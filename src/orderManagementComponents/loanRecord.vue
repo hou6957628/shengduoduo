@@ -1,0 +1,408 @@
+<template>
+  <div class="content">
+    <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/pendingApproval' }">待审批列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <div class="operationContent">
+      <el-col :span="6" style="height: 55px;">
+        产品：
+        <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+          <el-option
+            v-for="item in electData1"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        新老户：
+        <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+          <el-option
+            v-for="item in electData1"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        主渠道：
+        <el-input @click="searchProduct" class="searchContent"
+                  placeholder="逾期天数"
+                  v-model="overdueNum"
+                  clearable>
+        </el-input>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        子渠道：
+        <el-input @click="searchProduct" class="searchContent"
+                  placeholder="逾期天数"
+                  v-model="overdueNum"
+                  clearable>
+        </el-input>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        性别：
+        <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+          <el-option
+            v-for="item in electData1"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        手机号：
+        <el-input @click="searchProduct" class="searchContent"
+                  placeholder="逾期天数"
+                  v-model="overdueNum"
+                  clearable>
+        </el-input>
+      </el-col>
+      <el-col :span="12" style="height: 55px;">
+        <template>
+          申请时间时间：
+          <el-date-picker style="margin-left: 0px"
+                          v-model="value5"
+                          type="datetimerange"
+                          align="right"
+                          unlink-panels
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          :picker-options="pickerOptions2"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          @change="logTimeChange()">
+          </el-date-picker>
+        </template>
+      </el-col>
+      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button type="primary" id="cancelBtn" @click="cancelContent()" slot="append">批量审批</el-button>
+    </div>
+    <template>
+      <el-table
+        ref="multipleTable"
+        :data="tableData"
+        @selection-change="handleSelectionChange"
+        border
+        style="width: 100%">
+        <el-table-column
+          type="selection"
+          width="55">
+        </el-table-column>
+        <el-table-column
+          fixed
+          prop="productCode"
+          label="订单ID"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          fixed
+          prop="realName"
+          label="姓名"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="mobile"
+          label="性别"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="productId"
+          label="手机号"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="productId"
+          label="借款期限"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="借款金额"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="channelName"
+          label="订单状态"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="subChannelName"
+          label="主渠道"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="interestMethods"
+          label="子渠道"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="updateDate"
+          label="用户标识"
+          width="150">
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width="60">
+          <template slot-scope="scope">
+            <el-button @click="detailProduct(scope.row)" type="text" size="small">审核</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </template>
+    <div class="block">
+      <el-pagination class="paginationBox"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :unique-opened="true"
+        :current-page="pageNum"
+        :page-sizes="pageSizes"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="proTotal">
+      </el-pagination>
+    </div>
+  </div>
+</template>
+
+
+<script>
+  import axios from 'axios'
+  export default {
+    methods: {
+      //查询金融产品
+      searchContent(data){
+        if(data==""){
+          this.getProductList(1,20,null,null);
+          // this.$message.error('搜索内容不可以为空');
+        }else {
+          this.getProductList(1,20,data,this.finProduct);
+          console.log(data);
+        }
+      },
+      //每页显示多少条
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.nowPageSizes=val;
+      },
+      //翻页
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+        console.log(this.nowPageSizes);
+        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+      },
+      //创建金融产品
+      detailProduct(){
+        this.$router.push({
+          path: `/editFinanceProduct`,
+        });
+      },
+      /**
+       * 获取金融产品列表
+       * @param data1 查询第几页
+       * @param data2 每页显示多少条数据
+       * @param data3 产品名称
+       * @param data4 产品编号
+       */
+      getProductList(data1,data2,data3,data4){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/user_center/customer/list",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            realName: data1,
+            mobile: data2,
+            channelName: data3,
+            channelName: data4,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+            this.tableData=res.data.body.list;
+            this.proTotal=res.data.body.total;
+            this.pageSize=res.data.body.pageSize;
+            this.pageNum=res.data.body.pageNum;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //查询产品接口
+      searchProduct(){
+        this.getProductList(1,20,this.finProduct,this.finProduct);
+      },
+      //过滤类型字段
+      typeFormatter(row){
+        let status = row.type;
+        if(status === 0){
+          return '信贷产品'
+        } else {
+          return '分期产品'
+        }
+      },
+      //时间筛选
+      logTimeChange(){
+        if(this.value7==''||this.value7==null){
+          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
+        }else {
+          var startTime=this.value7[0];
+          var endTime=this.value7[1];
+          this.startTime=startTime;
+          this.endTime=endTime;
+          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
+          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
+        }
+      },
+      //时间筛选1
+      logTimeChange1(){
+        if(this.value6==''||this.value6==null){
+          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
+        }else {
+          var startTime=this.value6[0];
+          var endTime=this.value6[1];
+          this.startTime=startTime;
+          this.endTime=endTime;
+          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
+          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
+        }
+      },
+      //时间筛选2
+      logTimeChange2(){
+        if(this.value5==''||this.value5==null){
+          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
+        }else {
+          var startTime=this.value5[0];
+          var endTime=this.value5[1];
+          this.startTime=startTime;
+          this.endTime=endTime;
+          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
+          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
+        }
+      },
+      //下拉选择
+      selectChange(row){
+        console.log(this.electValue);
+      },
+      selectChange1(row){
+        console.log(this.electValue1);
+      },
+      selectChange2(row){
+        console.log(this.electValue2);
+      },
+      //取消分单
+      cancelContent(){
+
+      },
+      //全选
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      }
+    },
+    mounted:function () {
+      // this.finProduct=this.$route.params.name;
+      // this.getProductList(1,20,null,null);
+    },
+    data() {
+      return {
+        electData: [
+          {classifyId:0,classifyName:"全部产品"},
+          {classifyId:1,classifyName:"借点儿"},
+          {classifyId:2,classifyName:"夏花花"},
+          {classifyId:3,classifyName:"取消救济"},
+        ],
+        electData1: [
+          {classifyId:0,classifyName:"全部状态"},
+          {classifyId:1,classifyName:"逾期"},
+          {classifyId:2,classifyName:"坏账"},
+          {classifyId:3,classifyName:"逾期已还"},
+          {classifyId:4,classifyName:"坏账已还"},
+        ],
+        electData2: [
+          {classifyId:0,classifyName:"全部状态"},
+          {classifyId:1,classifyName:"新户"},
+          {classifyId:2,classifyName:"老户"},
+        ],
+        tableData:[],
+        electValue:0,
+        electValue1:0,
+        electValue2:0,
+        finProduct: '',
+        pageNum: null,
+        proTotal:null,
+        pageSize:null,
+        pageSizes:[20,30,50],
+        nowPageSizes:20,
+        pickerOptions2: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
+        value5:'',
+        value6:'',
+        value7:'',
+        overdueNum:'',
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .el-col-8{
+    height: 55px;
+  }
+  .select{
+    margin-left: 20px;
+  }
+  .content {
+    padding-left: 200px;
+    padding-top: 80px;
+  }
+  .fs-16{
+    font-size: 20px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  .operationContent{
+    text-align: left;
+    margin: 25px 30px 15px 0;
+  }
+  .operationContent .searchContent{
+    margin-left:0px;
+    width: 200px;
+    margin-right: 30px;
+  }
+  .paginationBox{
+    margin-top: 20px;
+    font-size: 18px;
+    margin-bottom: 40px;
+  }
+</style>
