@@ -21,34 +21,65 @@
         <div class="labelContent">
           <el-form-item>
             <el-form-item class="labelList" v-for="(domain, index) in electDataList.domains" :key="index">
-              <span>{{domain.flowItemAlias}}&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              标签名称：<el-button @click="xuan(index)" :id="['btn'+index]" v-if="domain.id">{{domain.tagName}}</el-button>
+              <span>{{domain.tagItemAlias}}&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              字段名称：<el-button @click="xuan(index)" :id="['btn'+index]" v-if="domain.id">{{domain.tagName}}</el-button>
                         <el-button @click="xuan(index)" :id="['btn'+index]" v-if="!domain.id">点击选择</el-button>
-              <!--规则-->
-              <div v-if="btype==1" class="noDisplay">
-                <el-select v-model="domain.action" class="select">
+              <!--数字-->
+              <div v-if="domain.dataType==1" class="noDisplay">
+                <el-select v-model="domain.symbolCode1" class="select" @change="changeSelect2($event,index,numSymbolCodeList)">
                   <el-option
-                    v-for="item in actionList"
+                    v-for="item in numSymbolCodeList"
                     :key="item.key"
                     :label="item.Id"
                     :value="item.key">
                   </el-option>
                 </el-select>
-                <el-input type="text" style="width: 200px" v-model="domain.actionValue" @keyup.native="numberCheck1(index)"></el-input>
-                <span style="margin-left: 15px">用户可选额度: </span>
-                <el-input type="text" style="width: 200px" v-model="domain.amountApp"></el-input>
+                <el-input type="tel" style="width: 200px" v-model="domain.fieldValue1" @keyup.native="numberCheck1(index)"></el-input>
+                <el-select v-model="domain.symbolCode2" class="select" @change="changeSelect2($event,index,numSymbolCodeList)">
+                  <el-option
+                    v-for="item in numSymbolCodeList"
+                    :key="item.key"
+                    :label="item.Id"
+                    :value="item.key">
+                  </el-option>
+                </el-select>
+                <el-input type="text" style="width: 200px" v-model="domain.fieldValue2" @keyup.native="numberCheck2(index)"></el-input>
+                <el-input v-if="domain.symbolCode2" type="hidden" style="width: 1px;" v-model="domain.operationalSymbolCode=domain.symbolCode1+','+domain.symbolCode2"></el-input>
+                <el-input v-if="!domain.symbolCode2" type="hidden" style="width: 1px;" v-model="domain.operationalSymbolCode=domain.symbolCode1"></el-input>
+                <el-input v-if="domain.fieldValue2" type="hidden" style="width: 1px;" v-model="domain.fieldValue=domain.fieldValue1+','+domain.fieldValue2"></el-input>
+                <el-input v-if="!domain.fieldValue2" type="hidden" style="width: 1px;" v-model="domain.fieldValue=domain.fieldValue1"></el-input>
+                <el-input type="hidden" style="width: 1px;" v-model="domain.dataType"></el-input>
+              </div>
+              <!--下拉框-->
+              <div v-if="domain.dataType==3" class="noDisplay">
+                <el-select v-model="domain.operationalSymbolCode" class="select" @change="changeSelect2($event,index,numSymbolCodeList)">
+                  <el-option
+                    v-for="item in booleanList"
+                    :key="item.key"
+                    :label="item.Id"
+                    :value="item.key">
+                  </el-option>
+                </el-select>
+                <el-select v-model="domain.fieldValue" class="select">
+                  <el-option
+                    v-for="item in reBorrowList"
+                    :key="item.key"
+                    :label="item.Id"
+                    :value="item.key">
+                  </el-option>
+                </el-select>
               </div>
               <el-button @click.prevent="removeDomain(domain)">删除</el-button>
             </el-form-item>
           </el-form-item >
           <p class="topText" style="margin: 60px 0 20px 0;">运算规则设置&nbsp;&nbsp;&nbsp;<el-tag class="fs15">&&:且</el-tag>&nbsp;&nbsp;<el-tag class="fs15">|:或</el-tag>&nbsp;&nbsp;<el-tag class="fs15">{}:最后执行</el-tag>&nbsp;&nbsp;<el-tag class="fs15">():优先执行</el-tag></p>
           <el-form-item class="" prop="flowRule">
-            <el-input style="width: 500px" v-model="ruleForm.flowRule"></el-input>
+            <el-input style="width: 500px" v-model="ruleForm.tagRule"></el-input>
             <el-button type="primary" @click="checkForDoc()">执行<i class="el-icon-upload el-icon--right"></i></el-button>
           </el-form-item>
-          <p class="topText" style="margin-top: 60px">执行后标签规则说明</p>
+          <p class="topText" style="margin-top: 60px">执行后流程说明</p>
           <div class="">
-              <p style="width: 1000px;margin-bottom: 40px;background-color: #fff;font-size: 18px;padding: 20px" v-model="ruleForm.flowRuleDesc">{{ruleForm.flowRuleDesc}}</p>
+              <p style="width: 1000px;margin-bottom: 40px;background-color: #fff;font-size: 18px;padding: 20px" v-model="ruleForm.tagRuleDesc">{{ruleForm.tagRuleDesc}}</p>
             <el-button type="primary" @click="submitForm('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
             <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
           </div>
@@ -57,7 +88,7 @@
     </el-form>
     <div v-if="bg" id="bg">
       <div v-for="(item,index) in tableData" style="display: inline-block;padding: 2px 5px;" :key="index">
-        <el-radio class="radioType" v-model="radio" @change="changeHandler(item)" border size="medium" :label="item.id">{{item.tagName}}</el-radio>
+        <el-radio class="radioType" v-model="radio" @change="changeHandler(item)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
       </div>
     </div>
   </div>
@@ -71,12 +102,12 @@
       addDomain() {
         if (this.electDataList.domains.length==0) {
           this.electDataList.domains.push({
-            flowItemAlias: this.labelData[localStorage.num],
+            tagItemAlias: this.labelData[localStorage.num],
           });
           localStorage.num++;
         } else {
           this.electDataList.domains.push({
-            flowItemAlias: this.labelData[localStorage.num],
+            tagItemAlias: this.labelData[localStorage.num],
           });
           localStorage.num++;
         }
@@ -93,8 +124,8 @@
         this.count=index;
         this.bg=true;
         axios({
-          method:"GET",
-          url:"http://"+this.baseUrl+"/quota/admin/amountTag/tagList",
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/flowField/getFieldList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -111,10 +142,10 @@
       changeHandler(item) {
         this.bg=false;
         this.radio="";
-        this.btype=1;
-        this.electDataList.domains[this.count].tagId = item.id;
-        $("#btn"+this.count).html(item.tagName);
-        this.electDataList.domains[this.count].tagName = item.tagName;
+        this.electDataList.domains[this.count].fieldCode=item.fieldCode;
+        this.electDataList.domains[this.count].fieldName=item.fieldName;
+        this.electDataList.domains[this.count].dataType=item.dataType;
+        $("#btn"+this.count).html(item.fieldName);
       },
       //根据id查询流程
       getFlowById(ruleId){
@@ -130,11 +161,13 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.ruleForm = res.data.body.amountFlow;
-            if (res.data.body.amountFlowItems.length != 0) {
-              this.btype=1;
-              this.electDataList.domains=res.data.body.amountFlowItems;
-            }
+            this.ruleForm = res.data.body;
+            this.ruleForm.flowId = res.data.body.id;
+            this.ruleForm.id = res.data.body.id;
+            // if (res.data.body.amountFlowItems.length != 0) {
+            //   this.btype=1;
+            //   this.electDataList.domains=res.data.body.amountFlowItems;
+            // }
             localStorage.num=this.electDataList.domains.length;
           }else {
             this.$message.error(res.data.msgInfo);
@@ -144,14 +177,12 @@
       //执行：生成文本描述
       checkForDoc(){
         var data  = {
-          'amountFlow':{
-            'flowRule': this.ruleForm.flowRule,
-          },
-          'amountFlowItems':this.electDataList.domains
+          'tagRule': this.ruleForm.tagRule,
+          'tagItemList':this.electDataList.domains
         };
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/quota/admin/amountFlow/checkForDoc",
+          url:"http://"+this.baseUrl+"/order/admin/checkForDoc",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -159,7 +190,8 @@
           data:JSON.stringify(data),
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.ruleForm.flowRuleDesc=res.data.body;
+            this.ruleForm.tagRuleDesc=res.data.body;
+            this.$forceUpdate();
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -170,7 +202,7 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             console.log(this.electDataList.domains);
-            if (this.electDataList.domains[0].action==null) {
+            if (this.electDataList.domains[0].operationalSymbolCode==null || this.electDataList.domains[0].fieldValue==null) {
               this.$alert('请填写子项', '提示', {
                 confirmButtonText: '确定',
                 center: true,
@@ -178,12 +210,12 @@
               });
             } else {
               var data  = {
-                'amountFlow':this.ruleForm,
-                'amountFlowItems':this.electDataList.domains
+                'orderTag':this.ruleForm,
+                'orderTagItems':this.electDataList.domains
               };
               axios({
                 method:"POST",
-                url:"http://"+this.baseUrl+"/quota/admin/amountFlow/config",
+                url:"http://"+this.baseUrl+"/order/admin/ordertTag/add",
                 headers:{
                   'Content-Type':'application/json',
                   'Authorization': localStorage.token
@@ -195,7 +227,7 @@
                     message: '配置成功',
                     type: 'success'
                   });
-                  this.$router.push('/amountFlowList');
+                  this.$router.push('/orderFlowList');
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -212,12 +244,29 @@
       },
       //只能输入数字
       numberCheck1(index) {
-        var data = this.electDataList.domains[index].actionValue;
+        var data = this.electDataList.domains[index].fieldValue1;
         let boo = new RegExp("^[1-9][0-9]*$").test(data);
         if (!boo) {
           this.$message.error("请输入正整数");
-          this.electDataList.domains[index].actionValue='';
+          this.electDataList.domains[index].fieldValue1=data.replace(/[^\d]/g,'');
         }
+      },
+      numberCheck2(index) {
+        var data = this.electDataList.domains[index].fieldValue2;
+        let boo = new RegExp("^[1-9][0-9]*$").test(data);
+        if (!boo) {
+          this.$message.error("请输入正整数");
+          this.electDataList.domains[index].fieldValue2=data.replace(/[^\d]/g,'');
+        }
+      },
+      //封装label值
+      changeSelect2(vId,index,list){
+        this.$forceUpdate();
+        let obj = {};
+        obj = list.find((item)=>{
+          return item.key === vId;
+        });
+        this.electDataList.domains[index].operationalSymbolName=obj.Id;
       },
     },
     mounted:function () {
@@ -229,12 +278,12 @@
       return {
         electData: [ ],
         ruleForm:{
-          id:'',
-          flowRule:'',
-          flowRuleDesc:'',
+          flowId:'',
+          tagRule:'',
+          tagRuleDesc:'',
         },
         rules: {
-          flowRule: [
+          tagRule: [
             { required: true, message: '请输入运算规则', trigger: 'change' }
           ]
         },
@@ -252,15 +301,25 @@
         ],
         electDataList: {
           domains: [{
-            flowItemAlias: "A",tagId:'',tagName:'',action:null,actionValue:'',amountApp:'',id:'',
+            tagItemAlias: "A",fieldValue:'',fieldCode:'',fieldName:'',tagRule:'',dataType:'',
+            operationalSymbolCode: null,operationalSymbolName: '',symbolCode1: '',fieldValue1:'',symbolCode2: '',fieldValue2:'',
           }]
         },
         radio:"",
-        actionList:[
-          {key:0,Id:"增加额度"},
-          {key:1,Id:"减少额度"},
-          {key:2,Id:"维持原额度"},
-          {key:3,Id:"拉黑"},
+        numSymbolCodeList:[
+          {key:"EQ",Id:"等于"},
+          {key:"NEQ",Id:"不等于"},
+          {key:"LT",Id:"小于"},
+          {key:"GT",Id:"大于"},
+          {key:"ELT",Id:"小于等于"},
+          {key:"EGT",Id:"大于等于"},
+        ],
+        booleanList:[
+          {key:"EQ",Id:"等于"},
+        ],
+        reBorrowList:[
+          {key:1,Id:"是"},
+          {key:0,Id:"否"},
         ],
       }
     }

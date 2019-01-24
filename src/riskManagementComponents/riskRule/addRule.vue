@@ -506,7 +506,7 @@
         let boo = new RegExp("^[1-9][0-9]*$").test(data);
         if (!boo) {
           this.$message.error("请输入正整数");
-          this.electDataList.domains[index].fieldValue1='';
+          this.electDataList.domains[index].fieldValue1=data.replace(/[^\d]/g,'');
         }
       },
       numberCheck2(index) {
@@ -516,7 +516,7 @@
         let boo = new RegExp("^[1-9][0-9]*$").test(data);
         if (!boo) {
           this.$message.error("请输入正整数");
-          this.electDataList.domains[index].fieldValue2='';
+          this.electDataList.domains[index].fieldValue2=data.replace(/[^\d]/g,'');
         }
       }
     },
