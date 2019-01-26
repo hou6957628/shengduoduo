@@ -1,18 +1,18 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/flowList' }">展期流程管理</el-breadcrumb-item>
-      <el-breadcrumb-item>编辑展期流程</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/flowList' }">风控总流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item>创建风控总流程</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="流程名称:" prop="flowName">
+      <el-form-item label="总流程名称:" prop="flowName" :rules="[ruleForm.flowName,{validator:checkName, required: true, trigger:'blur'}]">
         <el-input v-model="ruleForm.flowName"></el-input>
       </el-form-item>
-      <el-form-item label="流程说明:">
+      <el-form-item label="总流程说明:" prop="flowDetail">
         <el-input v-model="ruleForm.flowDetail"></el-input>
       </el-form-item>
       <el-form-item label="是否启用:" prop="enabled">
-        <el-select v-model="ruleForm.enabled" placeholder="请选择">
+        <el-select v-model="ruleForm.enabled" placeholder="请选择" @change="selectChange">
           <el-option
             v-for="item in electData"
             :key="item.key"
@@ -35,20 +35,16 @@
     data() {
       return {
         electData: [
-          {key:false,Id:"不启用"},
-          {key:true,Id:"启用"},
+          {key:0,Id:"不启用"},
+          {key:1,Id:"启用"},
         ],
         electValue:'',
         ruleForm: {
-          id:'',
           flowName: '',
           flowDetail: '',
-          enabled: '',
+          enabled: 1,
         },
         rules: {
-          flowName: [
-            { required: true, message: '请输入流程名称', trigger: 'blur' },
-          ],
           enabled: [
             { required: true, message: '请选择是否启用', trigger: 'change' }
           ]
@@ -56,38 +52,47 @@
       };
     },
     methods: {
-      //根据id查询流程
-      getFlowById(ruleId){
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/order/admin/orderFlow/get",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: ruleId,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.ruleForm = res.data.body.orderFlow;
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+      //验证名称是否重名
+      checkName(rule, value, callback) {
+        if (!value) {
+          callback(new Error('请输入名称'));
+        } else if (value.length < 3 | value.length > 10) {
+          callback(new Error('长度在 3 到 10 个字符'));
+        } else {
+          axios({
+            method:"GET",
+            url:"http://"+this.baseUrl+"/risk/admin/collection_flow/getByName",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              name: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body != 0) {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
       },
       //提交按钮
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var param = new FormData();  // 创建form对象
-            param.append('id', this.ruleForm.id);
             param.append('flowName', this.ruleForm.flowName);
-            param.append('flowDetail', this.ruleForm.flowDetail);
+            param.append('flowDetail', this.ruleForm.flowDetail); // 通过append向form对象添加数据
             param.append('enabled', this.ruleForm.enabled);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/order/admin/orderFlow/createFlow",
+              url:"http://"+this.baseUrl+"/risk/admin/collection_flow/add",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -96,10 +101,10 @@
             }).then((res)=>{
               if(res.data.msgCd=='ZYCASH-200'){
                 this.$message({
-                  message: '修改成功',
+                  message: '添加成功',
                   type: 'success'
                 });
-                this.$router.push('/orderFlowList');
+                this.$router.push('/flowList');
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }
@@ -113,14 +118,16 @@
           }
         });
       },
+      selectChange(){
+        console.log(this.ruleForm.enabled);
+      },
       //取消按钮
       resetForm(formName) {
         this.$router.go(-1);
       }
     },
     mounted:function () {
-      this.id=this.$route.params.id;
-      this.getFlowById(this.id);
+      // this.getProductList();
     }
   }
 </script>

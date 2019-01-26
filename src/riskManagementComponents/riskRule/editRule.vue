@@ -407,6 +407,13 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            this.electDataList.domains[this.count].symbolCode='';
+            this.electDataList.domains[this.count].symbolName='';
+            this.electDataList.domains[this.count].symbolCode1='';
+            this.electDataList.domains[this.count].symbolCode2='';
+            this.electDataList.domains[this.count].fieldValue='';
+            this.electDataList.domains[this.count].fieldValue1='';
+            this.electDataList.domains[this.count].fieldValue2='';
             var type=res.data.body.rcField.dataType - 1;
             this.electDataList.domains[this.count].fieldCode=res.data.body.rcField.fieldCode;
             this.electDataList.domains[this.count].fieldName=res.data.body.rcField.fieldName;

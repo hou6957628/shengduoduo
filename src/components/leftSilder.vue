@@ -71,7 +71,10 @@
                 <el-menu-item index="/collectionList">规则集管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/flowList">流程管理</el-menu-item>
+                <el-menu-item index="/flowList">子流程管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/flowHeadList">总流程管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item index="/flowLogList">风险命中列表</el-menu-item>

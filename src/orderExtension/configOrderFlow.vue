@@ -1,19 +1,19 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/ruleSetConfiguration' }">展期流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item>展期流程管理</el-breadcrumb-item>
       <el-breadcrumb-item>配置展期流程</el-breadcrumb-item>
     </el-breadcrumb>
     <h3 class="mt_20">展期流程</h3>
     <el-row :gutter="20">
-      <el-col :span="6">创建时间:<div class="grid-content">{{ruleForm.createDate}}</div></el-col>
-      <el-col :span="6">更新时间:<div class="grid-content">{{ruleForm.updateDate}}</div></el-col>
-      <el-col :span="6">创建人员:<div class="grid-content">{{ruleForm.creator}}</div></el-col>
+      <el-col :span="6">创建时间:<div class="grid-content">{{this.orderFlow.createDate}}</div></el-col>
+      <el-col :span="6">更新时间:<div class="grid-content">{{this.orderFlow.updateDate}}</div></el-col>
+      <el-col :span="6">创建人员:<div class="grid-content">{{this.orderFlow.creator}}</div></el-col>
     </el-row>
     <div class="line"></div>
     <el-row :gutter="20">
       <h4 style="padding-left: 10px;padding-top: 20px;padding-bottom: 10px">说明</h4>
-      <el-col>对应使用的额度流程: <div class="grid-content">应用1、应用2、应用3、应用4</div><p style="float: right;color:red;margin-right: 50px">修改记录</p></el-col>
+      <el-col>配置此展期流程的应用: <div class="grid-content">{{this.orderFlow.position==null?'无':this.orderFlow.position}}</div><p style="float: right;color:red;margin-right: 50px">修改记录</p></el-col>
     </el-row>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" >
       <div class="operationContent">
@@ -22,7 +22,7 @@
           <el-form-item>
             <el-form-item class="labelList" v-for="(domain, index) in electDataList.domains" :key="index">
               <span>{{domain.tagItemAlias}}&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              字段名称：<el-button @click="xuan(index)" :id="['btn'+index]" v-if="domain.id">{{domain.tagName}}</el-button>
+              字段名称：<el-button @click="xuan(index)" :id="['btn'+index]" v-if="domain.id">{{domain.fieldName}}</el-button>
                         <el-button @click="xuan(index)" :id="['btn'+index]" v-if="!domain.id">点击选择</el-button>
               <!--数字-->
               <div v-if="domain.dataType==1" class="noDisplay">
@@ -60,7 +60,7 @@
                     :value="item.key">
                   </el-option>
                 </el-select>
-                <el-select v-model="domain.fieldValue" class="select">
+                <el-select v-model="domain.fieldValue" class="select" @change="changeSelect()">
                   <el-option
                     v-for="item in reBorrowList"
                     :key="item.key"
@@ -142,10 +142,17 @@
       changeHandler(item) {
         this.bg=false;
         this.radio="";
+        this.electDataList.domains[this.count].operationalSymbolCode='';
+        this.electDataList.domains[this.count].operationalSymbolName='';
+        this.electDataList.domains[this.count].symbolCode1='';
+        this.electDataList.domains[this.count].symbolCode2='';
+        this.electDataList.domains[this.count].fieldValue='';
+        this.electDataList.domains[this.count].fieldValue1='';
+        this.electDataList.domains[this.count].fieldValue2='';
+        $("#btn"+this.count).html(item.fieldName);
         this.electDataList.domains[this.count].fieldCode=item.fieldCode;
         this.electDataList.domains[this.count].fieldName=item.fieldName;
         this.electDataList.domains[this.count].dataType=item.dataType;
-        $("#btn"+this.count).html(item.fieldName);
       },
       //根据id查询流程
       getFlowById(ruleId){
@@ -161,13 +168,28 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.ruleForm = res.data.body;
-            this.ruleForm.flowId = res.data.body.id;
-            this.ruleForm.id = res.data.body.id;
-            // if (res.data.body.amountFlowItems.length != 0) {
-            //   this.btype=1;
-            //   this.electDataList.domains=res.data.body.amountFlowItems;
-            // }
+            this.orderFlow = res.data.body.orderFlow;
+            if (res.data.body.orderTag != null) {
+              this.ruleForm = res.data.body.orderTag;
+            }
+            this.ruleForm.flowId=res.data.body.orderFlow.id;
+            if (res.data.body.orderTagItems.length != 0) {
+              this.electDataList.domains=res.data.body.orderTagItems;
+              var _this=this;
+              this.electDataList.domains.forEach(function (item,index) {
+                if (item.dataType==1) {
+                  if (item.operationalSymbolCode.indexOf(',')!=-1) {
+                    _this.electDataList.domains[index].symbolCode1=item.symbolCode.split(',')[0];
+                    _this.electDataList.domains[index].symbolCode2=item.symbolCode.split(',')[1];
+                    _this.electDataList.domains[index].fieldValue1=item.fieldValue.split(',')[0];
+                    _this.electDataList.domains[index].fieldValue2=item.fieldValue.split(',')[1];
+                  } else {
+                    _this.electDataList.domains[index].symbolCode1=item.operationalSymbolCode;
+                    _this.electDataList.domains[index].fieldValue1=item.fieldValue;
+                  }
+                }
+              });
+            }
             localStorage.num=this.electDataList.domains.length;
           }else {
             this.$message.error(res.data.msgInfo);
@@ -268,6 +290,10 @@
         });
         this.electDataList.domains[index].operationalSymbolName=obj.Id;
       },
+      //强制刷新视图层
+      changeSelect(){
+        this.$forceUpdate();
+      },
     },
     mounted:function () {
       localStorage.num=0;
@@ -277,6 +303,7 @@
     data() {
       return {
         electData: [ ],
+        orderFlow:[],
         ruleForm:{
           flowId:'',
           tagRule:'',

@@ -1,12 +1,12 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/riskControl' }">展期流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/ruleListManagement' }">风控总流程管理</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建流程<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-input class="searchContent"
-        placeholder="流程名称、编号搜索"
+      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建总流程<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-input @click="searchProduct" class="searchContent"
+        placeholder="总流程名称、编号搜索"
         v-model="finProduct"
         clearable>
         <el-button id="searchBtn" @click="searchContent(finProduct)" slot="append" icon="el-icon-search">查询</el-button>
@@ -19,19 +19,19 @@
         style="width: 100%">
         <el-table-column
           fixed
-          prop="flowCode"
-          label="流程编号"
+          prop="ruleCode"
+          label="规则编号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="flowName"
-          label="流程名称"
+          prop="ruleName"
+          label="规则名称"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="position"
-          label="使用中的应用"
-          width="300">
+          prop="classifyName"
+          label="规则分类"
+          width="120">
         </el-table-column>
         <el-table-column
           prop="createDate"
@@ -49,6 +49,11 @@
           width="120">
         </el-table-column>
         <el-table-column
+          prop="ruleDetail"
+          label="规则说明"
+          width="120">
+        </el-table-column>
+        <el-table-column
           prop="enabled"
           label="状态"
           width="80">
@@ -63,7 +68,6 @@
           width="220">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="configureProduct(scope.row)" type="text" size="small">配置</el-button>
             <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
             <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
             <el-button v-if="!scope.row.enabled" @click="obtainedCustomerTag(scope.row)" type="text" size="small">启用</el-button>
@@ -84,17 +88,17 @@
         :total="proTotal">
       </el-pagination>
     </div>
-    <!--复制风控流程结构-->
+    <!--复制规则结构-->
     <el-dialog
-      title="复制展期流程"
+      title="复制风控规则"
       :visible.sync="centerDialogVisible"
       width="40%"
       center>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="流程名称:" prop="ruleName" :rules="[ruleForm.ruleName,{validator:checkName2, required: true, trigger:'blur'}]">
+        <el-form-item label="规则名称:" prop="ruleName" :rules="[ruleForm.ruleName,{validator:checkName2, required: true, trigger:'blur'}]">
           <el-input v-model="ruleForm.ruleName"></el-input>
         </el-form-item>
-        <el-form-item label="流程说明:">
+        <el-form-item label="规则说明:">
           <el-input v-model="ruleForm.ruleDetail"></el-input>
         </el-form-item>
         <el-form-item label="是否启用:" prop="enabled">
@@ -121,9 +125,9 @@
   import axios from 'axios'
   export default {
     methods: {
-      //条件查询风控流程
+      //条件查询规则列表
       searchContent(data){
-        this.getProductList(1,20,this.finProduct);
+        this.getProductList(1,20,this.finProduct,this.electValue);
       },
       //每页显示多少条
       handleSizeChange(val) {
@@ -132,27 +136,31 @@
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
         this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
       },
-      //创建展期流程
+      //创建规则
       toAddProduct(){
         this.$router.push({
-          path: `/addOrderFlow`,
+          path: `/addHeadFlow`,
+        });
+      },
+      //跳转规则分类列表
+      tolabelList(){
+        this.$router.push({
+          path: `/ruleClassifyList`,
         });
       },
       /**
-       * 用户标签列表接口
+       * 规则列表接口
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
        * @param data3 标签名称
        * @param data4 分类名称
        */
-      getProductList(data1,data2,data3){
+      getProductList(data1,data2,data3,data4){
         axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/orderFlow/list",
+          method:"GET",
+          url:"http://"+this.baseUrl+"/risk/admin/rule/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -160,7 +168,8 @@
           params:{
             pageNum: data1,
             pageSize: data2,
-            keyName: data3,
+            ruleName: data3,
+            ruleTypeId: data4,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -173,49 +182,68 @@
           }
         })
       },
-      //编辑产品接口
+      //查询产品接口
+      searchProduct(){
+        this.getProductList(1,20,this.finProduct,this.finProduct,null);
+      },
+      //编辑规则接口
       editProduct(row){
         var id=row.id;
         this.$router.push({
-          path: `/editOrderFlow/${id}`,
-        });
-      },
-      //配置产品接口
-      configureProduct(row){
-        var id=row.id;
-        this.$router.push({
-          path: `/configOrderFlow/${id}`,
+          path: `/editRule/${id}`,
         });
       },
       //提示删除规则接口
       deleteProduct(row){
-        if (row.position != null) {
-          this.$alert('该展期流程在某应用（APP）引用，不可删除', '提示', {
-            confirmButtonText: '确定',
-            center: true,
-            type: 'warning'
-          });
-        } else {
-          this.$confirm('是否确认删除此展期流程?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-            center: true
-          }).then(() => {
-            this.deleteCustomerTag(row);
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除'
-            });
-          });
-        }
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/risk/admin/rule/checkRef",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id: row.id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            if (res.data.body.ruleCollectionCount != 0) {
+              this.$alert('该规则已被规则集引用，不可删除', '提示', {
+                confirmButtonText: '确定',
+                center: true,
+                type: 'warning'
+              });
+            } else if (res.data.body.flowCount != 0) {
+              this.$alert('该规则已被规则流程引用，不可删除', '提示', {
+                confirmButtonText: '确定',
+                center: true,
+                type: 'warning'
+              });
+            } else {
+              this.$confirm('是否确认删除此规则?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+              }).then(() => {
+                this.deleteCustomerTag(row);
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消删除'
+                });
+              });
+            }
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
       },
       //确认删除规则接口
       deleteCustomerTag(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/order/admin/orderFlow/deleteOrStop",
+          url:"http://"+this.baseUrl+"/risk/admin/rule/deleteOrStop",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -230,7 +258,7 @@
               message: '删除成功',
               type: 'success'
             });
-            this.getProductList(1,20,null);
+            this.getProductList(1,20,null,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -247,15 +275,15 @@
           if (valid) {
             axios({
               method:"post",
-              url:"http://"+this.baseUrl+"/order/admin/orderFlow/copy",
+              url:"http://"+this.baseUrl+"/risk/admin/rule/copy",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
               },
               params:{
                 id: this.copyId,
-                flowName: this.ruleForm.ruleName,
-                flowDetail: this.ruleForm.ruleDetail,
+                ruleName: this.ruleForm.ruleName,
+                ruleDetail: this.ruleForm.ruleDetail,
                 enabled: this.ruleForm.enabled,
               }
             }).then((res)=>{
@@ -265,7 +293,7 @@
                   type: 'success'
                 });
                 this.centerDialogVisible=false;
-                this.getProductList(1,20,null);
+                this.getProductList(1,20,null,null);
               }else {
                 this.$message.error(res.data.msgInfo);
               }
@@ -275,33 +303,55 @@
       },
       //提示启用停用规则接口
       obtainedProduct(row){
-        if (row.position != null) {
-          this.$alert('该展期流程在某应用（APP）引用，不可停用', '提示', {
-            confirmButtonText: '确定',
-            center: true,
-            type: 'warning'
-          });
-        } else {
-          this.$confirm('是否确认停用此展期流程?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-            center: true
-          }).then(() => {
-            this.obtainedCustomerTag(row);
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消停用'
-            });
-          });
-        }
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/risk/admin/rule/checkRef",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id: row.id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            if (res.data.body.ruleCollectionCount != 0) {
+              this.$alert('该规则已被规则集引用，不可停用', '提示', {
+                confirmButtonText: '确定',
+                center: true,
+                type: 'warning'
+              });
+            } else if (res.data.body.flowCount != 0) {
+              this.$alert('该规则已被规则流程引用，不可停用', '提示', {
+                confirmButtonText: '确定',
+                center: true,
+                type: 'warning'
+              });
+            } else {
+              this.$confirm('是否确认停用此规则?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+              }).then(() => {
+                this.obtainedCustomerTag(row);
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消操作'
+                });
+              });
+            }
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
       },
       //确认启用停用规则接口
       obtainedCustomerTag(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/order/admin/orderFlow/deleteOrStop",
+          url:"http://"+this.baseUrl+"/risk/admin/rule/deleteOrStop",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -316,22 +366,57 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,20,null);
+            this.getProductList(1,20,null,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //验证复制的风控流程名称是否重名
+      //过滤类型字段
+      typeFormatter(row){
+        let status = row.type;
+        if(status === 0){
+          return '信贷产品'
+        } else {
+          return '分期产品'
+        }
+      },
+      //下拉选择
+      selectChange(row){
+        this.finProduct='';
+        this.getProductList(1,20,null,this.electValue);
+      },
+      //查询规则分类
+      getRuleType(ruleType){
+        axios({
+          method:"get",
+          url:"http://"+this.baseUrl+"/risk/admin/classification/getByType",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            type: ruleType,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.electData=res.data.body.list;
+            this.electData.unshift({id: null, classifyName: '全部'});
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //验证复制的规则名称是否重名
       checkName2(rule, value, callback) {
         if (!value) {
           callback(new Error('请输入名称'));
-        } else if (value.length < 3 | value.length > 20) {
-          callback(new Error('长度在 3 到 20 个字符'));
+        } else if (value.length < 3 | value.length > 10) {
+          callback(new Error('长度在 3 到 10 个字符'));
         } else {
           axios({
-            method:"POST",
-            url:"http://"+this.baseUrl+"/order/admin/orderFlow/checkRepateFlowName",
+            method:"GET",
+            url:"http://"+this.baseUrl+"/risk/admin/rule/getByName",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token
@@ -341,7 +426,7 @@
             }
           }).then((res)=>{
             if(res.data.msgCd=='ZYCASH-200'){
-              if (res.data.body != true) {
+              if (res.data.body != 0) {
                 callback(new Error('名称重复'));
               } else {
                 callback();
@@ -354,11 +439,14 @@
       },
     },
     mounted:function () {
-      this.getProductList(1,20,null);
+      this.getProductList(1,20,null,null);
+      this.getRuleType(1);
     },
     data() {
       return {
+        electData: [ ],
         tableData:[],
+        electValue:null,
         finProduct: '',
         pageNum: null,
         proTotal:null,

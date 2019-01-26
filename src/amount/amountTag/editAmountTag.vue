@@ -185,6 +185,13 @@
         console.log(item.fieldName);
         this.bg=false;
         this.radio="";
+        this.electDataList.domains[this.count].operationalSymbolCode='';
+        this.electDataList.domains[this.count].operationalSymbolName='';
+        this.electDataList.domains[this.count].symbolCode1='';
+        this.electDataList.domains[this.count].symbolCode2='';
+        this.electDataList.domains[this.count].fieldValue='';
+        this.electDataList.domains[this.count].fieldValue1='';
+        this.electDataList.domains[this.count].fieldValue2='';
         $("#btn"+this.count).html(item.fieldName);
         this.electDataList.domains[this.count].fieldCode=item.fieldCode;
         this.electDataList.domains[this.count].fieldName=item.fieldName;

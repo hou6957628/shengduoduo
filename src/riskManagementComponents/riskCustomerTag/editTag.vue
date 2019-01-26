@@ -274,8 +274,16 @@
             if (res.data.body.list.length != 0) {
               this.$alert('修改用户标签，对应风控流程也会发生改变，是否确定修改？', '提示', {
                 confirmButtonText: '确定',
+                cancelButtonText: '取消',
                 center: true,
                 type: 'warning'
+              }).then(() => {
+                this.submitForm(formName);
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消修改'
+                });
               });
             } else {
               this.$confirm('是否确定保存?', '提示', {
@@ -402,6 +410,13 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            this.electDataList.domains[this.count].operationalSymbolCode='';
+            this.electDataList.domains[this.count].operationalSymbolName='';
+            this.electDataList.domains[this.count].symbolCode1='';
+            this.electDataList.domains[this.count].symbolCode2='';
+            this.electDataList.domains[this.count].fieldValue='';
+            this.electDataList.domains[this.count].fieldValue1='';
+            this.electDataList.domains[this.count].fieldValue2='';
             var type=res.data.body.rcField.dataType - 1;
             this.electDataList.domains[this.count].fieldCode=res.data.body.rcField.fieldCode;
             this.electDataList.domains[this.count].fieldName=res.data.body.rcField.fieldName;
@@ -410,8 +425,6 @@
             if (type == 2 || type == 3) {
               this.selectValues.push(res.data.body.selectValues);
             }
-            console.log('类型是:' + this.electDataList.domains[this.count].fieldDataType);
-            console.log('类型是:' + this.selectValues);
           }else {
             this.$message.error(res.data.msgInfo);
           }

@@ -44,6 +44,8 @@ import flowList from '@/riskManagementComponents/riskFlow/flowList'
 import addFlow from '@/riskManagementComponents/riskFlow/addFlow'
 import configFlow from '@/riskManagementComponents/riskFlow/configFlow'
 import editFlow from '@/riskManagementComponents/riskFlow/editFlow'
+import flowHeadList from '@/riskManagementComponents/riskFlow/flowHeadList'
+import addHeadFlow from '@/riskManagementComponents/riskFlow/addHeadFlow'
 //风险命中列表
 import flowLogList from '@/riskManagementComponents/flowLog/flowLogList'
 
@@ -107,6 +109,7 @@ import orderFlowList from '@/orderExtension/orderFlowList'
 import addOrderFlow from '@/orderExtension/addOrderFlow'
 import editOrderFlow from '@/orderExtension/editOrderFlow'
 import configOrderFlow from '@/orderExtension/configOrderFlow'
+import orderFlowLogList from '@/orderExtension/orderFlowLogList'
 
 import axios from 'axios'
 
@@ -147,11 +150,11 @@ axios.interceptors.response.use(
 
 // Vue.prototype.baseUrl="39.107.228.38:31999";
 //风控
-// Vue.prototype.baseUrl="localhost:9998";
+Vue.prototype.baseUrl="localhost:9998";
 //额度
 // Vue.prototype.baseUrl="localhost:9991";
 //订单
-Vue.prototype.baseUrl="localhost:9997";
+// Vue.prototype.baseUrl="localhost:9997";
 // Vue.prototype.baseUrl="192.168.20.110:8888";
 // Vue.prototype.baseUrl="192.168.20.216:9999";
 Vue.prototype.uurl="window.location.origin";
@@ -472,6 +475,22 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: editFlow
+    },
+    {
+      path: '/flowHeadList',
+      name: 'flowHeadList',
+      meta: {
+        requireAuth: true
+      },
+      component: flowHeadList
+    },
+    {
+      path: '/addHeadFlow',
+      name: 'addHeadFlow',
+      meta: {
+        requireAuth: true
+      },
+      component: addHeadFlow
     },
     {
       path: '/flowLogList',
@@ -915,6 +934,14 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: configOrderFlow
+    },
+    {
+      path: '/orderFlowLogList',
+      name: 'orderFlowLogList',
+      meta: {
+        requireAuth: true
+      },
+      component: orderFlowLogList
     },
 ]
 
