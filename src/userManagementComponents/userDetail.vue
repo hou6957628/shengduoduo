@@ -8,7 +8,6 @@
       <div class="listBox" v-for="(item,index) in productList" :class="isactive == index ? 'addclass' : ''" @click="fen(item,index)">{{item.productName}}</div>
     </div>
     <div class="listContent">
-      <!--<router-link :to="{name:'jiben',params: {cusCustomer: this.cusCustomer,idCard: this.idCard}}" tag="li">基本信息</router-link>-->
       <router-link :to="'/jiben/' + this.id" tag="li">基本信息</router-link>
       <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
       <router-link target="_blank" :to="'/yunying/' + this.id" tag="a">运营商通讯录比对</router-link>
