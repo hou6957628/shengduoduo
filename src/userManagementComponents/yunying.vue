@@ -25,7 +25,7 @@
             <h4>通话呼入分析</h4>
             <template>
               <el-table
-                :data="tableData"
+                :data="tableDataFrom"
                 border
                 style="width: 100%;margin-top: 20px;">
                 <el-table-column
@@ -88,7 +88,7 @@
             <h4>通话呼出分析</h4>
             <template>
               <el-table
-                :data="tableData"
+                :data="tableDataTo"
                 border
                 style="width: 100%;margin-top: 20px;">
                 <el-table-column
@@ -156,7 +156,8 @@
   export default {
     data() {
       return {
-        tableData: [],
+        tableDataFrom: [],
+        tableDataTo: [],
         finProduct: '',
         pageNum: null,
         proTotal:null,
@@ -168,20 +169,82 @@
     },
     methods: {
       //每页显示多少条
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+      handleSizeChangeFrom(val) {
         this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
         this.nowPageSizes=val;
       },
       //翻页
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
+      handleCurrentChangeFrom(val) {
         console.log(this.nowPageSizes);
         this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
       },
+      //每页显示多少条
+      handleSizeChangeTo(val) {
+        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.nowPageSizes=val;
+      },
+      //翻页
+      handleCurrentChangeTo(val) {
+        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+      },
+      //运营商通讯录比对
+      getAddressFrom(data1,data2,data3,data4){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/control_flow/list",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum: data1,
+            pageSize: data2,
+            id: data3,
+            type: data4,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.tableDataFrom=res.data.body.list;
+            this.proTotal=res.data.body.total;
+            this.pageSize=res.data.body.pageSize;
+            this.pageNum=res.data.body.pageNum;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //运营商通讯录比对
+      getAddressTo(data1,data2,data3,data4){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/control_flow/list",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum: data1,
+            pageSize: data2,
+            id: data3,
+            type: data4,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.tableDataTo=res.data.body.list;
+            this.proTotal=res.data.body.total;
+            this.pageSize=res.data.body.pageSize;
+            this.pageNum=res.data.body.pageNum;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted: function () {
-      // this.getProductList();
+      this.id=this.$route.params.id;
+      console.log(this.id);
+      this.getAddressFrom(1,20,16,0);
+      this.getAddressTo(1,20,16,1);
     }
   }
 </script>

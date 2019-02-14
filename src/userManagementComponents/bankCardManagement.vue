@@ -5,43 +5,27 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
-      <template>姓名：
-      <el-input @click="searchProduct" class="searchContent"
-        placeholder="产品名称、编号搜索"
-        v-model="finProduct"
-        clearable>
-      </el-input>
-      </template>
+        <template>姓名：
+          <el-input class="searchContent" placeholder="用户姓名" v-model="realName" clearable> </el-input>
+        </template>
       </el-col>
       <el-col :span="6" style="height: 55px;">
-      <template>手机号：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="产品名称、编号搜索"
-                  v-model="finProduct"
-                  clearable>
-        </el-input>
-      </template>
+        <template>手机号：
+          <el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
+        </template>
       </el-col>
       <el-col :span="6" style="height: 55px;">
-      <template>身份证号：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="产品名称、编号搜索"
-                  v-model="finProduct"
-                  clearable>
-        </el-input>
-      </template>
+        <template>身份证号：
+          <el-input class="searchContent" placeholder="用户身份证号" v-model="cardNumber" clearable></el-input>
+        </template>
       </el-col>
       <el-col :span="6" style="height: 55px;">
-      <template>开户银行：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="产品名称、编号搜索"
-                  v-model="finProduct"
-                  clearable>
-        </el-input>
-      </template>
+        <template>开户银行：
+          <el-input class="searchContent" placeholder="开户银行" v-model="bankName" clearable></el-input>
+        </template>
       </el-col>
       <template>
-        时间筛选：
+        时间筛选:
         <el-date-picker style="margin-left: 25px"
                         v-model="value7"
                         type="datetimerange"
@@ -65,96 +49,79 @@
         style="width: 100%">
         <el-table-column
           fixed
-          prop="productCode"
-          label="用户ID"
-          width="120">
+          prop="id"
+          label="银行卡ID"
+          width="80">
         </el-table-column>
         <el-table-column
-          prop="realName"
+          prop="name"
           label="姓名"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="mobile"
-          label="身份证号"
-          width="150">
-        </el-table-column>
-        <el-table-column
-          prop="mobile"
+          prop="registerMobile"
           label="手机号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="productId"
+          prop="type==0?'储蓄卡':'信用卡'"
+          label="类型"
+          width="110">
+          <template slot-scope="scope">
+            <el-tag disable-transitions>{{scope.row.type == 0 ? '储蓄卡' : '信用卡'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="productName"
           label="应用"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="createDate"
-          label="注册时间"
+          prop="cardNumber"
+          label="银行卡号"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="channelName"
-          label="主渠道"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="subChannelName"
-          label="子渠道"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="subChannelName"
-          label="拉黑原因"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="updateDate"
-          label="最近登录应用时间"
+          prop="subBranch"
+          label="开户行"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="isActiveApp"
-          label="激活APP"
-          width="80">
-          <template slot-scope="isActiveApp">
-            <el-tag
-              :type="scope.row.isActiveApp == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.isActiveApp == true ? '是' : '否'}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="isBlackList"
-          label="是否是黑名单"
-          width="110">
-          <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.isBlackList == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.isBlackList == true ? '是' : '否'}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="updateDate"
-          label="逾期次数"
+          prop="mobile"
+          label="预留手机号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="reBorrow"
-          label="用户标识"
-          width="80">
+          prop="purpose"
+          label="是否是放款卡"
+          width="110">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.reBorrow == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.reBorrow == true ? '老户' : '新户'}}</el-tag>
+              :type="scope.row.purpose == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.purpose == 1 ? '是' : '否'}}</el-tag>
           </template>
+        </el-table-column>
+        <el-table-column
+          prop="purpose"
+          label="是否是快捷支付"
+          width="120">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.purpose == 4 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.purpose == 4 ? '是' : '否'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="创建时间"
+          width="200">
         </el-table-column>
         <el-table-column
           label="操作"
           width="120">
           <template slot-scope="scope">
+            <el-button @click="editProduct(scope.row)" type="text" size="small">删除</el-button>
             <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
-            <el-button @click="editProduct(scope.row)" type="text" size="small">修改</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -181,55 +148,49 @@
     methods: {
       //查询金融产品
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,20,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,20,data,this.finProduct);
-          console.log(data);
-        }
+        this.getProductList(1,30,this.realName,this.mobile,this.cardNumber,this.bankName,this.startTime,this.endTime);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.realName,this.mobile,this.cardNumber,this.bankName,this.startTime,this.endTime);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
-      },
-      //创建金融产品
-      toAddProduct(){
-        this.$router.push({
-          path: `/editFinanceProduct`,
-        });
+        this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.cardNumber,this.bankName,this.startTime,this.endTime);
       },
       /**
        * 获取金融产品列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 产品名称
-       * @param data4 产品编号
+       * @param data3 用户姓名
+       * @param data4 手机号
+       * @param data5 身份证号
+       * @param data6 开户行
+       * @param data7 开始时间
+       * @param data8 结束时间
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/customer/list",
+          url:"http://"+this.baseUrl+"/credit/admin/bank/getBankCardInfoByParams",
+          // url:"http://localhost:9996/credit/admin/bank/getBankCardInfoByParams",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            realName: data1,
-            mobile: data2,
-            channelName: data3,
-            channelName: data4,
+            pageNum:data1,
+            pageSize:data2,
+            realName: data3,
+            registerMobile: data4,
+            cardNumber: data5,
+            bankName: data6,
+            startTime: data7,
+            endTime: data8,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+          if(res.data.msgCd=='ZYCASH-200'){
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
@@ -239,61 +200,78 @@
           }
         })
       },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20,this.finProduct,this.finProduct);
-      },
-      //编辑产品接口
+      //提示删除银行卡
       editProduct(row){
-        console.log(row.id);
-        let id=row.id;
-        this.$router.push({
-          path: `/editFinanceProduct/${id}`,
+        this.$confirm('是否确认删除此银行卡?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          this.deleteBankCard(row);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
         });
+      },
+      //确认删除银行卡接口
+      deleteBankCard(row){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/credit/admin/bank/deleteBankCardInfo",
+          // url:"http://localhost:9996/credit/admin/bank/deleteBankCardInfo",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id:row.id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            this.getProductList(1,30,null,null,null,null,null,null);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
       },
       //详情接口
       detailProduct(row){
         let id=row.id;
         this.$router.push({
-          path: `/editFinanceProduct/${id}`,
+          path: `/bankCardDetail/${id}`,
         });
-      },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
       },
       //时间筛选
       logTimeChange(){
-        if(this.value7==''||this.value7==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
-        }else {
+        if(this.value7!='' && this.value7!=null){
           var startTime=this.value7[0];
           var endTime=this.value7[1];
           this.startTime=startTime;
           this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
+        } else {
+          this.startTime='';
+          this.endTime='';
         }
       },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      this.getProductList(1,20,null,null);
+      this.getProductList(1,30,null,null,null,null,null,null);
     },
     data() {
       return {
         tableData: [],
-        finProduct: '',
         pageNum: null,
         proTotal:null,
         pageSize:null,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -321,7 +299,13 @@
             }
           }]
         },
+        realName:'',
+        mobile:'',
+        cardNumber:'',
+        bankName:'',
         value7:'',
+        startTime:'',
+        endTime:'',
       }
     }
   }

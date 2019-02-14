@@ -180,7 +180,8 @@
         <el-input v-model="ruleForm.repaymentLagRateValue" placeholder="请输入容时期罚率"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="dialogFormVisible = true">立即修改</el-button>
+        <el-button type="primary" @click="dialogFormVisible = true">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
         <el-dialog title="提示" :visible.sync="dialogFormVisible" center>
           <el-form >
             <el-form-item>
@@ -451,7 +452,6 @@
             axios({
               method:"POST",
               url:"http://"+this.baseUrl+"/operate/admin/product/saveProduct",
-              //url:"http://localhost:8888/operate/admin/product/saveProduct",
               headers:{
                 'Content-Type':'application/json',
                 'Authorization': localStorage.token

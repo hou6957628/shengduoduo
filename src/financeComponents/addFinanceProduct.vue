@@ -180,8 +180,8 @@
         <el-input v-model="ruleForm.repaymentLagRateValue" placeholder="请输入容时期罚率"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-        <!--<el-button @click="resetForm('ruleForm')">重置</el-button>-->
+        <el-button type="primary" @click="submitForm('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -255,7 +255,7 @@
           name: '',
           description: '',
           electValueType:'',
-          electValueEnabled:'',
+          electValueEnabled:1,
           minCapital: '',
           maxCapital: '',
           capitalMultiple: '',
@@ -279,8 +279,7 @@
         },
         rules: {
           name: [
-            {required: true, message: '请填写产品名称', trigger: 'blur'},
-            {min: 3, max: 8, message: '长度在 3 到 8 个字符', trigger: 'blur'}
+            {required: true, message: '请填写产品名称', trigger: 'blur'}
           ],
           description: [
             {required: true, message: '请填写产品说明', trigger: 'blur'}
@@ -391,7 +390,7 @@
             };
             axios({
               method:"POST",
-              url:"http://localhost:8888/operate/admin/product/addProduct",
+              url:"http://"+this.baseUrl+"/operate/admin/product/addProduct",
               headers:{
                 'Content-Type':'application/json',
                 'Authorization': localStorage.token
@@ -415,6 +414,10 @@
             return false;
           }
         });
+      },
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
       },
       removeDomain(item) {
         var index = this.electDataList.domains.indexOf(item)

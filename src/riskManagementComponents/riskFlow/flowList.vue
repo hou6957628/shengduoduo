@@ -1,12 +1,12 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/riskControl' }">风控流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/riskControl' }">风控子流程管理</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建流程<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建子流程<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-input @click="searchProduct" class="searchContent"
-        placeholder="流程名称、编号搜索"
+        placeholder="子流程名称、编号搜索"
         v-model="finProduct"
         clearable>
         <el-button id="searchBtn" @click="searchContent(finProduct)" slot="append" icon="el-icon-search">查询</el-button>
@@ -20,18 +20,13 @@
         <el-table-column
           fixed
           prop="flowCode"
-          label="流程编号"
+          label="子流程编号"
           width="150">
         </el-table-column>
         <el-table-column
           prop="flowName"
-          label="流程名称"
+          label="子流程名称"
           width="200">
-        </el-table-column>
-        <el-table-column
-          prop="borrowingProductUsed"
-          label="使用中的应用"
-          width="300">
         </el-table-column>
         <el-table-column
           prop="createDate"
@@ -84,17 +79,17 @@
         :total="proTotal">
       </el-pagination>
     </div>
-    <!--复制风控流程结构-->
+    <!--复制风控子流程结构-->
     <el-dialog
-      title="复制风控流程"
+      title="复制风控子流程"
       :visible.sync="centerDialogVisible"
       width="40%"
       center>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="流程名称:" prop="ruleName" :rules="[ruleForm.ruleName,{validator:checkName2, required: true, trigger:'blur'}]">
+        <el-form-item label="子流程名称:" prop="ruleName" :rules="[ruleForm.ruleName,{validator:checkName2, required: true, trigger:'blur'}]">
           <el-input v-model="ruleForm.ruleName"></el-input>
         </el-form-item>
-        <el-form-item label="流程说明:">
+        <el-form-item label="子流程说明:">
           <el-input v-model="ruleForm.ruleDetail"></el-input>
         </el-form-item>
         <el-form-item label="是否启用:" prop="enabled">
@@ -207,13 +202,13 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             if (res.data.body == "true") {
-              this.$alert('该风控流程在某应用（APP）引用，不可删除', '提示', {
+              this.$alert('该风控子流程已被某总流程引用，不可删除', '提示', {
                 confirmButtonText: '确定',
                 center: true,
                 type: 'warning'
               });
             } else {
-              this.$confirm('是否确认删除此风控流程?', '提示', {
+              this.$confirm('是否确认删除此风控子流程?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
@@ -309,13 +304,13 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             if (res.data.body == "true") {
-              this.$alert('该风控流程在某应用（APP）引用，不可停用', '提示', {
+              this.$alert('该风控子流程已被某总流程引用，不可停用', '提示', {
                 confirmButtonText: '确定',
                 center: true,
                 type: 'warning'
               });
             } else {
-              this.$confirm('是否确认停用此风控流程?', '提示', {
+              this.$confirm('是否确认停用此风控子流程?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',

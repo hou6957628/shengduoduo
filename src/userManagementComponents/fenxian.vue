@@ -15,12 +15,12 @@
         style="width: 100%">
         <el-table-column
           fixed
-          prop="productCode"
+          prop="id"
           label="风险命中ID编号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="realName"
+          prop="cusName"
           label="用户姓名"
           width="150">
         </el-table-column>
@@ -30,32 +30,32 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="productId"
+          prop="flowId"
           label="风险编号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="createDate"
+          prop="flowName"
           label="类型"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="memo"
           label="触发内容"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="subChannelName"
+          prop="action"
           label="触发结果"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="updateDate"
+          prop="createDate"
           label="创建时间"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="isActiveApp"
+          prop="updateDate"
           label="更新时间"
           width="200">
         </el-table-column>
@@ -112,28 +112,28 @@
         this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
       },
       /**
-       * 获取金融产品列表
+       * 获取风险命中列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 产品名称
-       * @param data4 产品编号
+       * @param data3 用户id
+       * @param data4 编号或触发名称
        */
       getProductList(data1,data2,data3,data4){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/customer/list",
+          url:"http://"+this.baseUrl+"/user_center/admin/control_flow/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            realName: data1,
-            mobile: data2,
-            channelName: data3,
-            channelName: data4,
+            pageNum: data1,
+            pageSize: data2,
+            id: data3,
+            name: data4,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+          if(res.data.msgCd=='ZYCASH-200'){
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
@@ -162,19 +162,10 @@
           path: `/editFinanceProduct/${id}`,
         });
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
-      },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      this.getProductList(1,20,null,null);
+      this.id=this.$route.params.id;
+      this.getProductList(1,20,this.id,null);
     },
     data() {
       return {

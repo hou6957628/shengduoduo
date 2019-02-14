@@ -11,7 +11,7 @@
       <el-form-item label="公司地址:" prop="companyAddress">
         <el-input v-model="ruleForm.companyAddress"></el-input>
       </el-form-item>
-      <el-form-item label="公司描述:" prop="companyDetail">
+      <el-form-item label="公司描述:">
         <el-input type="textarea" v-model="ruleForm.companyDetail"></el-input>
       </el-form-item>
       <el-form-item label="是否启用" prop="enabled">
@@ -25,9 +25,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
-        &nbsp;&nbsp;&nbsp;
-        <el-button type="primary" @click="noSubmitForm()">取消</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -37,6 +36,33 @@
   import axios from 'axios'
   export default {
     data() {
+      var validateName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入商户名称'));
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/operate/admin/merchant/checkRepeateName",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              merchantName: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body == false) {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
+      };
       return {
         electData:[
           {key:0,Id:'不启用'},
@@ -47,19 +73,14 @@
           merchantName: '',
           companyAddress: '',
           companyDetail: null,
-          enabled: null,
+          enabled: 1,
         },
         rules: {
           merchantName: [
-            { required: true, message: '请输入商户名称', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+            { required: true, validator: validateName, trigger: 'blur' }
           ],
           companyAddress: [
-            { required: true, message: '请输入公司地址', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-          ],
-          companyDetail: [
-            {  required: true, message: '请输入公司描述', trigger: 'change' }
+            { required: true, message: '请输入公司地址', trigger: 'blur' }
           ],
           enabled: [
             { required: true, message: '请选择商户名称', trigger: 'change' }
@@ -68,6 +89,7 @@
       };
     },
     methods: {
+      //添加商户
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -78,7 +100,7 @@
             param.append('enabled', this.ruleForm.enabled) // 添加form表单中其他数据
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/operate/admin/productManage/createProduct",
+              url:"http://"+this.baseUrl+"/operate/admin/merchant/save",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -90,7 +112,7 @@
                   message: '添加成功',
                   type: 'success'
                 });
-                this.$router.push('/productProductList');
+                this.$router.push('/merchantProductList');
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }
@@ -103,6 +125,10 @@
             return false;
           }
         });
+      },
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
       },
       //编辑产品接口
       editProduct(row){

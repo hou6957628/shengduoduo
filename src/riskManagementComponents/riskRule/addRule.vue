@@ -297,8 +297,6 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            console.log(this.electDataList.domains[0].symbolCode);
-            console.log(this.electDataList.domains[0].ruleAction);
             if (this.electDataList.domains[0].symbolCode==null | this.electDataList.domains[0].ruleAction==null) {
               this.$alert('请填写子项', '提示', {
                 confirmButtonText: '确定',

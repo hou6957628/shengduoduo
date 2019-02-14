@@ -2,18 +2,17 @@
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/productProductList' }">产品列表</el-breadcrumb-item>
-      <el-breadcrumb-item v-if="this.type">编辑产品</el-breadcrumb-item>
-      <el-breadcrumb-item v-if="!this.type">复制产品</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑产品</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
       <el-form-item label="产品名称:" prop="productName">
         <el-input v-model="ruleForm.productName"></el-input>
       </el-form-item>
-      <el-form-item label="产品说明:" prop="description">
+      <el-form-item label="产品说明:">
         <el-input v-model="ruleForm.description"></el-input>
       </el-form-item>
       <el-form-item label="商户名称:" prop="merchantId">
-        <el-select v-model="ruleForm.merchantId" v-bind:disabled="type" placeholder="请选择">
+        <el-select v-model="ruleForm.merchantId" placeholder="请选择">
           <el-option
             v-for="item in electData"
             :key="item.id"
@@ -23,8 +22,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" v-if="this.type" @click="openWarning1('ruleForm')">立即修改</el-button>
-        <el-button type="primary" v-if="!this.type" @click="openWarning2('ruleForm')">立即复制</el-button>
+        <el-button type="primary" @click="openWarning1('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -44,11 +43,7 @@
         },
         rules: {
           productName: [
-            { required: true, message: '请输入产品名称', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-          ],
-          description: [
-            {  required: true, message: '请输入产品说明', trigger: 'change' }
+            { required: true, message: '请输入产品名称', trigger: 'blur' }
           ],
           merchantId: [
             { required: true, message: '请选择商户名称', trigger: 'change' }
@@ -134,21 +129,6 @@
           });
         });
       },
-      openWarning2(){
-        this.$confirm('是否确认复制产品信息?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          center: true
-        }).then(() => {
-          this.submitForm('ruleForm');
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消复制'
-          });
-        });
-      },
       getProductList(data){
         axios({
           method:"POST",
@@ -186,11 +166,14 @@
             this.$message.error(res.data.msgInfo);
           }
         })
-      }
+      },
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
+      },
     },
     mounted:function () {
       this.id=this.$route.params.id;
-      this.type=!this.$route.params.copyType;
       this.getProductList(this.id);
       this.getNameList();
     }

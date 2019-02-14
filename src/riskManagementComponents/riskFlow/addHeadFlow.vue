@@ -61,7 +61,7 @@
         } else {
           axios({
             method:"GET",
-            url:"http://"+this.baseUrl+"/risk/admin/collection_flow/getByName",
+            url:"http://"+this.baseUrl+"/risk/admin/parent_flow/getByName",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token
@@ -92,7 +92,7 @@
             param.append('enabled', this.ruleForm.enabled);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/risk/admin/collection_flow/add",
+              url:"http://"+this.baseUrl+"/risk/admin/parent_flow/add",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -104,7 +104,7 @@
                   message: '添加成功',
                   type: 'success'
                 });
-                this.$router.push('/flowList');
+                this.$router.push('/flowHeadList');
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }

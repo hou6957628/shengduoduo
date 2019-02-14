@@ -5,13 +5,14 @@
       <el-breadcrumb-item>用户详情</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="listContent">
-      <div class="listBox" v-for="item in productList" @click="fen(item.key)">{{item.Id}}</div>
+      <div class="listBox" v-for="(item,index) in productList" :class="isactive == index ? 'addclass' : ''" @click="fen(item,index)">{{item.productName}}</div>
     </div>
     <div class="listContent">
-      <router-link to="/jiben" tag="li">基本信息</router-link>
-      <router-link to="/fenxian" tag="li">风险命中列表</router-link>
-      <router-link target="_blank" to="/yunying" tag="a">运营商通讯录比对</router-link>
-      <router-link to="/tianji" tag="li">天机报告</router-link>
+      <!--<router-link :to="{name:'jiben',params: {cusCustomer: this.cusCustomer,idCard: this.idCard}}" tag="li">基本信息</router-link>-->
+      <router-link :to="'/jiben/' + this.id" tag="li">基本信息</router-link>
+      <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
+      <router-link target="_blank" :to="'/yunying/' + this.id" tag="a">运营商通讯录比对</router-link>
+      <router-link target="_blank" :to="'/tianji' + this.id" tag="a">天机报告</router-link>
       <router-link to="/zhifu" tag="li">支付宝报告</router-link>
       <router-link to="/yonghu" tag="li">用户催收记录</router-link>
       <router-link to="/dingdan" tag="li">订单记录</router-link>
@@ -28,13 +29,16 @@
   export default {
     data() {
       return {
-        productList:[
-          {key:0,Id:'天使分单1'},
-          {key:1,Id:'天使分单2'},
-          {key:2,Id:'天使分单3'},
-          {key:3,Id:'天使分单4'},
-          {key:4,Id:'天使分单5'}
-        ],
+        productList:[],
+        zhimaFen:null,
+        bankCard:[],
+        cusCustomer:null,
+        tianjiReport:null,
+        idCard:null,
+        idFace:null,
+        linkMan:[],
+        authorizationStatus:[],
+        basicInfo:null,
         electData: [
           {key:0,Id:"全部产品"},
           {key:1,Id:"借点儿"},
@@ -43,9 +47,39 @@
         ],
         tableData:[],
         electValue:0,
+        isactive:0,
       };
     },
     methods: {
+      //用户基本信息
+      getUserDetail(id) {
+        axios({
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/customer/find",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            id: id,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.productList = res.data.body.productList;
+            this.zhimaFen = res.data.body.zhimaFen;
+            this.bankCard = res.data.body.bankCard;
+            this.cusCustomer = res.data.body.cusCustomer;
+            this.tianjiReport = res.data.body.tianjiReport;
+            this.idCard = res.data.body.idCard;
+            this.idFace = res.data.body.idFace;
+            this.linkMan = res.data.body.linkMan;
+            this.authorizationStatus = res.data.body.authorizationStatus;
+            this.basicInfo = res.data.body.basicInfo;
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
       //提交按钮
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
@@ -88,28 +122,6 @@
       selectChange(row){
         console.log(this.electValue);
       },
-      getProductList() {
-        axios({
-          method: "POST",
-          // url:"http://"+this.baseUrl+"/operate/admin/merchant/list",
-          url: "http://39.107.228.38:31999/operate/admin/merchant/list",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params: {
-            pageNum: 1,
-            pageSize: 20,
-          }
-        }).then((res) => {
-          if (res.data.msgCd == 'ZYCASH-200') {
-            this.electData = res.data.body.list;
-            console.log(this.electData);
-          } else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
       //取消按钮
       resetForm(formName) {
         this.$refs[formName].resetFields();
@@ -136,12 +148,13 @@
         });
       },
       //
-      fen(data){
-        console.log(data);
+      fen(item,index){
+        this.isactive = index;
       },
     },
     mounted: function () {
-      // this.getProductList();
+      this.id=this.$route.params.id;
+      this.getUserDetail(this.id);
     }
   }
 </script>
@@ -188,5 +201,8 @@
     font-size: 20px;
     margin-top: 10px;
     margin-bottom: 20px;
+  }
+  .addclass{
+    background-color: #118efe;
   }
 </style>

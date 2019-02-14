@@ -12,7 +12,7 @@
         <el-input v-model="ruleForm.description"></el-input>
       </el-form-item>
       <el-form-item label="是否启用:" prop="enabled">
-        <el-select v-model="ruleForm.enabled" placeholder="请选择" @change="selectChange">
+        <el-select v-model="ruleForm.enabled" disabled placeholder="请选择" @change="selectChange">
           <el-option
             v-for="item in electData"
             :key="item.key"

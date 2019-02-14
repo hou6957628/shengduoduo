@@ -38,7 +38,7 @@
           width="200">
         </el-table-column>
         <el-table-column
-          prop="tagTypeId"
+          prop="tagTypeName"
           label="标签分类"
           width="120">
         </el-table-column>

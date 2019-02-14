@@ -14,7 +14,7 @@
           <el-input v-model="ruleForm.ruleDetail"></el-input>
         </el-form-item>
         <el-form-item label="规则分类:" prop="classifyId">
-          <el-select v-model="ruleForm.classifyId" placeholder="请选择">
+          <el-select v-model="ruleForm.classifyId" placeholder="请选择" @change="changeClassify($event)">
             <el-option
               v-for="item in electData"
               :key="item.id"
@@ -331,7 +331,7 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            if (this.electDataList.domains[0].fieldValue==null | this.electDataList.domains[0].symbolCode==null | this.electDataList.domains[0].ruleAction=='') {
+            if (this.electDataList.domains[0].fieldValue==null | this.electDataList.domains[0].symbolCode==null | this.electDataList.domains[0].ruleAction==null) {
               this.$alert('请填写子项', '提示', {
                 confirmButtonText: '确定',
                 center: true,
@@ -560,6 +560,14 @@
       typeFormatter(row){
 
       },
+      //下拉选择
+      changeClassify(vId){
+        let obj = {};
+        obj = this.electData.find((item)=>{
+          return item.id === vId;
+        });
+        this.ruleForm.classifyName=obj.classifyName;
+      },
       //添加标签
       addTag(){
         this.centerDialogVisible1=true;
@@ -685,8 +693,8 @@
         ],
         electDataList: {
           domains: [{
-            itemAlias: "A",fieldValue:'',fieldCode:'',fieldName:'',fieldType:'',fieldDataType:'',selectValues: [ ],
-            operationalSymbolCode: '',operationalSymbolName: '',symbolCode1: '',fieldValue1:'',symbolCode2: '',fieldValue2:'',ruleAction:'',
+            itemAlias: "A",fieldValue:null,fieldCode:'',fieldName:'',fieldType:'',fieldDataType:'',selectValues: [ ],
+            symbolCode: null,symbolName: '',symbolCode1: '',fieldValue1:'',symbolCode2: '',fieldValue2:'',ruleAction:null,
           }]
         },
         radio:"",

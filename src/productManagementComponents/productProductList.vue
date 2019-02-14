@@ -37,8 +37,8 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="company"
-          label="公司名称"
+          prop="merchantName"
+          label="商户名称"
           width="120">
         </el-table-column>
         <el-table-column
@@ -72,13 +72,13 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="updateDate"
-          label="更新时间"
+          prop="createDate"
+          label="创建时间"
           width="180">
         </el-table-column>
         <el-table-column
-          prop="createDate"
-          label="创建时间"
+          prop="updateDate"
+          label="更新时间"
           width="180">
         </el-table-column>
         <el-table-column
@@ -88,12 +88,12 @@
         </el-table-column>
         <el-table-column
           prop="enabled"
-          label="是否提额"
+          label="状态"
           width="80">
           <template slot-scope="scope" style="text-align: center">
             <el-tag
               :type="scope.row.enabled == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.enabled == true ? '是' : '否'}}</el-tag>
+              disable-transitions>{{scope.row.enabled == true ? '使用中' : '已停用'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -102,7 +102,7 @@
           <template slot-scope="scope">
             <el-button @click="configureProduct(scope.row)" type="text" size="small">配置</el-button>
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
+            <!--<el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>-->
             <el-button @click="copyProduct(scope.row)" type="text" size="small">复制</el-button>
             <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
             <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
@@ -122,6 +122,35 @@
         :total="proTotal">
       </el-pagination>
     </div>
+    <!--复制产品结构-->
+    <el-dialog
+      title="复制产品"
+      :visible.sync="centerDialogVisible"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="产品名称:" prop="productName">
+          <el-input v-model="ruleForm.productName"></el-input>
+        </el-form-item>
+        <el-form-item label="产品说明:">
+          <el-input v-model="ruleForm.description"></el-input>
+        </el-form-item>
+        <el-form-item label="商户名称:" prop="merchantId">
+          <el-select v-model="ruleForm.merchantId" placeholder="请选择">
+            <el-option
+              v-for="item in electData"
+              :key="item.id"
+              :label="item.merchantName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="copyCustomerTag('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -181,8 +210,7 @@
           params:{
             pageNum: data1,
             pageSize: data2,
-            merchantName: data3,
-            // merchantCode: data4,
+            productName: data3,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -240,11 +268,73 @@
           }
         })
       },
-      //复制产品接口
+      //提示复制产品接口
       copyProduct(row){
-        var id=row.id;
-        this.$router.push({
-          path: `/editProduct/${id}/true`,
+        this.copyId = row.id;
+        this.centerDialogVisible=true;
+      },
+      //确认复制用户标签接口
+      copyCustomerTag(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            console.log(this.type);
+            var param = new FormData();  // 创建form对象
+            param.append('id', this.copyId)  // 通过append向form对象添加数据
+            param.append('productName', this.ruleForm.productName)  // 通过append向form对象添加数据
+            param.append('description', this.ruleForm.description) // 添加form表单中其他数据
+            param.append('merchantId', this.ruleForm.merchantId) // 添加form表单中其他数据
+            if (!this.type) {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/operate/admin/productManage/copyProduct",
+                headers:{
+                  'Content-Type':'application/x-www-form-urlencoded',
+                  'Authorization': localStorage.token
+                },
+                data:param,
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.centerDialogVisible=false;
+                  this.$message({
+                    message: '复制成功',
+                    type: 'success'
+                  });
+                  this.getProductList(1,20,null,null);
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            } else {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/operate/admin/productManage/saveProduct",
+                headers:{
+                  'Content-Type':'application/x-www-form-urlencoded',
+                  'Authorization': localStorage.token
+                },
+                data:param,
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.$message({
+                    message: '修改成功',
+                    type: 'success'
+                  });
+                  this.$router.push('/productProductList');
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            }
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
         });
       },
       //停用产品接口
@@ -273,21 +363,57 @@
           }
         })
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
+      //获取商户列表
+      getMerchantList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/merchant/getNameList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.electData= res.data.body.list;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
       },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
+      this.getMerchantList();
       this.getProductList(1,20,null,null);
     },
     data() {
+      //验证产品名称是否重复
+      var validateName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入产品名称'));
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/operate/admin/productManage/checkRepeateName",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              productName: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body == false) {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
+      };
       return {
         tableData: [],
         finProduct: '',
@@ -296,10 +422,19 @@
         pageSize:null,
         pageSizes:[20,30,50],
         nowPageSizes:20,
+        centerDialogVisible:false,
         ruleForm: {
           productName: '',
           description: '',
           merchantId: null,
+        },
+        rules: {
+          productName: [
+            { required: true, validator: validateName, trigger: 'blur' }
+          ],
+          merchantId: [
+            { required: true, message: '请选择商户名称', trigger: 'change' }
+          ]
         },
         electData:[],
         dialogFormVisible: false

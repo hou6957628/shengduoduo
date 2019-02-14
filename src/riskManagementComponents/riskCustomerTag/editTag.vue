@@ -14,7 +14,7 @@
           <el-input v-model="ruleForm.description"></el-input>
         </el-form-item>
         <el-form-item label="标签分类:" prop="tagTypeId">
-          <el-select v-model="ruleForm.tagTypeId" placeholder="请选择" @change="selectChange">
+          <el-select v-model="ruleForm.tagTypeId" placeholder="请选择" @change="changeClassify($event)">
             <el-option
               v-for="item in electData"
               :key="item.id"
@@ -566,6 +566,14 @@
       //添加标签
       addTag(){
         this.centerDialogVisible1=true;
+      },
+      //下拉选择
+      changeClassify(vId){
+        let obj = {};
+        obj = this.electData.find((item)=>{
+          return item.id === vId;
+        });
+        this.ruleForm.classifyName=obj.classifyName;
       },
       //添加标签提交
       addClassification(formName){

@@ -5,24 +5,24 @@
       <el-breadcrumb-item>银行卡详情</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="bankBox">
-      <p><span>编号：</span>Ying2111</p>
-      <p><span>卡号：</span>6212261209001677695</p>
-      <p><span>类型：</span>储蓄卡</p>
-      <p><span>银行名称：</span>中国建设银行</p>
-      <p><span>开户支行：</span>123123</p>
-      <p><span>预留手机号：</span>13718825134</p>
-      <p><span>所属应用：</span>天使借</p>
-      <p><span>是否是放款卡：</span>是</p>
-      <p><span>是否是快捷支付：</span>是</p>
-      <p><span>创建时间：</span>2018-12-06 17:31:47</p>
-      <p><span>更新时间：</span>2018-12-06 17:31:47</p>
-      <p><span>备注：</span>1371882512312323134</p>
-      <p><span>用户姓名：</span>李辉</p>
-      <p><span>身份证号：</span>341224198207307817</p>
-      <p><span>注册手机号：</span>13718825134</p>
+      <p><span>编号：</span>{{bankCard.id}}</p>
+      <p><span>卡号：</span>{{bankCard.cardNumber}}</p>
+      <p><span>类型：</span>{{bankCard.type==0?'储蓄卡':'信用卡'}}</p>
+      <p><span>银行名称：</span>{{bankCard.bankName}}</p>
+      <p><span>开户支行：</span>{{bankCard.subBranch}}</p>
+      <p><span>预留手机号：</span>{{bankCard.mobile}}</p>
+      <p><span>所属应用：</span>{{bankCard.productName}}</p>
+      <p><span>是否是放款卡：</span>{{bankCard.id}}</p>
+      <p><span>是否是快捷支付：</span>{{bankCard.id}}</p>
+      <p><span>创建时间：</span>{{bankCard.createDate}}</p>
+      <p><span>更新时间：</span>{{bankCard.updateDate}}</p>
+      <p><span>备注：</span>后台无此属性</p>
+      <p><span>用户姓名：</span>{{bankCard.name}}</p>
+      <p><span>身份证号：</span>{{bankCard.number}}</p>
+      <p><span>注册手机号：</span>{{bankCard.registerMobile}}</p>
     </div>
     <el-button-group class="btGrop">
-      <el-button class="jie" type="primary">解绑</el-button>
+      <el-button class="jie" type="primary" @click="editProduct()">解绑</el-button>
       <el-button @click="guan()" class="guan">关闭</el-button>
     </el-button-group>
   </div>
@@ -32,6 +32,68 @@
   import axios from 'axios'
   export default {
     methods: {
+      //根据id获取银行卡
+      getBankCardById(id){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/credit/admin/bank/getBankCardInfoById",
+          // url:"http://localhost:9996/credit/admin/bank/getBankCardInfoById",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id:id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.bankCard=res.data.body;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //提示删除银行卡
+      editProduct(row){
+        this.$confirm('是否确认解绑此银行卡?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          this.deleteBankCard(row);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消解绑'
+          });
+        });
+      },
+      //确认删除银行卡接口
+      deleteBankCard(row){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/credit/admin/bank/deleteBankCardInfo",
+          // url:"http://localhost:9996/credit/admin/bank/deleteBankCardInfo",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id:row.id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            this.getProductList(1,30,null,null,null,null,null,null);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
       guan(){
         this.$router.push({
           path: `/bankCardManagement`,
@@ -39,10 +101,13 @@
       },
     },
     mounted:function () {
+      this.id=this.$route.params.id;
+      this.getBankCardById(this.id);
     },
     data() {
       return {
         finProduct: '',
+        bankCard: '',
       }
     }
   }

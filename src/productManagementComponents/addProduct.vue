@@ -8,7 +8,7 @@
       <el-form-item label="产品名称:" prop="productName">
         <el-input v-model="ruleForm.productName"></el-input>
       </el-form-item>
-      <el-form-item label="产品说明:" prop="description">
+      <el-form-item label="产品说明:">
         <el-input v-model="ruleForm.description"></el-input>
       </el-form-item>
       <el-form-item label="商户名称:" prop="merchantId">
@@ -19,13 +19,46 @@
             :label="item.merchantName"
             :value="item.id">
           </el-option>
-        </el-select>
+        </el-select>&nbsp;&nbsp;
+        <el-button @click="addTag()">添加商户</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-        <!--<el-button @click="resetForm('ruleForm')">重置</el-button>-->
+        <el-button type="primary" @click="submitForm('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
       </el-form-item>
     </el-form>
+    <!--添加商户结构-->
+    <el-dialog
+      title="添加商户"
+      :visible.sync="centerDialogVisible1"
+      width="45%"
+      center>
+      <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="商户名称:" prop="merchantName">
+          <el-input v-model="ruleForm2.merchantName"></el-input>
+        </el-form-item>
+        <el-form-item label="公司地址:" prop="companyAddress">
+          <el-input v-model="ruleForm2.companyAddress"></el-input>
+        </el-form-item>
+        <el-form-item label="公司描述:">
+          <el-input v-model="ruleForm2.companyDetail"></el-input>
+        </el-form-item>
+        <el-form-item label="是否启用:" prop="enabled">
+          <el-select v-model="ruleForm2.enabled" placeholder="请选择" @change="selectChange">
+            <el-option
+              v-for="item in electDataEnabled"
+              :key="item.key"
+              :label="item.Id"
+              :value="item.key">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="addMerchant('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible1 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -33,9 +66,65 @@
   import axios from 'axios'
   export default {
     data() {
+      //验证产品名称是否重复
+      var validateName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入产品名称'));
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/operate/admin/productManage/checkRepeateName",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              productName: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body == false) {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
+      };
+      //验证商户名称是否重复
+      var validateName2 = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入商户名称'));
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/operate/admin/merchant/checkRepeateName",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              merchantName: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body == false) {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
+      };
       return {
+        centerDialogVisible1:false,
         electData:[],
-        electValue:'首页弹窗',
         ruleForm: {
           productName: '',
           description: '',
@@ -43,19 +132,37 @@
         },
         rules: {
           productName: [
-            { required: true, message: '请输入产品名称', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-          ],
-          description: [
-            {  required: true, message: '请输入产品说明', trigger: 'change' }
+            { required: true, validator: validateName, trigger: 'blur' }
           ],
           merchantId: [
             { required: true, message: '请选择商户名称', trigger: 'change' }
           ]
-        }
+        },
+        electDataEnabled: [
+          {key:1,Id:'启用'},
+          {key:0,Id:'不启用'},
+        ],
+        ruleForm2:{
+          merchantName:'',
+          companyAddress:'',
+          companyDetail:'',
+          enabled:1,
+        },
+        rules2: {
+          merchantName: [
+            { required: true, validator: validateName2, trigger: 'blur' }
+          ],
+          companyAddress: [
+            { required: true, message: '请输入公司地址', trigger: 'blur' }
+          ],
+          enabled: [
+            { required: true, message: '请选择是否启用', trigger: 'change' }
+          ],
+        },
       };
     },
     methods: {
+      //添加产品
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -91,6 +198,7 @@
           }
         });
       },
+      //获取商户列表
       getProductList(){
         axios({
           method:"POST",
@@ -106,7 +214,53 @@
             this.$message.error(res.data.msgInfo);
           }
         })
-      }
+      },
+      //添加商户弹窗
+      addTag(){
+        this.centerDialogVisible1=true;
+      },
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
+      },
+      //添加商户
+      addMerchant(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            var param = new FormData();  // 创建form对象
+            param.append('merchantName', this.ruleForm2.merchantName)  // 通过append向form对象添加数据
+            param.append('companyAddress', this.ruleForm2.companyAddress) // 添加form表单中其他数据
+            param.append('companyDetail', this.ruleForm2.companyDetail) // 添加form表单中其他数据
+            param.append('enabled', this.ruleForm2.enabled) // 添加form表单中其他数据
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/operate/admin/merchant/save",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              data:param,
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.centerDialogVisible1 = false;
+                this.$message({
+                  message: '添加成功',
+                  type: 'success'
+                });
+                this.getProductList();
+              }else if(res.data.msgCd=='ZYCASH-1009'){
+                this.$message.error(res.data.msgInfo);
+              }
+              else {
+                this.$message.error(res);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
     },
     mounted:function () {
       this.getProductList();

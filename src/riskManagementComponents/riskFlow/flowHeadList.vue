@@ -5,7 +5,7 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建总流程<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-input @click="searchProduct" class="searchContent"
+      <el-input class="searchContent"
         placeholder="总流程名称、编号搜索"
         v-model="finProduct"
         clearable>
@@ -19,19 +19,19 @@
         style="width: 100%">
         <el-table-column
           fixed
-          prop="ruleCode"
-          label="规则编号"
+          prop="flowCode"
+          label="总流程编号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="ruleName"
-          label="规则名称"
+          prop="flowName"
+          label="总流程名称"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="classifyName"
-          label="规则分类"
-          width="120">
+          prop="borrowingProductUsed"
+          label="使用中的应用"
+          width="300">
         </el-table-column>
         <el-table-column
           prop="createDate"
@@ -49,11 +49,6 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="ruleDetail"
-          label="规则说明"
-          width="120">
-        </el-table-column>
-        <el-table-column
           prop="enabled"
           label="状态"
           width="80">
@@ -68,6 +63,7 @@
           width="220">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="configureProduct(scope.row)" type="text" size="small">配置</el-button>
             <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
             <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
             <el-button v-if="!scope.row.enabled" @click="obtainedCustomerTag(scope.row)" type="text" size="small">启用</el-button>
@@ -88,17 +84,17 @@
         :total="proTotal">
       </el-pagination>
     </div>
-    <!--复制规则结构-->
+    <!--复制风控总流程结构-->
     <el-dialog
-      title="复制风控规则"
+      title="复制风控总流程"
       :visible.sync="centerDialogVisible"
       width="40%"
       center>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="规则名称:" prop="ruleName" :rules="[ruleForm.ruleName,{validator:checkName2, required: true, trigger:'blur'}]">
+        <el-form-item label="总流程名称:" prop="ruleName" :rules="[ruleForm.ruleName,{validator:checkName2, required: true, trigger:'blur'}]">
           <el-input v-model="ruleForm.ruleName"></el-input>
         </el-form-item>
-        <el-form-item label="规则说明:">
+        <el-form-item label="总流程说明:">
           <el-input v-model="ruleForm.ruleDetail"></el-input>
         </el-form-item>
         <el-form-item label="是否启用:" prop="enabled">
@@ -127,27 +123,21 @@
     methods: {
       //条件查询规则列表
       searchContent(data){
-        this.getProductList(1,20,this.finProduct,this.electValue);
+        this.getProductList(1,20,this.finProduct);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.finProduct);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.finProduct);
       },
       //创建规则
       toAddProduct(){
         this.$router.push({
           path: `/addHeadFlow`,
-        });
-      },
-      //跳转规则分类列表
-      tolabelList(){
-        this.$router.push({
-          path: `/ruleClassifyList`,
         });
       },
       /**
@@ -157,10 +147,10 @@
        * @param data3 标签名称
        * @param data4 分类名称
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2,data3){
         axios({
           method:"GET",
-          url:"http://"+this.baseUrl+"/risk/admin/rule/list",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -168,8 +158,7 @@
           params:{
             pageNum: data1,
             pageSize: data2,
-            ruleName: data3,
-            ruleTypeId: data4,
+            flowName: data3,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -182,45 +171,43 @@
           }
         })
       },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20,this.finProduct,this.finProduct,null);
-      },
       //编辑规则接口
       editProduct(row){
         var id=row.id;
         this.$router.push({
-          path: `/editRule/${id}`,
+          path: `/editHeadFlow/${id}`,
+        });
+      },
+      //配置产品接口
+      configureProduct(row){
+        var id=row.id;
+        this.$router.push({
+          path: `/configHeadFlow/${id}`,
         });
       },
       //提示删除规则接口
       deleteProduct(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/risk/admin/rule/checkRef",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/checkRef",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            id: row.id,
+            flowId: row.id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            if (res.data.body.ruleCollectionCount != 0) {
-              this.$alert('该规则已被规则集引用，不可删除', '提示', {
-                confirmButtonText: '确定',
-                center: true,
-                type: 'warning'
-              });
-            } else if (res.data.body.flowCount != 0) {
-              this.$alert('该规则已被规则流程引用，不可删除', '提示', {
+            console.log(res.data.body);
+            if (res.data.body != null) {
+              this.$alert('该总流程已被某APP引用，不可删除', '提示', {
                 confirmButtonText: '确定',
                 center: true,
                 type: 'warning'
               });
             } else {
-              this.$confirm('是否确认删除此规则?', '提示', {
+              this.$confirm('是否确认删除此总流程?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
@@ -243,7 +230,7 @@
       deleteCustomerTag(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/risk/admin/rule/deleteOrStop",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/deleteOrStop",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -258,7 +245,7 @@
               message: '删除成功',
               type: 'success'
             });
-            this.getProductList(1,20,null,null);
+            this.getProductList(1,20,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -275,15 +262,15 @@
           if (valid) {
             axios({
               method:"post",
-              url:"http://"+this.baseUrl+"/risk/admin/rule/copy",
+              url:"http://"+this.baseUrl+"/risk/admin/parent_flow/copy",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
               },
               params:{
                 id: this.copyId,
-                ruleName: this.ruleForm.ruleName,
-                ruleDetail: this.ruleForm.ruleDetail,
+                flowName: this.ruleForm.ruleName,
+                flowDetail: this.ruleForm.ruleDetail,
                 enabled: this.ruleForm.enabled,
               }
             }).then((res)=>{
@@ -305,30 +292,24 @@
       obtainedProduct(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/risk/admin/rule/checkRef",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/checkRef",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            id: row.id,
+            flowId: row.id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            if (res.data.body.ruleCollectionCount != 0) {
-              this.$alert('该规则已被规则集引用，不可停用', '提示', {
-                confirmButtonText: '确定',
-                center: true,
-                type: 'warning'
-              });
-            } else if (res.data.body.flowCount != 0) {
-              this.$alert('该规则已被规则流程引用，不可停用', '提示', {
+            if (res.data.body != null) {
+              this.$alert('该总流程已被某APP引用，不可停用', '提示', {
                 confirmButtonText: '确定',
                 center: true,
                 type: 'warning'
               });
             } else {
-              this.$confirm('是否确认停用此规则?', '提示', {
+              this.$confirm('是否确认停用此总流程?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning',
@@ -351,7 +332,7 @@
       obtainedCustomerTag(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/risk/admin/rule/deleteOrStop",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/deleteOrStop",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -366,7 +347,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,20,null,null);
+            this.getProductList(1,20,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -384,28 +365,7 @@
       //下拉选择
       selectChange(row){
         this.finProduct='';
-        this.getProductList(1,20,null,this.electValue);
-      },
-      //查询规则分类
-      getRuleType(ruleType){
-        axios({
-          method:"get",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/getByType",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            type: ruleType,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.electData=res.data.body.list;
-            this.electData.unshift({id: null, classifyName: '全部'});
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        this.getProductList(1,20,null);
       },
       //验证复制的规则名称是否重名
       checkName2(rule, value, callback) {
@@ -416,7 +376,7 @@
         } else {
           axios({
             method:"GET",
-            url:"http://"+this.baseUrl+"/risk/admin/rule/getByName",
+            url:"http://"+this.baseUrl+"/risk/admin/parent_flow/getByName",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token
@@ -440,13 +400,11 @@
     },
     mounted:function () {
       this.getProductList(1,20,null,null);
-      this.getRuleType(1);
     },
     data() {
       return {
         electData: [ ],
         tableData:[],
-        electValue:null,
         finProduct: '',
         pageNum: null,
         proTotal:null,

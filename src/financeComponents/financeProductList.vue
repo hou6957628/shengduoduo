@@ -6,7 +6,7 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建金额产品<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-input @click="searchProduct" class="searchContent"
+      <el-input class="searchContent"
         placeholder="产品名称、编号搜索"
         v-model="finProduct"
         clearable>
@@ -96,22 +96,7 @@
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="openWarningDelete(scope.row)" type="text" size="small">删除</el-button>
-            <!--<el-button @click="copyProduct(scope.row)" type="text" size="small">复制</el-button>-->
-            <el-button @click="dialogFormVisible = true,rowData = scope.row" type="text" size="small">复制</el-button>
-            <el-dialog title="重新填写产品名称及说明" :modal-append-to-body='false' :visible.sync="dialogFormVisible">
-              <el-form :model="ruleForm">
-                <el-form-item label="产品名称" label-width="100px">
-                  <el-input v-model="ruleForm.productName" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="产品说明" label-width="100px">
-                  <el-input v-model="ruleForm.description" autocomplete="off"></el-input>
-                </el-form-item>
-              </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="copyProduct(rowData)">确 定</el-button>
-              </div>
-            </el-dialog>
+            <el-button @click="copyProduct(scope.row)" type="text" size="small">复制</el-button>
             <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
             <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
           </template>
@@ -130,6 +115,25 @@
         :total="proTotal">
       </el-pagination>
     </div>
+    <!--复制金融产品结构-->
+    <el-dialog
+      title="复制金融产品"
+      :visible.sync="centerDialogVisible"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="产品名称:" prop="productName">
+          <el-input v-model="ruleForm.productName"></el-input>
+        </el-form-item>
+        <el-form-item label="产品说明:">
+          <el-input v-model="ruleForm.description"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="copyCustomerTag('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -140,25 +144,19 @@
     methods: {
       //查询金融产品
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,20,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,20,data,this.finProduct);
-          console.log(data);
-        }
+        this.getProductList(1,20,this.finProduct);
       },
       //每页显示多少条
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.finProduct);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
         console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.finProduct);
       },
       //创建金融产品
       toAddProduct(){
@@ -173,7 +171,7 @@
        * @param data3 产品名称
        * @param data4 产品编号
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2,data3){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/operate/admin/product/list",
@@ -185,7 +183,6 @@
             pageNum: data1,
             pageSize: data2,
             name: data3,
-            id: data4,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -193,15 +190,10 @@
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
             this.pageNum=res.data.body.pageNum;
-            //this.dialogFormVisible = false;
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
-      },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20,this.finProduct,this.finProduct);
       },
       //编辑产品接口
       editProduct(row){
@@ -219,7 +211,6 @@
             type: 'warning',
             center: true
           }).then(() => {
-            this.dialogFormVisible = false;
             this.deleteProduct(row);
           }).catch(() => {
             this.$message({
@@ -246,23 +237,27 @@
           params:{
             id: row.id,
             status: 1,
-            //enabled: row.enabled,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            this.dialogFormVisible = false;
             this.$message({
               message: '操作成功',
               type: 'success'
             });
-            this.dialogFormVisible = false;
             this.getProductList(1,10,this.finProduct,this.finProduct);
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //复制产品接口
+      //提示复制产品接口
       copyProduct(row){
+        this.copyId = row.id;
+        this.centerDialogVisible=true;
+      },
+      //确定复制产品接口
+      copyCustomerTag(){
         axios({
           method:"post",
           url:"http://"+this.baseUrl+"/operate/admin/product/copyProduct",
@@ -271,18 +266,18 @@
             'Authorization': localStorage.token
           },
           params:{
-            id: row.id,
+            id: this.copyId,
             name: this.ruleForm.productName,
             description: this.ruleForm.description,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            this.centerDialogVisible = false;
             this.$message({
               message: '操作成功',
               type: 'success'
             });
-            this.dialogFormVisible = false;
-            this.getProductList(1,20,this.finProduct,this.finProduct);
+            this.getProductList(1,20,null,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -308,26 +303,14 @@
               message: '操作成功',
               type: 'success'
             });
-            this.dialogFormVisible = false;
             this.getProductList(1,20,this.finProduct,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
-      },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      this.dialogFormVisible = false;
       this.getProductList(1,20,null,null);
     },
     data() {
@@ -339,7 +322,7 @@
         pageSize:null,
         pageSizes:[20,30,50],
         nowPageSizes:20,
-        dialogFormVisible: false,
+        centerDialogVisible: false,
         rowData: null,
         ruleForm: {
           productName: '',
@@ -347,12 +330,8 @@
         },
         rules: {
           productName: [
-            { required: true, message: '请输入产品名称', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+            { required: true, message: '请输入产品名称', trigger: 'blur' }
           ],
-          description: [
-            {  required: true, message: '请输入产品说明', trigger: 'change' }
-          ]
         }
       }
     }

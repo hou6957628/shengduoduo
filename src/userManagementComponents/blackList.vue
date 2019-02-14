@@ -5,52 +5,32 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
-      <template>姓名：
-      <el-input @click="searchProduct" class="searchContent"
-        placeholder="产品名称、编号搜索"
-        v-model="finProduct"
-        clearable>
-      </el-input>
-      </template>
+        <template>姓名：
+          <el-input class="searchContent" placeholder="用户姓名" v-model="realName" clearable> </el-input>
+        </template>
       </el-col>
       <el-col :span="6" style="height: 55px;">
-      <template>手机号：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="产品名称、编号搜索"
-                  v-model="finProduct"
-                  clearable>
-        </el-input>
-      </template>
-      </el-col>
-      <el-col :span="6" style="height: 55px;">
-      <template>主渠道：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="产品名称、编号搜索"
-                  v-model="finProduct"
-                  clearable>
-        </el-input>
-      </template>
-      </el-col>
-      <el-col :span="6" style="height: 55px;">
-      <template>子渠道编号：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="产品名称、编号搜索"
-                  v-model="finProduct"
-                  clearable>
-        </el-input>
-      </template>
+        <template>手机号：
+          <el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
+        </template>
       </el-col>
       <el-col :span="6" style="height: 55px;">
         <template>身份证号：
-          <el-input @click="searchProduct" class="searchContent"
-                    placeholder="身份证号"
-                    v-model="finProduct"
-                    clearable>
-          </el-input>
+          <el-input class="searchContent" placeholder="用户身份证号" v-model="cardNumber" clearable></el-input>
+        </template>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        <template>主渠道：
+          <el-input class="searchContent" placeholder="主渠道名称" v-model="channelName" clearable></el-input>
+        </template>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        <template>子渠道：
+          <el-input class="searchContent" placeholder="子渠道名称" v-model="subChannelName" clearable></el-input>
         </template>
       </el-col>
       <template>
-        时间筛选：
+        时间筛选:
         <el-date-picker style="margin-left: 25px"
                         v-model="value7"
                         type="datetimerange"
@@ -75,9 +55,9 @@
         style="width: 100%">
         <el-table-column
           fixed
-          prop="productCode"
+          prop="customerId"
           label="用户ID"
-          width="120">
+          width="80">
         </el-table-column>
         <el-table-column
           prop="realName"
@@ -85,9 +65,9 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="mobile"
+          prop="cardNumber"
           label="身份证号"
-          width="150">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="mobile"
@@ -95,7 +75,7 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="productId"
+          prop="productName"
           label="应用"
           width="120">
         </el-table-column>
@@ -115,7 +95,7 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="subChannelName"
+          prop="description"
           label="拉黑原因"
           width="120">
         </el-table-column>
@@ -123,16 +103,6 @@
           prop="updateDate"
           label="最近登录应用时间"
           width="200">
-        </el-table-column>
-        <el-table-column
-          prop="isActiveApp"
-          label="激活APP"
-          width="80">
-          <template slot-scope="isActiveApp">
-            <el-tag
-              :type="scope.row.isActiveApp == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.isActiveApp == true ? '是' : '否'}}</el-tag>
-          </template>
         </el-table-column>
         <el-table-column
           prop="isBlackList"
@@ -145,9 +115,9 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="updateDate"
+          prop="overdueNumber"
           label="逾期次数"
-          width="150">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="reBorrow"
@@ -164,7 +134,6 @@
           width="120">
           <template slot-scope="scope">
             <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
-            <el-button @click="editProduct(scope.row)" type="text" size="small">修改</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -191,25 +160,16 @@
     methods: {
       //查询金融产品
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,20,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,20,data,this.finProduct);
-          console.log(data);
-        }
+        this.getProductList(1,20,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime);
       },
       //创建金融产品
       toAddProduct(){
@@ -218,28 +178,38 @@
         });
       },
       /**
-       * 获取金融产品列表
+       * 获取黑名单列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 产品名称
-       * @param data4 产品编号
+       * @param data3 用户姓名
+       * @param data4 用户手机号
+       * @param data5 身份证号
+       * @param data6 主渠道
+       * @param data7 子渠道
+       * @param data8 开始时间
+       * @param data9 结束时间
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9){
         axios({
-          method:"POST",
+          method:"GET",
           url:"http://"+this.baseUrl+"/user_center/admin/black/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            realName: data1,
-            mobile: data2,
-            channelName: data3,
-            channelName: data4,
+            pageNum:data1,
+            pageSize:data2,
+            realName: data3,
+            mobile: data4,
+            cardNumber: data5,
+            channelName: data6,
+            subChannelName: data7,
+            startDate: data8,
+            endDate: data9,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+          if(res.data.msgCd=='ZYCASH-200'){
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
@@ -279,26 +249,23 @@
       },
       //时间筛选
       logTimeChange(){
-        if(this.value7==''||this.value7==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
-        }else {
+        if(this.value7!='' && this.value7!=null){
           var startTime=this.value7[0];
           var endTime=this.value7[1];
           this.startTime=startTime;
           this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
+        } else {
+          this.startTime='';
+          this.endTime='';
         }
       },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      this.getProductList(1,30,null,null);
+      this.getProductList(1,20,null,null,null,null,null,null);
     },
     data() {
       return {
         tableData: [],
-        finProduct: '',
         pageNum: null,
         proTotal:null,
         pageSize:null,
@@ -331,7 +298,14 @@
             }
           }]
         },
+        realName:'',
+        mobile:'',
+        cardNumber:'',
+        channelName:'',
+        subChannelName:'',
         value7:'',
+        startTime:'',
+        endTime:'',
       }
     }
   }

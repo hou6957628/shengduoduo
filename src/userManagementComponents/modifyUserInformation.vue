@@ -2,29 +2,29 @@
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/userProductList' }">用户列表</el-breadcrumb-item>
-      <el-breadcrumb-item>用户详情</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑用户</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="listContent">
       <table>
-        <tr><td>用户ID</td><td> Ying2111</td></tr>
-        <tr><td>手机号</td><td>13718825134</td></tr>
-        <tr><td>姓名</td><td>扬子</td></tr>
-        <tr><td>身份证号码</td><td>341224198207307817</td></tr>
-        <tr><td>状态</td><td>启用</td></tr>
-        <tr><td>性别</td><td>男</td></tr>
-        <tr><td>出生日期</td><td>1982-07-30</td></tr>
-        <tr><td>创建日期</td><td>2018-12-04 17:18:15</td></tr>
-        <tr><td>更新日期</td><td>2018-12-04 17:18:15</td></tr>
+        <tr><td>用户ID</td><td>{{ruleForm.id}}</td></tr>
+        <tr><td>手机号</td><td>{{ruleForm.mobile}}</td></tr>
+        <tr><td>姓名</td><td>{{ruleForm.realName}}</td></tr>
+        <tr><td>身份证号码</td><td>{{ruleForm.cardNumber}}</td></tr>
+        <tr><td>状态</td><td>{{ruleForm.enabled=='false'?'禁用':'启用'}}</td></tr>
+        <tr><td>性别</td><td>{{ruleForm.gender}}</td></tr>
+        <tr><td>出生日期</td><td>{{ruleForm.birthDate}}</td></tr>
+        <tr><td>创建日期</td><td>{{ruleForm.createDate}}</td></tr>
+        <tr><td>更新日期</td><td>{{ruleForm.updateDate}}</td></tr>
       </table>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
-        <el-form-item label="修改登录密码:" prop="classifyName">
-          <el-input v-model="ruleForm.classifyName"></el-input>
+        <el-form-item label="修改登录密码:" prop="password">
+          <el-input v-model="ruleForm.password"></el-input>
         </el-form-item>
-        <el-form-item label="确认登录密码:" prop="description">
-          <el-input v-model="ruleForm.description"></el-input>
+        <el-form-item label="确认登录密码:" prop="confirmPassword">
+          <el-input v-model="ruleForm.confirmPassword"></el-input>
         </el-form-item>
         <el-form-item label="是否启用:" prop="enabled">
-          <el-select v-model="ruleForm.enabled" placeholder="请选择" @change="selectChange">
+          <el-select v-model="ruleForm.enabled" placeholder="请选择">
             <el-option
               v-for="item in electData"
               :key="item.key"
@@ -34,8 +34,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">修改</el-button>
-          <el-button type="primary" @click="resetForm('ruleForm')">关闭</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">修改<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info" @click="resetForm('ruleForm')">关闭<i class="el-icon-close el-icon--right"></i></el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -47,25 +47,45 @@
 
   export default {
     data() {
+      var validatePass = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入新密码'));
+        } else if (value.toString().length < 6 || value.toString().length > 32) {
+          callback(new Error('密码长度为6 - 32个字符'));
+        } else {
+          callback();
+        }
+      };
+      var validatePass2 = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请再次输入密码'));
+        } else if (value != this.ruleForm.password) {
+          callback(new Error('两次输入密码不一致'));
+        } else {
+          callback();
+        }
+      };
       return {
         tableData:[],
         electValue:0,
         electData: [
-          {key:0,Id:"不启用"},
-          {key:1,Id:"启用"},
+          {key:false,Id:"不启用"},
+          {key:true,Id:"启用"},
         ],
         ruleForm: {
-          classifyName: '',
-          description: '',
-          enabled: 1,
+          id: '',
+          mobile: '',
+          password: '',
+          confirmPassword: '',
+          gender: '',
+          enabled: '',
         },
         rules: {
-          classifyName: [
-            { required: true, message: '请输入标签分类名称', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+          password: [
+            { required: true, validator: validatePass, trigger: 'blur' }
           ],
-          description: [
-            {  required: true, message: '请输入产品说明', trigger: 'change' }
+          confirmPassword: [
+            { required: true, validator: validatePass2, trigger: 'blur' }
           ],
           enabled: [
             { required: true, message: '请选择是否启用', trigger: 'change' }
@@ -79,14 +99,13 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var param = new FormData();  // 创建form对象
-            param.append('classifyCode', null);  // 这个字段没有
-            param.append('classifyName', this.ruleForm.classifyName); // 通过append向form对象添加数据
-            param.append('classifyType', 1); // 添加0：用户标签 1：规则标签 2:规则集标签
-            param.append('description', this.ruleForm.description);
+            param.append('id', this.ruleForm.id);  // 这个字段没有
+            param.append('mobile', this.ruleForm.mobile); // 通过append向form对象添加数据
+            param.append('password', this.ruleForm.password); // 添加0：用户标签 1：规则标签 2:规则集标签
+            param.append('enabled', this.ruleForm.enabled);
             axios({
               method: "POST",
-              // url:"http://"+this.baseUrl+"/operate/admin/productManage/createProduct",
-              url: "http://39.105.217.251:9998/risk/admin/classification/add",
+              url:"http://"+this.baseUrl+"/user_center/admin/customer/update",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -95,10 +114,10 @@
             }).then((res) => {
               if (res.data.msgCd == 'ZYCASH-200') {
                 this.$message({
-                  message: '添加成功',
+                  message: '修改成功',
                   type: 'success'
                 });
-                this.$router.push('/productProductList');
+                this.$router.push('/userProductList');
               } else if (res.data.msgCd == 'ZYCASH-1009') {
                 this.$message.error(res.data.msgInfo);
               }
@@ -112,64 +131,41 @@
           }
         });
       },
-      //下拉选择
-      selectChange(row){
-        console.log(this.electValue);
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
       },
-      getProductList() {
+      //通过id获取用户信息
+      getUserById(id) {
         axios({
-          method: "POST",
-          // url:"http://"+this.baseUrl+"/operate/admin/merchant/list",
-          url: "http://39.107.228.38:31999/operate/admin/merchant/list",
+          method: "GET",
+          url:"http://"+this.baseUrl+"/user_center/admin/customer/get",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params: {
-            pageNum: 1,
-            pageSize: 20,
+            id: id,
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
-            this.electData = res.data.body.list;
-            console.log(this.electData);
+            this.ruleForm = res.data.body;
+            if(res.data.body.gender==true){
+              this.ruleForm.gender='女';
+            } else if(res.data.body.gender==false){
+              this.ruleForm.gender='男';
+            } else {
+              this.ruleForm.gender='未知';
+            }
           } else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //取消按钮
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
-      },
-      //
-      getCheckedNodes() {
-        var rad=''
-        var ridsa = this.$refs.tree.getCheckedKeys().join(',')// 获取当前的选中的数据[数组] -id, 把数组转换成字符串
-        var ridsb = this.$refs.tree.getCheckedNodes()// 获取当前的选中的数据{对象}
-        ridsb.forEach(ids=>{//获取选中的所有的父级id
-          // rad+=','+ids.pid
-        })
-        rad=rad.substr(1) // 删除字符串前面的','
-        var rids=rad+','+ridsa
-        var arr=rids.split(',')//  把字符串转换成数组
-        arr=[...new Set(arr)]; // 数组去重
-        rids=arr.join(',')// 把数组转换成字符串
-        console.log(rids)
-      },
-      //跳转到主渠道
-      addChannel(){
-        this.$router.push({
-          path: `/addAccount`,
-        });
-      },
-      //
-      fen(data){
-        console.log(data);
-      },
     },
     mounted: function () {
-      // this.getProductList();
+      this.id=this.$route.params.id;
+      this.getUserById(this.id);
     }
   }
 </script>

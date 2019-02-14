@@ -12,7 +12,24 @@ import productProductList from '@/productManagementComponents/productProductList
 import addProduct from '@/productManagementComponents/addProduct'
 import editProduct from '@/productManagementComponents/editProduct'
 import configProduct from '@/productManagementComponents/configProduct'
+//用户管理-用户列表
 import userProductList from '@/userManagementComponents/userProductList'
+import userDetail from '@/userManagementComponents/userDetail'
+import jiben from '@/userManagementComponents/jiben'
+import fenxian from '@/userManagementComponents/fenxian'
+import yunying from '@/userManagementComponents/yunying'
+import tianji from '@/userManagementComponents/tianji'
+import zhifu from '@/userManagementComponents/zhifu'
+import yonghu from '@/userManagementComponents/yonghu'
+import dingdan from '@/userManagementComponents/dingdan'
+import fangkuan from '@/userManagementComponents/fangkuan'
+import huankuan from '@/userManagementComponents/huankuan'
+import modifyUserInformation from '@/userManagementComponents/modifyUserInformation'
+//用户管理-黑名单列表
+import blackList from '@/userManagementComponents/blackList'
+//用户管理-银行卡管理列表
+import bankCardManagement from '@/userManagementComponents/bankCardManagement'
+import bankCardDetail from '@/userManagementComponents/bankCardDetail'
 //风控字段
 import fieldList from '@/riskManagementComponents/riskField/fieldList'
 //风控用户标签
@@ -46,6 +63,8 @@ import configFlow from '@/riskManagementComponents/riskFlow/configFlow'
 import editFlow from '@/riskManagementComponents/riskFlow/editFlow'
 import flowHeadList from '@/riskManagementComponents/riskFlow/flowHeadList'
 import addHeadFlow from '@/riskManagementComponents/riskFlow/addHeadFlow'
+import editHeadFlow from '@/riskManagementComponents/riskFlow/editHeadFlow'
+import configHeadFlow from '@/riskManagementComponents/riskFlow/configHeadFlow'
 //风险命中列表
 import flowLogList from '@/riskManagementComponents/flowLog/flowLogList'
 
@@ -67,20 +86,7 @@ import channelconnectionManagement from '@/channelManagementComponents/channelco
 import addChannel from '@/channelManagementComponents/addChannel'
 import childrenChannelDetail from '@/channelManagementComponents/childrenChannelDetail'
 import channelStatistics from '@/channelManagementComponents/channelStatistics'
-import userDetail from '@/userManagementComponents/userDetail'
-import jiben from '@/userManagementComponents/jiben'
-import fenxian from '@/userManagementComponents/fenxian'
-import yunying from '@/userManagementComponents/yunying'
-import tianji from '@/userManagementComponents/tianji'
-import zhifu from '@/userManagementComponents/zhifu'
-import yonghu from '@/userManagementComponents/yonghu'
-import dingdan from '@/userManagementComponents/dingdan'
-import fangkuan from '@/userManagementComponents/fangkuan'
-import huankuan from '@/userManagementComponents/huankuan'
-import modifyUserInformation from '@/userManagementComponents/modifyUserInformation'
-import blackList from '@/userManagementComponents/blackList'
-import bankCardManagement from '@/userManagementComponents/bankCardManagement'
-import bankCardDetail from '@/userManagementComponents/bankCardDetail'
+
 import editAccount from '@/privilegeManagementComponents/editAccount'
 import editRole from '@/privilegeManagementComponents/editRole'
 import editCollectionPerson from '@/postLoanManagementComponents/editCollectionPerson'
@@ -148,14 +154,17 @@ axios.interceptors.response.use(
     return Promise.reject(error.response)   // 返回接口返回的错误信息
   });
 
-// Vue.prototype.baseUrl="39.107.228.38:31999";
+Vue.prototype.baseUrl="39.105.217.251:31999";
 //风控
-Vue.prototype.baseUrl="localhost:9998";
+// Vue.prototype.baseUrl="localhost:9998";
 //额度
 // Vue.prototype.baseUrl="localhost:9991";
 //订单
 // Vue.prototype.baseUrl="localhost:9997";
-// Vue.prototype.baseUrl="192.168.20.110:8888";
+//产品operate
+// Vue.prototype.baseUrl="localhost:8888";
+//用户中心
+// Vue.prototype.baseUrl="localhost:9995";
 // Vue.prototype.baseUrl="192.168.20.216:9999";
 Vue.prototype.uurl="window.location.origin";
 
@@ -254,14 +263,6 @@ const vueRouter = new Router({
     },
     {
       path: '/editProduct/:id',
-      name: 'editProduct',
-      meta: {
-        requireAuth: true
-      },
-      component: editProduct
-    },
-    {
-      path: '/editProduct/:id/:copyType',
       name: 'editProduct',
       meta: {
         requireAuth: true
@@ -493,6 +494,22 @@ const vueRouter = new Router({
       component: addHeadFlow
     },
     {
+      path: '/editHeadFlow/:id',
+      name: 'editHeadFlow',
+      meta: {
+        requireAuth: true
+      },
+      component: editHeadFlow
+    },
+    {
+      path: '/configHeadFlow/:id',
+      name: 'configHeadFlow',
+      meta: {
+        requireAuth: true
+      },
+      component: configHeadFlow
+    },
+    {
       path: '/flowLogList',
       name: 'flowLogList',
       meta: {
@@ -646,22 +663,22 @@ const vueRouter = new Router({
       component: yunying
     },
     {
-      path: '/userDetail',
+      path: '/userDetail/:id',
       name: 'userDetail',
       meta: {
         requireAuth: true
       },
       children:[
         {
-          path:"",
+          path:"/jiben/:id",
           component:jiben
         },
         {
-          path:"/fenxian",
+          path:"/fenxian/:id",
           component:fenxian
         },
         {
-          path:"/yunying",
+          path:"/yunying/:id",
           component:yunying
         },
         {
@@ -692,7 +709,7 @@ const vueRouter = new Router({
       component: userDetail
     },
     {
-      path: '/modifyUserInformation',
+      path: '/modifyUserInformation/:id',
       name: 'modifyUserInformation',
       meta: {
         requireAuth: true
@@ -716,7 +733,7 @@ const vueRouter = new Router({
       component: bankCardManagement
     },
     {
-      path: '/bankCardDetail',
+      path: '/bankCardDetail/:id',
       name: 'bankCardDetail',
       meta: {
         requireAuth: true

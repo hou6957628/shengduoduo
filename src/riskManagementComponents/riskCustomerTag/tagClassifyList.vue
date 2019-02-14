@@ -72,7 +72,7 @@
     methods: {
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,0,this.finProduct);
+        this.getProductList(this.pageNum,val,0,null);
         this.nowPageSizes=val;
       },
       //翻页

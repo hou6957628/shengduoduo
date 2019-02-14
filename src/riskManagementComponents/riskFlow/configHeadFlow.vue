@@ -1,87 +1,29 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/ruleSetConfiguration' }">风控子流程管理</el-breadcrumb-item>
-      <el-breadcrumb-item>配置风控子流程</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/ruleSetConfiguration' }">风控总流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item>配置风控总流程</el-breadcrumb-item>
     </el-breadcrumb>
-    <h3 class="mt_20">风控子流程</h3>
+    <h3 class="mt_20">风控总流程</h3>
     <el-row :gutter="20">
       <el-col :span="6">创建时间:<div class="grid-content">{{ruleForm.createDate}}</div></el-col>
       <el-col :span="6">更新时间:<div class="grid-content">{{ruleForm.updateDate}}</div></el-col>
       <el-col :span="6">创建人员:<div class="grid-content">{{ruleForm.creator}}</div></el-col>
     </el-row>
     <div class="line"></div>
+    <el-row :gutter="20">
+      <h4 style="padding-left: 10px;padding-top: 20px;padding-bottom: 10px">说明</h4>
+      <el-col>使用此总流程的APP: <div class="grid-content">{{this.borrowingProductUsed==null?'无':this.borrowingProductUsed}}</div><p style="float: right;color:red;margin-right: 50px">修改记录</p></el-col>
+    </el-row>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" >
       <div class="operationContent">
         <p class="topText">子流程管理&nbsp;&nbsp;&nbsp;<el-button type="primary"  @click="addDomain" size="medium">添加子项</el-button></p>
         <div class="labelContent">
           <el-form-item>
             <el-form-item class="labelList" v-for="(domain, index) in electDataList.domains" :key="index">
-              <span>{{domain.itemAlias}}&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <el-select v-model="domain.childItemType" placeholder="请选择子项类别" style="width: 150px" @change="selectChange(domain.childItemType)">
-                <el-option
-                  v-for="item in itemTypeList"
-                  :key="item.key"
-                  :label="item.Id"
-                  :value="item.key">
-                </el-option>
-              </el-select>
+              <span>{{domain.itemAlias}}&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;子流程&nbsp;&nbsp;</span>
               <el-button @click="xuan(index)" :id="['btn'+index]" v-if="domain.id">{{domain.childItemName}}</el-button>
               <el-button @click="xuan(index)" :id="['btn'+index]" v-if="!domain.id">点击选择</el-button>
-              <!--用户标签-->
-              <div v-if="domain.childItemType==0" class="noDisplay">
-                <span>操作: </span>
-                <el-select v-model="domain.strategy" class="select">
-                  <el-option
-                    v-for="item in strategyList"
-                    :key="item.key"
-                    :label="item.Id"
-                    :value="item.key">
-                  </el-option>
-                </el-select>
-              </div>
-              <!--规则-->
-              <div v-if="domain.childItemType==1" class="noDisplay">
-                <span>规则: </span>
-                <el-select v-model="domain.action" class="select">
-                  <el-option
-                    v-for="item in actionList"
-                    :key="item.key"
-                    :label="item.Id"
-                    :value="item.key">
-                  </el-option>
-                </el-select>
-                <span style="margin-left: 15px">操作: </span>
-                <el-select v-model="domain.strategy" class="select">
-                  <el-option
-                    v-for="item in strategyList"
-                    :key="item.key"
-                    :label="item.Id"
-                    :value="item.key">
-                  </el-option>
-                </el-select>
-              </div>
-              <!--规则集-->
-              <div v-if="domain.childItemType==2" class="noDisplay">
-                <span>规则集: </span>
-                <el-select v-model="domain.action" class="select">
-                  <el-option
-                    v-for="item in actionList"
-                    :key="item.key"
-                    :label="item.Id"
-                    :value="item.key">
-                  </el-option>
-                </el-select>
-                <span style="margin-left: 15px">操作: </span>
-                <el-select v-model="domain.strategy" class="select">
-                  <el-option
-                    v-for="item in strategyList"
-                    :key="item.key"
-                    :label="item.Id"
-                    :value="item.key">
-                  </el-option>
-                </el-select>
-              </div>
               <el-button @click.prevent="removeDomain(domain)">删除</el-button>
             </el-form-item>
           </el-form-item >
@@ -101,9 +43,7 @@
     </el-form>
     <div v-if="bg" id="bg">
       <div v-for="(item,index) in tableData" style="display: inline-block;padding: 2px 5px;" :key="index">
-        <el-radio v-if="num==0" class="radioType" v-model="radio" @change="changeHandler(item,0)" border size="medium" :label="item.id">{{item.tagName}}</el-radio>
-        <el-radio v-if="num==1" class="radioType" v-model="radio" @change="changeHandler(item,1)" border size="medium" :label="item.id">{{item.ruleName}}</el-radio>
-        <el-radio v-if="num==2" class="radioType" v-model="radio" @change="changeHandler(item,2)" border size="medium" :label="item.id">{{item.collectionName}}</el-radio>
+        <el-radio class="radioType" v-model="radio" @change="changeHandler(item)" border size="medium" :label="item.id">{{item.flowName}}</el-radio>
       </div>
     </div>
   </div>
@@ -113,10 +53,6 @@
   import axios from 'axios'
   export default {
     methods: {
-      //下拉选择
-      selectChange(type){
-        this.num = type;
-      },
       //添加数据
       addDomain() {
         if (this.electDataList.domains.length==0) {
@@ -146,45 +82,33 @@
         this.bg=true;
         axios({
           method:"GET",
-          url:"http://"+this.baseUrl+"/risk/admin/collection_flow/getChildItemByType",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/getFlowSonList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
-          },
-          params:{
-            childItemType: this.electDataList.domains[index].childItemType,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.tableData=res.data.body.list;
+            this.tableData=res.data.body;
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
       //选择字段的事件
-      changeHandler(item,num) {
+      changeHandler(item) {
         this.bg=false;
         this.radio="";
+        $("#btn"+this.count).html(item.flowName);
         this.electDataList.domains[this.count].childItemId = item.id;
-        if (num == 0) {
-          $("#btn"+this.count).html(item.tagName);
-          this.electDataList.domains[this.count].childItemName = item.tagName;
-        }
-        if (num == 1) {
-          $("#btn"+this.count).html(item.ruleName);
-          this.electDataList.domains[this.count].childItemName = item.ruleName;
-        }
-        if (num == 2) {
-          $("#btn"+this.count).html(item.collectionName);
-          this.electDataList.domains[this.count].childItemName = item.collectionName;
-        }
+        this.electDataList.domains[this.count].childItemName = item.flowName;
+        this.electDataList.domains[this.count].childItemType = 3;
       },
       //根据id查询流程
       getFlowById(ruleId){
         axios({
           method:"get",
-          url:"http://"+this.baseUrl+"/risk/admin/collection_flow/id",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/id",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -194,9 +118,9 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.ruleForm = res.data.body.rcFlow;
-            if (res.data.body.rcFlowItem.length != 0) {
-              this.electDataList.domains=res.data.body.rcFlowItem;
+            this.ruleForm = res.data.body.flow;
+            if (res.data.body.rcFlowItems.length != 0) {
+              this.electDataList.domains=res.data.body.rcFlowItems;
             }
             localStorage.num=this.electDataList.domains.length;
           }else {
@@ -207,14 +131,14 @@
       //执行：生成文本描述
       checkForDoc(){
         var data  = {
-          'rcFlow':{
+          'flow':{
             'flowRule': this.ruleForm.flowRule,
           },
-          'rcFlowItem':this.electDataList.domains
+          'rcFlowItems':this.electDataList.domains
         };
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/risk/admin/collection_flow/checkForDoc",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/checkForDoc",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -232,8 +156,7 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            console.log(this.electDataList.domains);
-            if (this.electDataList.domains[0].childItemId=='' | this.electDataList.domains[0].strategy=='') {
+            if (this.electDataList.domains[0].childItemId=='') {
               this.$alert('请填写子项', '提示', {
                 confirmButtonText: '确定',
                 center: true,
@@ -241,12 +164,12 @@
               });
             } else {
               var data  = {
-                'rcFlow':this.ruleForm,
-                'rcFlowItem':this.electDataList.domains
+                'flow':this.ruleForm,
+                'rcFlowItems':this.electDataList.domains
               };
               axios({
                 method:"POST",
-                url:"http://"+this.baseUrl+"/risk/admin/collection_flow/config",
+                url:"http://"+this.baseUrl+"/risk/admin/parent_flow/config",
                 headers:{
                   'Content-Type':'application/json',
                   'Authorization': localStorage.token
@@ -258,7 +181,7 @@
                     message: '配置成功',
                     type: 'success'
                   });
-                  this.$router.push('/flowList');
+                  this.$router.push('/flowHeadList');
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -273,14 +196,36 @@
           }
         })
       },
+      //查询使用此总流程的APP
+      checkRef(id){
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/checkRef",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            flowId: id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.borrowingProductUsed=res.data.body;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted:function () {
       localStorage.num=0;
       this.id=this.$route.params.id;
       this.getFlowById(this.id);
+      this.checkRef(this.id);
     },
     data() {
       return {
+        borrowingProductUsed:'',
         electData: [ ],
         ruleForm:{
           id:'',
@@ -305,7 +250,7 @@
         ],
         electDataList: {
           domains: [{
-            itemAlias: "A",childItemId:'',childItemName:'',childItemType:0,strategy:'',action:'',
+            itemAlias: "A",childItemId:'',childItemName:'',childItemType:''
           }]
         },
         radio:"",
@@ -353,7 +298,7 @@
     left: 0;
     top: 0;
     right: 0;
-    bottom: 0;
+    bottom: 500px;
     z-index: 1001;
   }
   .labelList{

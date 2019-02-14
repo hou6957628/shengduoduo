@@ -1,14 +1,14 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/flowList' }">风控流程管理</el-breadcrumb-item>
-      <el-breadcrumb-item>编辑风控流程</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/flowList' }">风控子流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑风控子流程</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="流程名称:" prop="flowName">
+      <el-form-item label="子流程名称:" prop="flowName">
         <el-input v-model="ruleForm.flowName"></el-input>
       </el-form-item>
-      <el-form-item label="流程说明:">
+      <el-form-item label="子流程说明:">
         <el-input v-model="ruleForm.flowDetail"></el-input>
       </el-form-item>
       <el-form-item label="是否启用:" prop="enabled">

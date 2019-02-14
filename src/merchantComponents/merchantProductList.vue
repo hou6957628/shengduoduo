@@ -33,24 +33,24 @@
           label="更新时间"
           width="200">
         </el-table-column>
-        <!--<el-table-column-->
-          <!--prop="enabled"-->
-          <!--label="状态"-->
-          <!--width="80">-->
-          <!--<template slot-scope="scope">-->
-            <!--<el-tag-->
-              <!--:type="scope.row.enabled == true ? 'primary' : 'danger'"-->
-              <!--disable-transitions>{{scope.row.enabled == true ? '使用中' : '已停用'}}</el-tag>-->
-          <!--</template>-->
-        <!--</el-table-column>-->
+        <el-table-column
+          prop="enabled"
+          label="状态"
+          width="80">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.enabled == true ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.enabled == true ? '使用中' : '已停用'}}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           label="操作"
           width="180">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>
-            <!--<el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>-->
-            <!--<el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>-->
+            <el-button @click="deleteProductTip(scope.row)" type="text" size="medium">删除</el-button>
+            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="!scope.row.enabled" @click="obtainedCustomerTag(scope.row)" type="text" size="medium">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -138,10 +138,6 @@
           }
         })
       },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20);
-      },
       //编辑产品接口
       editProduct(row){
         var id=row.id;
@@ -149,7 +145,47 @@
           path: `/editMerchant/${id}`,
         });
       },
-      //删除产品接口
+      //提示删除商户接口
+      deleteProductTip(row){
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/operate/admin/merchant/verifyMerchantBeforeDelete",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            merchantCode: row.merchantCode,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            if (res.data.body == false) {
+              this.$alert('商户使用中无法删除', '提示', {
+                confirmButtonText: '确定',
+                center: true,
+                type: 'warning'
+              });
+            } else {
+              this.$confirm('是否确认删除此商户?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+              }).then(() => {
+                this.deleteProduct(row);
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消删除'
+                });
+              });
+            }
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //确认删除商户接口
       deleteProduct(row){
         axios({
           method:"post",
@@ -170,6 +206,71 @@
               type: 'success'
             });
             this.getProductList(1,20,this.finProduct,this.finProduct);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //提示启用停用用户标签接口
+      obtainedProduct(row){
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/operate/admin/merchant/verifyMerchantBeforeDelete",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            merchantCode: row.merchantCode,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            if (res.data.body == false) {
+              this.$alert('商户使用中无法停用', '提示', {
+                confirmButtonText: '确定',
+                center: true,
+                type: 'warning'
+              });
+            } else {
+              this.$confirm('是否确认停用此商户?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+              }).then(() => {
+                this.obtainedCustomerTag(row);
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消操作'
+                });
+              });
+            }
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //确认启用停用用户标签接口
+      obtainedCustomerTag(row){
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/operate/admin/merchant/edit",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            merchantCode: row.merchantCode,
+            enabled: !row.enabled,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.getProductList(1,20,this.finProduct);
           }else {
             this.$message.error(res.data.msgInfo);
           }

@@ -11,11 +11,11 @@
       <el-form-item label="公司地址:" prop="companyAddress">
         <el-input v-model="ruleForm.companyAddress"></el-input>
       </el-form-item>
-      <el-form-item label="公司描述:" prop="companyDetail">
+      <el-form-item label="公司描述:">
         <el-input v-model="ruleForm.companyDetail"></el-input>
       </el-form-item>
       <el-form-item label="是否启用" prop="enabled">
-        <el-select v-model="ruleForm.enabled">
+        <el-select v-model="ruleForm.enabled" disabled>
           <el-option
             v-for="item in electDataEnabled"
             :key="item.key"
@@ -25,7 +25,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -51,15 +52,12 @@
         },
         rules: {
           merchantName: [
-            { required: true, message: '请输入商户名称', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+            { required: true, message: '请输入商户名称', trigger: 'blur' }
+            // { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
           ],
           companyAddress: [
-            { required: true, message: '请输入公司地址', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-          ],
-          companyDetail: [
-            {  required: true, message: '请输入公司描述', trigger: 'change' }
+            { required: true, message: '请输入公司地址', trigger: 'blur' }
+            // { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
           ],
           enabled: [
             { required: true, message: '请选择是否启用', trigger: 'change' }
@@ -106,6 +104,10 @@
             return false;
           }
         });
+      },
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
       },
       editMerchant(data){
         axios({

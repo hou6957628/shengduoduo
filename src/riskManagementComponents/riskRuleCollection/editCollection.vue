@@ -14,7 +14,7 @@
           <el-input v-model="ruleForm.collectionDetail"></el-input>
         </el-form-item>
         <el-form-item label="规则集分类:" prop="classifyId">
-          <el-select v-model="ruleForm.classifyId" placeholder="请选择" @change="selectChange">
+          <el-select v-model="ruleForm.classifyId" placeholder="请选择" @change="changeClassify($event)">
             <el-option
               v-for="item in electData"
               :key="item.id"
@@ -91,7 +91,7 @@
           <el-input v-model="ruleForm2.classifyDescription"></el-input>
         </el-form-item>
         <el-form-item label="是否启用:" prop="classifyEnabled">
-          <el-select v-model="ruleForm2.classifyEnabled" placeholder="请选择" @change="selectChange">
+          <el-select v-model="ruleForm2.classifyEnabled" placeholder="请选择" @change="selectChange()">
             <el-option
               v-for="item in electDataEnabled"
               :key="item.key"
@@ -284,8 +284,12 @@
         })
       },
       //下拉选择
-      selectChange(row){
-        console.log(this.electValue);
+      changeClassify(vId){
+        let obj = {};
+        obj = this.electData.find((item)=>{
+          return item.id === vId;
+        });
+        this.ruleForm.classifyName=obj.classifyName;
       },
       //添加数据
       addDomain() {

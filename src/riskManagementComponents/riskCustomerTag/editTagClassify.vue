@@ -12,7 +12,7 @@
         <el-input v-model="ruleForm.description"></el-input>
       </el-form-item>
       <el-form-item label="是否启用:" prop="enabled">
-        <el-select v-model="ruleForm.enabled" placeholder="请选择" @change="selectChange">
+        <el-select v-model="ruleForm.enabled" disabled placeholder="请选择" @change="selectChange">
           <el-option
             v-for="item in electData"
             :key="item.key"
@@ -80,7 +80,7 @@
                   message: '修改成功',
                   type: 'success'
                 });
-                this.$router.push('/tagList');
+                this.$router.push('/tagClassifyList');
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }

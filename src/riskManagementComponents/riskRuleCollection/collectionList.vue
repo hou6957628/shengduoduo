@@ -39,7 +39,7 @@
         </el-table-column>
         <el-table-column
           prop="classifyName"
-          label="风控流程"
+          label="风控子流程"
           width="300">
         </el-table-column>
         <el-table-column

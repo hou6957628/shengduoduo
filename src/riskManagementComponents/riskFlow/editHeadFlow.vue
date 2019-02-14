@@ -1,18 +1,18 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/tagList' }">规则分类列表</el-breadcrumb-item>
-      <el-breadcrumb-item>编辑规则分类</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/flowList' }">风控总流程管理</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑风控总流程</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="分类名称:" prop="classifyName">
-        <el-input v-model="ruleForm.classifyName"></el-input>
+      <el-form-item label="总流程名称:" prop="flowName">
+        <el-input v-model="ruleForm.flowName"></el-input>
       </el-form-item>
-      <el-form-item label="分类说明:">
-        <el-input v-model="ruleForm.description"></el-input>
+      <el-form-item label="总流程说明:">
+        <el-input v-model="ruleForm.flowDetail"></el-input>
       </el-form-item>
       <el-form-item label="是否启用:" prop="enabled">
-        <el-select v-model="ruleForm.enabled" disabled placeholder="请选择" @change="selectChange">
+        <el-select v-model="ruleForm.enabled" placeholder="请选择" @change="selectChange">
           <el-option
             v-for="item in electData"
             :key="item.key"
@@ -41,13 +41,13 @@
         electValue:'',
         ruleForm: {
           id:'',
-          classifyName: '',
-          description: '',
-          enabled: 1,
+          flowName: '',
+          flowDetail: '',
+          enabled: '',
         },
         rules: {
-          classifyName: [
-            { required: true, message: '请输入标签分类名称', trigger: 'blur' },
+          flowName: [
+            { required: true, message: '请输入总流程名称', trigger: 'blur' },
             { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
           ],
           enabled: [
@@ -57,30 +57,50 @@
       };
     },
     methods: {
+      //根据id查询流程
+      getFlowById(ruleId){
+        axios({
+          method:"get",
+          url:"http://"+this.baseUrl+"/risk/admin/parent_flow/id",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id: ruleId,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.ruleForm = res.data.body.flow;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
       //提交按钮
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            var param = new FormData();  // 创建form对象
+            param.append('id', this.ruleForm.id);
+            param.append('flowName', this.ruleForm.flowName);
+            param.append('flowDetail', this.ruleForm.flowDetail);
+            param.append('enabled', this.ruleForm.enabled);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/risk/admin/classification/update",
+              url:"http://"+this.baseUrl+"/risk/admin/parent_flow/update",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
               },
-              params:{
-                classifyName: this.ruleForm.classifyName,
-                description: this.ruleForm.description,
-                enabled: this.ruleForm.enabled,
-                id: this.ruleForm.id,
-              }
+              data:param,
             }).then((res)=>{
               if(res.data.msgCd=='ZYCASH-200'){
                 this.$message({
                   message: '修改成功',
                   type: 'success'
                 });
-                this.$router.push('/ruleClassifyList');
+                this.$router.push('/flowHeadList');
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }
@@ -95,27 +115,7 @@
         });
       },
       selectChange(){
-        console.log(this.ruleForm.enabled);
-      },
-      //根据id查询规则分类
-      getClassificationById(id){
-        axios({
-          method:"get",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/id",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: id,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.ruleForm= res.data.body;
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        // console.log(this.ruleForm.enabled);
       },
       //取消按钮
       resetForm(formName) {
@@ -124,7 +124,7 @@
     },
     mounted:function () {
       this.id=this.$route.params.id;
-      this.getClassificationById(this.id);
+      this.getFlowById(this.id);
     }
   }
 </script>
