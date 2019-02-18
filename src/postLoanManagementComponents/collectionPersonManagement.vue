@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/collectionPersonManagement' }">催收人员管理</el-breadcrumb-item>
+      <el-breadcrumb-item>催收人员管理</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">添加人员<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
@@ -52,8 +52,9 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="products.productName"
+          prop="products"
           label="产品选择"
+          :formatter="typeFormatter"
           width="150">
         </el-table-column>
         <el-table-column
@@ -76,7 +77,7 @@
           width="180">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
+            <el-button v-if="scope.row.enabled" @click="obtainedProductTip(scope.row)" type="text" size="small">停用</el-button>
             <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
           </template>
         </el-table-column>
@@ -104,13 +105,7 @@
     methods: {
       //查询金融产品
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,30,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,30,this.finProduct,this.electValue);
-          console.log(this.finProduct,this.electValue);
-        }
+        this.getProductList(1,30,this.finProduct,this.electValue);
       },
       //每页显示多少条
       handleSizeChange(val) {
@@ -124,7 +119,7 @@
         console.log(this.nowPageSizes);
         this.getProductList(val,this.nowPageSizes,this.finProduct,this.electValue);
       },
-      //创建金融产品
+      //添加人员
       toAddProduct(){
         this.$router.push({
           path: `/collectionPerson`,
@@ -153,11 +148,13 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            this.serverDate=res.data.startDateTime;
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
             this.pageNum=res.data.body.pageNum;
             this.operationGroupList=res.data.body.operationGroupList;
+            this.operationGroupList.unshift({id:null,groupName:"全部群组"});
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -170,34 +167,23 @@
           path: `/editCollectionPerson/${id}`,
         });
       },
-      //删除产品接口
-      deleteProduct(row){
-        axios({
-          method:"post",
-          // url:"http://"+this.baseUrl+"/super/admin/product/obtainedProduct",
-          url:"http://"+this.baseUrl+"/operate/admin/product/delOrStopProduct",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: row.id,
-            status: 1,
-            enabled: row.enabled,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.getProductList(1,10,this.finProduct,this.finProduct);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+      //提示停用产品接口
+      obtainedProductTip(row){
+        this.$confirm('是否确定停用此催收员?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          this.obtainedProduct(row);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          });
+        });
       },
-      //停用产品接口
+      //确认停用产品接口
       obtainedProduct(row){
         axios({
           method:"post",
@@ -216,7 +202,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,30,this.finProduct,this.data4);
+            this.getProductList(1,30,null,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -224,12 +210,16 @@
       },
       //过滤类型字段
       typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
+        let products = row.products;
+        let productName = '';
+        products.forEach(function (item,index) {
+          if (index > 0) {
+            productName=productName + "、" + item.productName;
+          } else {
+            productName= productName + item.productName;
+          }
+        });
+        return productName;
       },
       //下拉选择
       selectChange(row){
@@ -238,14 +228,11 @@
       },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
       this.getProductList(1,30,null,null);
     },
     data() {
       return {
-        operationGroupList: [
-          {id:null,groupName:"全部群组"},
-        ],
+        operationGroupList: [],
         electValue:null,
         tableData: [],
         finProduct: '',
@@ -254,6 +241,7 @@
         pageSize:null,
         pageSizes:[30,40,50],
         nowPageSizes:30,
+        serverDate:''
       }
     }
   }

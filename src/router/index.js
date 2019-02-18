@@ -67,13 +67,22 @@ import editHeadFlow from '@/riskManagementComponents/riskFlow/editHeadFlow'
 import configHeadFlow from '@/riskManagementComponents/riskFlow/configHeadFlow'
 //风险命中列表
 import flowLogList from '@/riskManagementComponents/flowLog/flowLogList'
-
+//逾期订单、委外订单、催收标签、通话类型
 import afterLoanManagement from '@/postLoanManagementComponents/afterLoanManagement'
+import afterLoanNoRepay from '@/postLoanManagementComponents/afterLoanNoRepay'
+import afterLoanRepayed from '@/postLoanManagementComponents/afterLoanRepayed'
+import outsourcingOrderList from '@/postLoanManagementComponents/outsourcingOrderList'
+import outsourcingOrderRepayedList from '@/postLoanManagementComponents/outsourcingOrderRepayedList'
 import collectionTag from '@/postLoanManagementComponents/collectionTag'
+import callTypeTag from '@/postLoanManagementComponents/callTypeTag'
+//催收人员、催收群组
 import collectionPersonManagement from '@/postLoanManagementComponents/collectionPersonManagement'
 import collectionPerson from '@/postLoanManagementComponents/collectionPerson'
 import collectionGroupManagement from '@/postLoanManagementComponents/collectionGroupManagement'
 import collectionGroup from '@/postLoanManagementComponents/collectionGroup'
+import editCollectionGroup from '@/postLoanManagementComponents/editCollectionGroup'
+
+
 import collectionOrder from '@/postLoanManagementComponents/collectionOrder'
 import collectionOrderList from '@/postLoanManagementComponents/collectionOrderList'
 import collectionTaskList from '@/postLoanManagementComponents/collectionTaskList'
@@ -154,13 +163,13 @@ axios.interceptors.response.use(
     return Promise.reject(error.response)   // 返回接口返回的错误信息
   });
 
-Vue.prototype.baseUrl="39.105.217.251:31999";
+// Vue.prototype.baseUrl="39.105.217.251:31999";
 //风控
 // Vue.prototype.baseUrl="localhost:9998";
 //额度
 // Vue.prototype.baseUrl="localhost:9991";
 //订单
-// Vue.prototype.baseUrl="localhost:9997";
+Vue.prototype.baseUrl="localhost:9997";
 //产品operate
 // Vue.prototype.baseUrl="localhost:8888";
 //用户中心
@@ -517,7 +526,6 @@ const vueRouter = new Router({
       },
       component: flowLogList
     },
-
     {
       path: '/afterLoanManagement',
       name: 'afterLoanManagement',
@@ -527,12 +535,52 @@ const vueRouter = new Router({
       component: afterLoanManagement
     },
     {
+      path: '/afterLoanNoRepay',
+      name: 'afterLoanNoRepay',
+      meta: {
+        requireAuth: true
+      },
+      component: afterLoanNoRepay
+    },
+    {
+      path: '/afterLoanRepayed',
+      name: 'afterLoanRepayed',
+      meta: {
+        requireAuth: true
+      },
+      component: afterLoanRepayed
+    },
+    {
+      path: '/outsourcingOrderList',
+      name: 'outsourcingOrderList',
+      meta: {
+        requireAuth: true
+      },
+      component: outsourcingOrderList
+    },
+    {
+      path: '/outsourcingOrderRepayedList',
+      name: 'outsourcingOrderRepayedList',
+      meta: {
+        requireAuth: true
+      },
+      component: outsourcingOrderRepayedList
+    },
+    {
       path: '/collectionTag',
       name: 'collectionTag',
       meta: {
         requireAuth: true
       },
       component: collectionTag
+    },
+    {
+      path: '/callTypeTag',
+      name: 'callTypeTag',
+      meta: {
+        requireAuth: true
+      },
+      component: callTypeTag
     },
     {
       path: '/collectionPersonManagement',
@@ -565,6 +613,14 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: collectionGroup
+    },
+    {
+      path: '/editCollectionGroup/:id',
+      name: 'editCollectionGroup',
+      meta: {
+        requireAuth: true
+      },
+      component: editCollectionGroup
     },
     {
       path: '/collectionOrder',

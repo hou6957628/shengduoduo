@@ -89,7 +89,22 @@
                 <el-menu-item index="/afterLoanManagement">逾期订单管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/afterLoanNoRepay">逾期未还订单</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/afterLoanRepayed">逾期已还订单</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/outsourcingOrderList">委外订单</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/outsourcingOrderRepayedList">委外已还</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item index="/collectionTag">催收标签</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/callTypeTag">通话类型</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item index="/collectionPersonManagement">催收人员管理</el-menu-item>

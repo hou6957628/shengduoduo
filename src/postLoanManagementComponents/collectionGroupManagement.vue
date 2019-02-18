@@ -5,7 +5,7 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">新建群组<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-input @click="searchProduct" class="searchContent"
+      <el-input class="searchContent"
         placeholder="催收组名"
         v-model="finProduct"
         clearable>
@@ -44,11 +44,16 @@
           width="200">
         </el-table-column>
         <el-table-column
+          prop="updateDate"
+          label="更新时间"
+          width="200">
+        </el-table-column>
+        <el-table-column
           label="操作"
           width="180">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
+            <el-button v-if="scope.row.enabled" @click="obtainedProductTip(scope.row)" type="text" size="small">停用</el-button>
             <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
           </template>
         </el-table-column>
@@ -76,27 +81,21 @@
     methods: {
       //查询金融产品
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,30);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,30,this.finProduct);
-          console.log(data);
-        }
+        this.getProductList(1,30,this.finProduct);
       },
       //每页显示多少条
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.finProduct);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
         console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.finProduct);
       },
-      //创建金融产品
+      //创建催收群组
       toAddProduct(){
         this.$router.push({
           path: `/collectionGroup`,
@@ -133,80 +132,34 @@
           }
         })
       },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,30,this.finProduct);
-      },
-      //编辑产品接口
+      //编辑催收群组
       editProduct(row){
-        console.log(row.id);
         var id=row.id;
         this.$router.push({
           path: `/editCollectionGroup/${id}`,
         });
-        // this.$router.push({
-        //   path: '/editCollectionGroup',
-        //   query: {id: row.id, enabled: row.enabled, groupName: row.groupName}
-        // });
       },
-      //删除产品接口
-      deleteProduct(row){
-        axios({
-          method:"post",
-          // url:"http://"+this.baseUrl+"/super/admin/product/obtainedProduct",
-          url:"http://"+this.baseUrl+"/operate/admin/product/delOrStopProduct",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: row.id,
-            status: 1,
-            enabled: row.enabled,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.getProductList(1,10,this.finProduct,this.finProduct);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+      //提示停用产品接口
+      obtainedProductTip(row){
+        this.$confirm('是否确定停用此催收组?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          this.obtainedProduct(row);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          });
+        });
       },
-      //复制产品接口
-      copyProduct(row){
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/operate/admin/product/copyProduct",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: row.id,
-            status: 0,
-            enabled: row.enabled,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.getProductList(1,20,this.finProduct,this.finProduct);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
-      //停用产品接口
+      //确认停用产品接口
       obtainedProduct(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/operate/admin/collection/update",
+          url:"http://"+this.baseUrl+"/operate/admin/group/update",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -221,7 +174,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,20,this.finProduct,null);
+            this.getProductList(1,20,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -243,7 +196,7 @@
     },
     mounted:function () {
       // this.finProduct=this.$route.params.name;
-      this.getProductList(1,30);
+      this.getProductList(1,30,null);
     },
     data() {
       return {

@@ -25,7 +25,7 @@
           <el-button @click="addTag()">添加标签</el-button>
         </el-form-item>
         <el-form-item label="是否启用:" prop="enabled">
-          <el-select v-model="ruleForm.enabled" placeholder="请选择">
+          <el-select v-model="ruleForm.enabled" disabled placeholder="请选择">
             <el-option
               v-for="item in electDataEnabled"
               :key="item.key"

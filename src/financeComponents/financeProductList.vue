@@ -258,30 +258,37 @@
       },
       //确定复制产品接口
       copyCustomerTag(){
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/operate/admin/product/copyProduct",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: this.copyId,
-            name: this.ruleForm.productName,
-            description: this.ruleForm.description,
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios({
+              method:"post",
+              url:"http://"+this.baseUrl+"/operate/admin/product/copyProduct",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              params:{
+                id: this.copyId,
+                name: this.ruleForm.productName,
+                description: this.ruleForm.description,
+              }
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.centerDialogVisible = false;
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+                this.getProductList(1,20,null,null);
+              }else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.centerDialogVisible = false;
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.getProductList(1,20,null,null);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        });
       },
       //停用产品接口
       obtainedProduct(row){

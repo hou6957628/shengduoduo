@@ -14,31 +14,34 @@
       <el-form-item label="密码:" prop="password">
         <el-input v-model="ruleForm.password"></el-input>
       </el-form-item>
+      <el-form-item label="确认密码:" prop="rePassword">
+        <el-input v-model="ruleForm.rePassword"></el-input>
+      </el-form-item>
       <el-form-item label="所属群组" prop="groupId">
-        <el-select v-model="ruleForm.groupId" placeholder="请选择">
-          <!--<el-option-->
-            <!--v-for="item in ruleForm.operationGroupList"-->
-            <!--:key="item.id"-->
-            <!--:label="item.groupName"-->
-            <!--:value="item.id">-->
-          <!--</el-option>-->
+        <el-select v-model="ruleForm.groupId" value-key="id" placeholder="请选择">
+          <el-option
+            v-for="item in operationGroupList"
+            :key="item.id"
+            :label="item.groupName"
+            :value="item.id">
+          </el-option>
         </el-select>
-        <el-button @click="gozu()" style="margin-left: 50px">创建群组</el-button>
+        <el-button @click="addGroup()" style="margin-left: 50px">创建群组</el-button>
       </el-form-item>
       <el-form-item label="角色" prop="roleId">
         <el-select v-model="ruleForm.roleId" value-key="id" placeholder="请选择">
           <el-option
-            v-for="item in ruleForm.operationRoleList"
+            v-for="item in operationRoleList"
             :key="item.id"
             :label="item.roleName"
             :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="催收产品" prop="productId">
-        <el-select v-model="ruleForm.productId" value-key="productId" multiple placeholder="请选择" @change="selectChange">
+      <el-form-item label="催收产品" prop="productIds">
+        <el-select v-model="ruleForm.productIds" value-key="productId" multiple placeholder="请选择" @change="selectChange">
           <el-option
-            v-for="item in ruleForm.operationMerchantProductList"
+            v-for="item in operationMerchantProductList"
             :key="item.productId"
             :label="item.productName"
             :value="item.productId">
@@ -56,11 +59,39 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
-        &nbsp;&nbsp;&nbsp;
-        <el-button type="primary" @click="noSubmitForm()">取消</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
       </el-form-item>
     </el-form>
+    <!--添加群组结构-->
+    <el-dialog
+      title="创建群组"
+      :visible.sync="centerDialogVisible1"
+      width="45%"
+      center>
+      <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="群组名称:" prop="groupName">
+          <el-input v-model="ruleForm2.groupName"></el-input>
+        </el-form-item>
+        <el-form-item label="备注:">
+          <el-input v-model="ruleForm2.remark"></el-input>
+        </el-form-item>
+        <el-form-item label="状态:" prop="enabled">
+          <el-select v-model="ruleForm2.enabled" placeholder="请选择">
+            <el-option
+              v-for="item in electData"
+              :key="item.key"
+              :label="item.Id"
+              :value="item.key">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="addGroupSubmit('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible1 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -68,10 +99,31 @@
   import axios from 'axios'
   export default {
     data() {
+      //催收员姓名最多10个汉字姓名不可重复
+      var validateName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入催收员姓名'));
+        }  else if (value.length > 10) {
+          callback(new Error('长度须小于10个字符'));
+        } else {
+          callback();
+        }
+      };
+      //验证密码长度
+      var validatePass = (rule, value, callback) => {
+        if (!value) {
+          callback();
+        }  else if (value.length < 6) {
+          callback(new Error('长度最少6个字符'));
+        } else {
+          callback();
+        }
+      };
+      //验证确认密码
       var validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入确认密码'));
-        } else if (value !== this.ruleForm.password) {
+        if (!value && !this.ruleForm.password) {
+          callback();
+        }  else if (value !== this.ruleForm.password) {
           callback(new Error('两次输入密码不一致!'));
         } else {
           callback();
@@ -91,31 +143,67 @@
           }
         }
       };
+      //群组名称不可重复
+      var validateNameGroup = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入群组名称'));
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/operate/admin/group/checkName",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              name: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body != 0) {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
+      };
       return {
+        centerDialogVisible1:false,
         electData:[
           {key:false,Id:'不启用'},
           {key:true,Id:'启用'},
         ],
+        operationRoleList: [],
+        operationGroupList: [],
+        operationMerchantProductList: [],
+        operationMerchantProductList1: [],
         ruleForm: {
+          id:'',
           name: '',
           mobile: '',
           password: '',
-          enabled: 1,
-          operationRoleList: '',
-          operationGroupList: '',
-          operationMerchantProductList: [],
-          operationMerchantProductList1: [],
+          rePassword: null,
+          groupId: '',
+          roleId: '',
+          productIds:[],
+          enabled: ''
         },
         rules: {
           name: [
-            { required: true, message: '请输入姓名', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+            { required: true, validator: validateName, trigger: 'blur' }
           ],
           mobile: [
             {  required: true, validator: checkPhone, trigger: 'blur' }
           ],
           password: [
-            {  required: true, message: '请输入密码', trigger: 'change' }
+            {  required: true, validator: validatePass, trigger: 'blur' }
+          ],
+          rePassword: [
+            {  required: true, validator: validatePass2, trigger: 'blur' }
           ],
           groupId: [
             {  required: true, message: '请选择所属群组', trigger: 'change' }
@@ -123,11 +211,21 @@
           roleId: [
             {  required: true, message: '请选择角色', trigger: 'change' }
           ],
-          productId: [
-            {  required: true, message: '请选择催收产品', trigger: 'blur' }
+          productIds: [
+            {  required: true, message: '请选择催收产品', trigger: 'change' }
           ],
-          rePassword: [
-            {  required: true, validator: validatePass2, trigger: 'blur' }
+          enabled: [
+            { required: true, message: '请选择是否启用', trigger: 'change' }
+          ]
+        },
+        ruleForm2: {
+          groupName:'',
+          remark:'',
+          enabled:true,
+        },
+        rules2: {
+          groupName: [
+            { required: true, validator: validateNameGroup, trigger: 'blur' }
           ],
           enabled: [
             { required: true, message: '请选择是否启用', trigger: 'change' }
@@ -140,26 +238,19 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            var param = new FormData();  // 创建form对象
-            param.append('name', this.ruleForm.name);
-            param.append('mobile', this.ruleForm.mobile);
-            param.append('password', this.ruleForm.password);
-            param.append('roleId', this.ruleForm.roleId);
-            param.append('enabled', this.ruleForm.enabled);
-            param.append('productId', this.ruleForm.productId);
-            param.append('groupId', this.ruleForm.groupId);
+            console.log(this.ruleForm + "33333333333");
             axios({
               method:"POST",
               url:"http://"+this.baseUrl+"/operate/admin/collection/save",
               headers:{
-                'Content-Type':'application/x-www-form-urlencoded',
+                'Content-Type':'application/json',
                 'Authorization': localStorage.token
               },
-              data:param,
+              data:JSON.stringify(this.ruleForm),
             }).then((res)=>{
               if(res.data.msgCd=='ZYCASH-200'){
                 this.$message({
-                  message: '添加成功',
+                  message: '操作成功',
                   type: 'success'
                 });
                 this.$router.push('/collectionPersonManagement');
@@ -176,41 +267,10 @@
           }
         });
       },
-      //编辑产品接口
-      editProduct(row){
-        var param = new FormData();  // 创建form对象
-        param.append('merchantName', this.ruleForm.merchantName);
-        param.append('enabled', this.ruleForm.enabled);
-        param.append('enableDelete', 0);
-        param.append('company', null);
-        param.append('companyAddress', this.ruleForm.companyAddress);
-        param.append('companyDetail', this.ruleForm.companyDetail);
-        param.append('email', null);
-        param.append('mobile', null);
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/operate/admin/merchant/get",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          data:param,
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '添加成功',
-              type: 'success'
-            });
-            this.$router.push('/merchantProductList');
-          }else if(res.data.msgCd=='ZYCASH--1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
-            this.$message.error(res);
-          }
-        })
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
       },
-      //
       selectChange(row){
         // console.log(this.ruleForm.productId);
         console.log(typeof (this.ruleForm.productId));
@@ -223,7 +283,6 @@
        * @param data3 催收员姓名或者手机号
        */
       getProductList(){
-        var _this=this;
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/operate/admin/collection/get",
@@ -234,24 +293,23 @@
           params:{}
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            _this.ruleForm.operationRoleList=res.data.body.operationRoleList;
-            _this.ruleForm.operationGroupList=res.data.body.operationGroupList;
-            _this.ruleForm.operationMerchantProductList1=res.data.body.operationMerchantProductList;
-            console.log("长度"+_this.ruleForm.operationMerchantProductList1.length);
-            for(var i=0;i<_this.ruleForm.operationMerchantProductList1.length;i++){
-              _this.ruleForm.operationMerchantProductList.push({
-                productId:_this.ruleForm.operationMerchantProductList1[i].productId,
-                productName:_this.ruleForm.operationMerchantProductList1[i].productName
+            this.operationRoleList=res.data.body.operationRoleList;
+            this.operationGroupList=res.data.body.operationGroupList;
+            this.operationMerchantProductList1=res.data.body.operationMerchantProductList;
+            for(var i=0;i<this.operationMerchantProductList1.length;i++){
+              this.operationMerchantProductList.push({
+                productId:this.operationMerchantProductList1[i].productId,
+                productName:this.operationMerchantProductList1[i].productName
               });
-              _this.$forceUpdate();
-               console.log(_this.ruleForm.operationMerchantProductList1);
+              this.$forceUpdate();
             }
           }else {
-            _this.$message.error(res.data.msgInfo);
+            this.$message.error(res.data.msgInfo);
           }
         })
       },
-      getProductList1(){
+      //查询催收员信息
+      getCollectionPersonById(){
         var _this=this;
         axios({
           method:"POST",
@@ -265,23 +323,64 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            _this.ruleForm=res.data.body.accountManager;
-            _this.ruleForm.groupId=res.data.body.accountManager.operationGroup.id;
-            _this.ruleForm.roleId=res.data.body.accountManager.role.id;
-            _this.ruleForm.productId=res.data.body.accountManager.products[0].id;
-            console.log(_this.ruleForm.groupId);
-            console.log(_this.ruleForm.roleId);
-            console.log(_this.ruleForm.productId);
+            this.ruleForm=res.data.body.accountManager;
+            this.ruleForm.productIds=[];
+            this.ruleForm.groupId=res.data.body.accountManager.operationGroup.id;
+            this.ruleForm.roleId=res.data.body.accountManager.role.id;
+            res.data.body.accountManager.products.forEach(function (item,index) {
+              _this.ruleForm.productIds.push(item.id);
+            });
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
+      //添加群组
+      addGroup(){
+        this.centerDialogVisible1=true;
+      },
+      //添加群组-提交
+      addGroupSubmit(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            var param = new FormData();  // 创建form对象
+            param.append('groupName', this.ruleForm2.groupName);
+            param.append('remark', this.ruleForm2.remark);
+            param.append('enabled', this.ruleForm2.enabled);
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/operate/admin/group/save",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              data:param,
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.centerDialogVisible1=false;
+                this.$message({
+                  message: '添加成功',
+                  type: 'success'
+                });
+                this.getProductList();
+              }else if(res.data.msgCd=='ZYCASH-1009'){
+                this.$message.error(res.data.msgInfo);
+              }
+              else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
     },
     mounted:function () {
       this.id=this.$route.params.id;
       this.getProductList();
-      this.getProductList1();
+      this.getCollectionPersonById();
     }
   }
 </script>

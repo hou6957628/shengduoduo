@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/collectionTag' }">催收标签</el-breadcrumb-item>
+      <el-breadcrumb-item>催收标签</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toTag()" type="primary">添加催收标签<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
@@ -13,12 +13,12 @@
         style="width: 100%">
         <el-table-column
           fixed
-          prop="classifyCode"
+          prop="id"
           label="标签编号"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="classifyName"
+          prop="labelContent"
           label="标签内容"
           width="400">
         </el-table-column>
@@ -46,31 +46,38 @@
     </div>
     <!--添加标签结构-->
     <el-dialog
-      title="催收标签"
+      title="添加催收标签"
       :visible.sync="centerDialogVisible"
-      width="30%"
+      width="40%"
       center>
-      标签内容：<el-input v-model="content" style="width: 300px"></el-input>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="centerDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="submitTag()">确 定</el-button>
-  </span>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="标签内容:" prop="labelContent">
+          <el-input v-model="ruleForm.labelContent"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitTag('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
     </el-dialog>
     <!--编辑标签结构-->
     <el-dialog
-      title="催收标签"
+      title="编辑催收标签"
       :visible.sync="centerDialogVisible1"
-      width="30%"
+      width="40%"
       center>
-      标签内容：<el-input v-model="content" style="width: 300px"></el-input>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="centerDialogVisible1 = false">取 消</el-button>
-    <el-button type="primary" @click="editTag()">确 定</el-button>
-  </span>
+      <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="标签内容:" prop="labelContent">
+          <el-input v-model="ruleForm2.labelContent"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="editTag('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible1 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
-
 
 <script>
   import axios from 'axios'
@@ -78,32 +85,22 @@
     methods: {
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
-      },
-      //创建金融产品
-      toTag(){
-        this.centerDialogVisible=true;
+        this.getProductList(val,this.nowPageSizes);
       },
       /**
-       * 用户标签列表接口
+       * 催收标签列表接口
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 标签名称
-       * @param data4 分类名称
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2){
         axios({
-          method:"GET",
-          // url:"http://"+this.baseUrl+"/admin/customer_tag/list",
-          url:"http://39.105.217.251:9998/risk/admin/classification/list",
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/label/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -111,8 +108,6 @@
           params:{
             pageNum: data1,
             pageSize: data2,
-            classifyType: data3,
-            classifyName: data4,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -125,73 +120,167 @@
           }
         })
       },
-      //编辑产品接口
-      editProduct(row){
-        this.centerDialogVisible1=true;
+      //添加催收标签
+      toTag(){
+        this.centerDialogVisible=true;
       },
       //添加催收标签-保存按钮
-      submitTag(){
-        this.centerDialogVisible=false;
+      submitTag(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios({
+              method:"post",
+              url:"http://"+this.baseUrl+"/order/admin/label/save",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              params:{
+                labelContent: this.ruleForm.labelContent,
+              }
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.centerDialogVisible=false;
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+                this.getProductList(1,30);
+              }else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        })
       },
-      //编辑催收标签-保存按钮
-      editTag(){
-        this.centerDialogVisible1=false;
-      },
-      //删除产品接口
-      deleteProduct(row){
+      //编辑催收标签接口
+      editProduct(row){
+        this.centerDialogVisible1=true;
+        this.ruleForm2.id=row.id;
         axios({
           method:"post",
-          // url:"http://"+this.baseUrl+"/super/admin/product/obtainedProduct",
-          url:"http://"+this.baseUrl+"/operate/admin/product/delOrStopProduct",
+          url:"http://"+this.baseUrl+"/order/admin/label/get",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
             id: row.id,
-            status: 1,
-            enabled: row.enabled,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.getProductList(1,10,this.finProduct,this.finProduct);
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.ruleForm2=res.data.body;
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '用户标签'
-        }else if(status === 1){
-          return '规则标签'
-        }else {
-          return '规则集标签'
-        }
+      //编辑催收标签-保存按钮
+      editTag(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios({
+              method:"post",
+              url:"http://"+this.baseUrl+"/order/admin/label/update",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              params:{
+                id: this.ruleForm2.id,
+                labelContent: this.ruleForm2.labelContent,
+              }
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.centerDialogVisible1=false;
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+                this.getProductList(1,30);
+              }else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        })
+      },
+      //删除催收标签接口
+      deleteProduct(row){
+        this.$confirm('是否确认删除此标签?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          axios({
+            method:"post",
+            url:"http://"+this.baseUrl+"/order/admin/label/update",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              id: row.id,
+              enable: false,
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              });
+              this.getProductList(1,30);
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
     },
     mounted:function () {
-      this.getProductList(1,20,1,null);
+      this.getProductList(1,30);
     },
     data() {
       return {
         tableData:[],
         electValue:'',
-        finProduct: '',
         pageNum: null,
         proTotal:null,
         pageSize:null,
         pageSizes:[20,30,50],
         nowPageSizes:20,
-        content:'这是内容',
         centerDialogVisible:false,
         centerDialogVisible1:false,
+        ruleForm: {
+          id: '',
+          labelContent: '',
+        },
+        rules: {
+          labelContent: [
+            { required: true, message: '请输入标签内容', trigger: 'blur' }
+          ],
+        },
+        ruleForm2: {
+          id: '',
+          labelContent: '',
+        },
+        rules2: {
+          labelContent: [
+            { required: true, message: '请输入标签内容', trigger: 'blur' }
+          ],
+        }
       }
     }
   }

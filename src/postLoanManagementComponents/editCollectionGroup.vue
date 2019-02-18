@@ -8,11 +8,11 @@
       <el-form-item label="群组名称:" prop="groupName">
         <el-input v-model="ruleForm.groupName"></el-input>
       </el-form-item>
-      <el-form-item label="备注:" prop="remark">
+      <el-form-item label="备注:">
         <el-input v-model="ruleForm.remark"></el-input>
       </el-form-item>
       <el-form-item label="是否启用" prop="enabled">
-        <el-select v-model="ruleForm.enabled" placeholder="请选择">
+        <el-select v-model="ruleForm.enabled" disabled placeholder="请选择">
           <el-option
             v-for="item in electData"
             :key="item.key"
@@ -22,9 +22,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
-        &nbsp;&nbsp;&nbsp;
-        <el-button type="primary" @click="noSubmitForm()">取消</el-button>
+        <el-button type="primary" @click="submitForm('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -40,20 +39,14 @@
           {key:true,Id:'启用'},
         ],
         ruleForm: {
-          groupName: '',
           id: '',
+          groupName: '',
           remark: null,
           enabled: null,
-          enabled1: [],
-          enabled2: [],
-          enabled3: [],
         },
         rules: {
           groupName: [
             { required: true, message: '请输入群组名称', trigger: 'blur' },
-          ],
-          remark: [
-            {  required: true, message: '请输入备注', trigger: 'blur' }
           ],
           enabled: [
             { required: true, message: '请选择是否启用', trigger: 'blur' }
@@ -81,7 +74,7 @@
             }).then((res)=>{
               if(res.data.msgCd=='ZYCASH-200'){
                 this.$message({
-                  message: '添加成功',
+                  message: '操作成功',
                   type: 'success'
                 });
                 this.$router.push('/collectionGroupManagement');
@@ -98,44 +91,10 @@
           }
         });
       },
-      //编辑产品接口
-      editProduct(row){
-        var param = new FormData();  // 创建form对象
-        param.append('merchantName', this.ruleForm.merchantName);
-        param.append('enabled', this.ruleForm.enabled);
-        param.append('enableDelete', 0);
-        param.append('company', null);
-        param.append('companyAddress', this.ruleForm.companyAddress);
-        param.append('companyDetail', this.ruleForm.companyDetail);
-        param.append('email', null);
-        param.append('mobile', null);
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/operate/admin/merchant/get",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          data:param,
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '添加成功',
-              type: 'success'
-            });
-            this.$router.push('/merchantProductList');
-          }else if(res.data.msgCd=='ZYCASH--1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
-            this.$message.error(res);
-          }
-        })
-      },
       /**
-       * 获取催收群组列表
+       * 获取催收群组
        */
-      getProductList(){
+      getGroupById(){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/operate/admin/group/get",
@@ -148,20 +107,20 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.tableData=res.data.body.list;
-            this.ruleForm.enabled=res.data.body.enabled;
-            this.ruleForm.groupName=res.data.body.groupName;
-            this.ruleForm.id=res.data.body.id;
-            this.ruleForm.remark=res.data.body.remark;
+            this.ruleForm=res.data.body
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
+      },
     },
     mounted:function () {
       this.id=this.$route.params.id;
-      this.getProductList();
+      this.getGroupById();
     }
   }
 </script>
