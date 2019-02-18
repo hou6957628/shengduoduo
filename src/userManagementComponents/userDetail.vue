@@ -9,10 +9,10 @@
     </div>
     <div class="listContent">
       <!--<router-link :to="{name:'jiben',params: {cusCustomer: this.cusCustomer,idCard: this.idCard}}" tag="li">基本信息</router-link>-->
-      <router-link :to="'/jiben/' + this.id" tag="li">基本信息</router-link>
-      <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
-      <router-link target="_blank" :to="'/yunying/' + this.id" tag="a">运营商通讯录比对</router-link>
-      <router-link target="_blank" :to="'/tianji' + this.id" tag="a">天机报告</router-link>
+      <router-link :to="'/jiben/'+this.id" tag="li">基本信息</router-link>
+      <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表{{this.id}}</router-link>
+      <router-link target="_blank" :to="'/yunying/' + this.id" tag="a">运营商通讯录比对{{this.id}}</router-link>
+      <router-link target="_blank" :to="'/tianji' + this.id" tag="a">天机报告{{this.id}}</router-link>
       <router-link to="/zhifu" tag="li">支付宝报告</router-link>
       <router-link to="/yonghu" tag="li">用户催收记录</router-link>
       <router-link to="/dingdan" tag="li">订单记录</router-link>
@@ -37,6 +37,7 @@
         idCard:null,
         idFace:null,
         linkMan:[],
+        id:null,
         authorizationStatus:[],
         basicInfo:null,
         electData: [
@@ -125,21 +126,6 @@
       //取消按钮
       resetForm(formName) {
         this.$refs[formName].resetFields();
-      },
-      //
-      getCheckedNodes() {
-        var rad=''
-        var ridsa = this.$refs.tree.getCheckedKeys().join(',')// 获取当前的选中的数据[数组] -id, 把数组转换成字符串
-        var ridsb = this.$refs.tree.getCheckedNodes()// 获取当前的选中的数据{对象}
-        ridsb.forEach(ids=>{//获取选中的所有的父级id
-          // rad+=','+ids.pid
-        })
-        rad=rad.substr(1) // 删除字符串前面的','
-        var rids=rad+','+ridsa
-        var arr=rids.split(',')//  把字符串转换成数组
-        arr=[...new Set(arr)]; // 数组去重
-        rids=arr.join(',')// 把数组转换成字符串
-        console.log(rids)
       },
       //跳转到主渠道
       addChannel(){
