@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-row>
-      <el-col style="width: 170px;margin-left: 5px" :span="3"><img style="height: 108px;width: 170px" src="http://www.zytech360.com/midai/images/jieqian.jpg"/></el-col>
-      <el-col style="width: 170px;margin-left: 20px" :span="3"><img style="height: 108px;width: 170px" src="http://www.zytech360.com/midai/images/jieqian.jpg"/></el-col>
-      <el-col style="width: 170px;margin-left: 20px" :span="3"><img style="height: 108px;width: 170px" src="http://www.zytech360.com/midai/images/jieqian.jpg"/></el-col>
+      <el-col style="width: 170px;margin-left: 5px" :span="3"><img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.front"/></el-col>
+      <el-col style="width: 170px;margin-left: 20px" :span="3"><img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.back"/></el-col>
+      <el-col style="width: 170px;margin-left: 20px" :span="3"><img style="height: 108px;width: 170px" :src="this.idFace.image"/></el-col>
     </el-row>
     <el-row>
     <el-col :span="3" style="width: 170px;text-align: center;margin-left: 5px;">身份证正面</el-col>
@@ -87,8 +87,10 @@
         bankCard:[],
         cusCustomer:null,
         tianjiReport:null,
-        idCard:null,
-        idFace:null,
+        idCard:[],
+        idFace:[],
+        front:null,
+        id:null,
         linkMan:[],
         authorizationStatus:[],
         basicInfo:{
@@ -184,6 +186,7 @@
       },
     },
     mounted: function () {
+      console.log(this.$route.params.id);
       this.id=this.$route.params.id;
       this.getUserDetail(this.id);
     }
