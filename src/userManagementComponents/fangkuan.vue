@@ -2,52 +2,52 @@
   <div>
     <template>
       <el-table
-        :data="tableData"
+        :data="count"
         border
         style="width: 100%;margin-top: 20px;">
         <el-table-column
           fixed
-          prop="name"
+          prop="id"
           label="放款编号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="realName"
+          prop="mobile"
           label=" 手机号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="mobile"
+          prop="name"
           label="姓名"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="productId"
+          prop="bankName"
           label="银行名称"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="createDate"
+          prop="bankNumber"
           label="银行卡号"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="tranFlowId"
           label="交易流水号"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="borrowingPaymentAmount"
           label="放款金额"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="status"
           label="状态"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="productName"
           label="所属平台"
           width="100">
         </el-table-column>
@@ -74,7 +74,7 @@
   export default {
     data() {
       return {
-        tableData: [],
+        count: [],
         finProduct: '',
         pageNum: null,
         proTotal:null,
@@ -104,9 +104,55 @@
           path: `/editFinanceProduct/${id}`,
         });
       },
+      getCollection(id) {
+        axios({
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/payment/get",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            id: id,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.count = res.data.body;
+            this.proTotal=res.data.body.total;
+            this.pageSize=res.data.body.pageSize;
+            this.pageNum=res.data.body.pageNum;
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted: function () {
-      // this.getProductList();
+      this.id=this.$route.params.id;
+      this.getCollection(this.id);
+    },
+    filters:{
+      typeFalse:function(arg1){
+        console.log(arg1);
+        if(arg1==true){
+          var result = "是";
+          return result;
+        }else if(arg1==false){
+          var result = "否";
+          return result;
+        }
+
+      },
+      yuqi:function(arg1){
+        if(arg1==9){
+          var result = "是";
+          return result;
+        }else{
+          var result = "否";
+          return result;
+        }
+
+      }
     }
   }
 </script>

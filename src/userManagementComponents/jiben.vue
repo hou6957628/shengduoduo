@@ -193,7 +193,7 @@
   }
 </script>
 
-<style scoped>
+<style scoped >
   .jiben{
     margin-top: 20px;
     font-size: 14px;
