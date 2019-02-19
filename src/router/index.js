@@ -690,19 +690,19 @@ const vueRouter = new Router({
           component:zhifu
         },
         {
-          path:"/yonghu",
+          path:"/yonghu/:id",
           component:yonghu
         },
         {
-          path:"/dingdan",
+          path:"/dingdan/:id",
           component:dingdan
         },
         {
-          path:"/fangkuan",
+          path:"/fangkuan/:id",
           component:fangkuan
         },
         {
-          path:"/huankuan",
+          path:"/huankuan/:id",
           component:huankuan
         }
       ],

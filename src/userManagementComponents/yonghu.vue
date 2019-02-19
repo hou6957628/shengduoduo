@@ -2,38 +2,38 @@
   <div>
     <template>
       <el-table
-        :data="tableData"
+        :data="collection"
         border
         style="width: 100%;margin-top: 20px;">
         <el-table-column
           fixed
-          prop="name"
+          prop="id"
           label="编号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="realName"
+          prop="collectorName"
           label="催收人员"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="mobile"
+          prop="collectionLabelName"
           label="类型"
           sortable
           width="150">
         </el-table-column>
         <el-table-column
-          prop="productId"
+          prop="callTypeName"
           label="通话类型"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="createDate"
+          prop="cardNumber"
           label="说明"
           width="300">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="createDate"
           label="时间"
           sortable
           width="150">
@@ -68,7 +68,7 @@
   export default {
     data() {
       return {
-        tableData: [],
+        collection: [],
         finProduct: '',
         pageNum: null,
         proTotal:null,
@@ -98,9 +98,42 @@
           path: `/editFinanceProduct/${id}`,
         });
       },
+      //用户基本信息
+      getCollection(id) {
+        axios({
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/collection/get",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            id: id,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.collection = res.data.body.list;
+            this.proTotal=res.data.body.total;
+            this.pageSize=res.data.body.pageSize;
+            this.pageNum=res.data.body.pageNum;
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //过滤类型字段
+      typeFormatter(row){
+        let status = row.type;
+        if(status === 0){
+          return '信贷产品'
+        } else {
+          return '分期产品'
+        }
+      },
     },
     mounted: function () {
-      // this.getProductList();
+      this.id=this.$route.params.id;
+      this.getCollection(this.id);
     }
   }
 </script>

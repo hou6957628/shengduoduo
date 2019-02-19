@@ -2,48 +2,94 @@
   <div>
     <template>
       <el-table
-        :data="tableData"
+        :data="count"
         border
         style="width: 100%;margin-top: 20px;">
         <el-table-column
           fixed
-          prop="name"
-          label="编号"
-          width="150">
-        </el-table-column>
-        <el-table-column
-          prop="realName"
-          label="催收人员"
+          prop="id"
+          label="还款编号"
           width="150">
         </el-table-column>
         <el-table-column
           prop="mobile"
-          label="类型"
-          sortable
+          label="还款方式"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="productId"
-          label="通话类型"
+          prop="status"
+          label="还款通道"
           width="150">
+        </el-table-column>
+        <el-table-column
+          prop="cardNumber"
+          label="状态"
+          width="150">
+        </el-table-column>
+        <el-table-column
+          prop="gender"
+          label="姓名"
+          width="200">
+        </el-table-column>
+        <el-table-column
+          prop="birthDate"
+          label="手机号"
+          width="200">
         </el-table-column>
         <el-table-column
           prop="createDate"
-          label="说明"
-          width="300">
+          label="交易流水号"
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="channelName"
-          label="时间"
-          sortable
-          width="150">
+          prop="status"
+          label="合同额"
+          width="100">
         </el-table-column>
         <el-table-column
-          label="操作"
-          width="120">
-          <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
-          </template>
+          prop="productName"
+          label="逾期费用"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="罚息金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="总费用"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="减免金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="实际还款金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="是否是部分还款"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="部分还款金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="是否展期"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="展期还款金额"
+          width="100">
         </el-table-column>
       </el-table>
     </template>
@@ -68,7 +114,7 @@
   export default {
     data() {
       return {
-        tableData: [],
+        count: [],
         finProduct: '',
         pageNum: null,
         proTotal:null,
@@ -98,9 +144,55 @@
           path: `/editFinanceProduct/${id}`,
         });
       },
+      getCollection(id) {
+        axios({
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/repayment/get",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            id: id,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.count = res.data.body;
+            this.proTotal=res.data.body.total;
+            this.pageSize=res.data.body.pageSize;
+            this.pageNum=res.data.body.pageNum;
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted: function () {
-      // this.getProductList();
+      this.id=this.$route.params.id;
+      this.getCollection(this.id);
+    },
+    filters:{
+      typeFalse:function(arg1){
+        console.log(arg1);
+        if(arg1==true){
+          var result = "是";
+          return result;
+        }else if(arg1==false){
+          var result = "否";
+          return result;
+        }
+
+      },
+      yuqi:function(arg1){
+        if(arg1==9){
+          var result = "是";
+          return result;
+        }else{
+          var result = "否";
+          return result;
+        }
+
+      }
     }
   }
 </script>

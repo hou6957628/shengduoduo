@@ -10,14 +10,14 @@
     <div class="listContent">
       <!--<router-link :to="{name:'jiben',params: {cusCustomer: this.cusCustomer,idCard: this.idCard}}" tag="li">基本信息</router-link>-->
       <router-link :to="'/jiben/'+this.id" tag="li">基本信息</router-link>
-      <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表{{this.id}}</router-link>
-      <router-link target="_blank" :to="'/yunying/' + this.id" tag="a">运营商通讯录比对{{this.id}}</router-link>
-      <router-link target="_blank" :to="'/tianji' + this.id" tag="a">天机报告{{this.id}}</router-link>
-      <router-link to="/zhifu" tag="li">支付宝报告</router-link>
-      <router-link to="/yonghu" tag="li">用户催收记录</router-link>
-      <router-link to="/dingdan" tag="li">订单记录</router-link>
-      <router-link to="/fangkuan" tag="li">放款记录</router-link>
-      <router-link to="/huankuan" tag="li">还款记录</router-link>
+      <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
+      <router-link :to="'/yunying/' + this.id" tag="li">运营商通讯录比对</router-link>
+      <a href="http://www.baidu.com" target="_blank" class="ddd">天机报告</a>
+      <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>
+      <router-link :to="'/yonghu/' + this.id" tag="li">用户催收记录</router-link>
+      <router-link :to="'/dingdan/' + this.id" tag="li">订单记录</router-link>
+      <router-link :to="'/fangkuan/' + this.id" tag="li">放款记录</router-link>
+      <router-link :to="'/huankuan/' + this.id" tag="li">还款记录</router-link>
     </div>
     <router-view/>
   </div>
@@ -137,6 +137,14 @@
       fen(item,index){
         this.isactive = index;
       },
+      //跳转天机
+      tian(url){
+        window.location.href = url;
+      },
+      //跳转支付宝
+      zhi(url){
+        window.location.href = url;
+      }
     },
     mounted: function () {
       this.id=this.$route.params.id;
@@ -146,6 +154,23 @@
 </script>
 
 <style scoped>
+  .ddd{
+    display: inline-block;
+    padding: 10px 15px;
+    margin-right: 10px;
+    margin-left: 5px;
+    font-size: 16px;
+    color: #ffffff;
+    background-color: #118efe;
+    border: 1px solid #0f91ff;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .ddd:hover{
+    background-color: #0abcfe;
+    border: 1px solid #0fbeff;
+  }
   .listBox{
     display: inline-block;
     float: left;

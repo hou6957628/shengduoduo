@@ -62,10 +62,10 @@
         <el-table-column
           label="操作"
           width="120">
-          <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
-            <el-button @click="editProduct(scope.row)" type="text" size="small">修改</el-button>
-          </template>
+          <!--<template slot-scope="scope">-->
+            <!--<el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>-->
+            <!--<el-button @click="editProduct(scope.row)" type="text" size="small">修改</el-button>-->
+          <!--</template>-->
         </el-table-column>
       </el-table>
     </template>
@@ -118,7 +118,7 @@
        * @param data3 用户id
        * @param data4 编号或触发名称
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(id){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/user_center/admin/control_flow/list",
@@ -127,10 +127,7 @@
             'Authorization': localStorage.token
           },
           params:{
-            pageNum: data1,
-            pageSize: data2,
-            id: data3,
-            name: data4,
+            id:id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -165,7 +162,7 @@
     },
     mounted:function () {
       this.id=this.$route.params.id;
-      this.getProductList(1,20,this.id,null);
+      this.getProductList(this.id);
     },
     data() {
       return {
