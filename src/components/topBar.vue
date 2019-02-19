@@ -6,6 +6,7 @@
       </a>
     </h1>
     <el-button @click="goOut()" class="goOut" type="info">退出登录</el-button>
+    <el-button @click="reload()" class="reload" type="warning" icon="el-icon-refresh">刷新</el-button>
   </div>
 </template>
 
@@ -20,6 +21,9 @@
         });
         localStorage.clear();
         this.$router.push('/login');
+      },
+      reload(){
+        window.location.reload();
       }
     }
   }
@@ -55,6 +59,11 @@
     font-family: "Microsoft YaHei", arial, sans-serif;
   }
   .goOut{
+    float: right;
+    margin-right:40px;
+    margin-top:10px ;
+  }
+  .reload{
     float: right;
     margin-right:40px;
     margin-top:10px ;

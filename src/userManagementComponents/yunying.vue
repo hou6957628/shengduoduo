@@ -22,7 +22,7 @@
               <el-table
                 :data="tableDataFrom"
                 border
-                style="width: 100%;margin-top: 20px;">
+                style="width: 98%;margin-top: 20px;">
                 <el-table-column
                   fixed
                   prop="name"
