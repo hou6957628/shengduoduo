@@ -23,7 +23,19 @@ Vue.prototype.dateFormat = function (date){
   // 拼接
   // return year+"-"+month+"-"+day+" "+"00:00:00";
   return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;;
-}
+};
+//只能输入数字
+Vue.prototype.validatorNumber = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error('输入不能为空'));
+  } else {
+    if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
+      callback(new Error("请填写正整数"));
+    }else{
+      callback();
+    }
+  }
+};
 
 new Vue({
   el: '#app',

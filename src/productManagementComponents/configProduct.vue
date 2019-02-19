@@ -13,24 +13,102 @@
       <div v-for="(item,index) in moduleAttribute">
         <div class="jiegou" v-if="ruleForm.mode==item.module" style="width: 700px">
           <el-form-item :label="item.nameText" prop="nameText">
-            <div v-if="ruleForm.count==7 || ruleForm.count==8 || ruleForm.count==13 || ruleForm.count==16">
-              <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+            <div v-if="ruleForm.count==7">
+              <el-select v-model="item.valueId" placeholder="请选择" @change="changeSelect1($event,index,selectList)">
                 <el-option
-                  v-for="item in electData1"
+                  v-for="item in selectList"
                   :key="item.id"
-                  :label="item.classifyName"
-                  :value="item.classifyId">
+                  :label="item.flowName"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </div>
-            <div v-if="!ruleForm.count==7 || !ruleForm.count==8 || !ruleForm.count==13 || !ruleForm.count==16">
+            <div v-else-if="ruleForm.count==8">
+              <el-select v-model="item.valueId" placeholder="请选择" @change="changeSelect2($event,index,selectList)">
+                <el-option
+                  v-for="item in selectList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+            <div v-else-if="ruleForm.count==13">
+              <el-select v-if="index==0" v-model="item.valueId" placeholder="请选择">
+                <el-option
+                  v-for="item in enableList"
+                  :key="item.key"
+                  :label="item.Id"
+                  :value="item.key">
+                </el-option>
+              </el-select>
+              <el-select v-if="index==1" v-model="item.valueId" placeholder="请选择" @change="changeSelect1($event,index,amountList)">
+                <el-option
+                  v-for="item in amountList"
+                  :key="item.id"
+                  :label="item.flowName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-if="index==2" v-model="item.valueId" placeholder="请选择">
+                <el-option
+                  v-for="item in enableList"
+                  :key="item.key"
+                  :label="item.Id"
+                  :value="item.key">
+                </el-option>
+              </el-select>
+              <el-select v-if="index==3" v-model="item.valueId" placeholder="请选择" @change="changeSelect1($event,index,orderFlowList)">
+                <el-option
+                  v-for="item in orderFlowList"
+                  :key="item.id"
+                  :label="item.flowName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-if="index==4" v-model="item.valueId" placeholder="请选择">
+                <el-option
+                  v-for="item in enableList"
+                  :key="item.key"
+                  :label="item.Id"
+                  :value="item.key">
+                </el-option>
+              </el-select>
+              <el-select v-if="index==5" v-model="item.valueId" placeholder="请选择" @change="changeSelect3($event,index,selectList)">
+                <el-option
+                  v-for="item in selectList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-if="index==6" v-model="item.valueId" placeholder="请选择">
+                <el-option
+                  v-for="item in enableList"
+                  :key="item.key"
+                  :label="item.Id"
+                  :value="item.key">
+                </el-option>
+              </el-select>
+              <el-select v-if="index==7" v-model="item.valueId" placeholder="请选择" @change="changeSelect3($event,index,productList)">
+                <el-option
+                  v-for="item in productList"
+                  :key="item.id"
+                  :label="item.productName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-input type="textarea" v-if="index==8" v-model="item.value"></el-input>
+            </div>
+            <div v-else>
               <el-input v-model="item.value"></el-input>
             </div>
           </el-form-item>
       </div>
       </div>
         <el-form-item label-width="340px">
-          <el-button type="primary" style="display: block" @click="submitForm(moduleAttribute[0].module,moduleAttribute[0].moduleName)">保存</el-button>
+          <el-button type="primary" @click="submitForm(moduleAttribute[0].module,moduleAttribute[0].moduleName)">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info" @click="resetForm('ruleForm')">取消<i class="el-icon-close el-icon--right"></i></el-button>
         </el-form-item>
     </el-form>
   </div>
@@ -41,17 +119,17 @@
   export default {
     data() {
       return {
-        electData1: [
-          {classifyId:0,classifyName:"全部状态"},
-          {classifyId:1,classifyName:"逾期"},
-          {classifyId:2,classifyName:"坏账"},
-          {classifyId:3,classifyName:"逾期已还"},
-          {classifyId:4,classifyName:"坏账已还"},
-        ],
-        electValue1:'',
-        modeList:[ ],
+        selectList:[],
+        amountList:[],
+        orderFlowList:[],
+        productList:[],
+        modeList:[],
         moduleAttribute:[
-          {mode:'',moduleName:'',name:'',nameText:'',value: '',valueId: '',}
+          {module:'',moduleName:'',name:'',nameText:'',value: '',valueId: '',}
+        ],
+        enableList:[
+          {key:1,Id:'是'},
+          {key:0,Id:'否'},
         ],
         ruleForm: {
           mode:'',
@@ -70,6 +148,44 @@
       };
     },
     methods: {
+      //取消按钮
+      resetForm(formName) {
+        this.$router.go(-1);
+      },
+      selectChange(key){
+        console.log(key);
+        if (key == 0) {
+          this.selectList=["1111"];
+        }
+      },
+      //封装label值
+      changeSelect1(vId,index,list){
+        this.$forceUpdate();
+        let obj = {};
+        obj = list.find((item)=>{
+          return item.id === vId;
+        });
+        this.moduleAttribute[index].value=obj.flowName;
+      },
+      //封装label值
+      changeSelect2(vId,index,list){
+        this.$forceUpdate();
+        let obj = {};
+        obj = list.find((item)=>{
+          return item.id === vId;
+        });
+        this.moduleAttribute[index].value=obj.name;
+      },
+      //封装label值
+      changeSelect3(vId,index,list){
+        this.$forceUpdate();
+        let obj = {};
+        obj = list.find((item)=>{
+          return item.id === vId;
+        });
+        this.moduleAttribute[index].value=obj.productName;
+      },
+      //查询所有配置
       loaderModelTable() {
         axios({
           method:"post",
@@ -86,6 +202,7 @@
           }
         })
       },
+      //查询每个配置的子项
       handleClick(key,id,num) {
         this.ruleForm.count=num;
         this.ruleForm.mode=key;
@@ -105,11 +222,120 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.moduleAttribute= res.data.body.list;
+            if (num == 7) {
+              //获取所有风控流程
+              this.getRiskList();
+            } else if (num == 8) {
+              //获取所有金融产品
+              this.getBorrowingProductList();
+            } else if (num == 13) {
+              //获取所有提额流程
+              this.getAmountList();
+              //获取所有展期流程
+              this.getOrderFlowList();
+              //获取所有产品
+              this.getProductList();
+            }
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
+      //获取所有风控流程
+      getRiskList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/productManage/getRiskList",
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
+          }
+        }).then((res)=>{
+          this.selectList=res.data.list;
+        })
+      },
+      //获取所有提额流程
+      getAmountList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/productManage/getAmountList",
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
+          }
+        }).then((res)=>{
+          this.amountList=res.data.list;
+        })
+      },
+      //获取所有展期流程
+      getOrderFlowList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/orderFlow/list",
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
+          }
+        }).then((res)=>{
+          console.log(res.data);
+          this.orderFlowList=res.data.body.list;
+          console.log(this.orderFlowList);
+        })
+      },
+      //获取所有产品
+      getProductList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/productManage/list",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 200,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productList=res.data.body.list;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //获取金融产品列表
+      getBorrowingProductList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/product/getList",
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.selectList=res.data.body;
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          } else {
+            this.$message.error(res);
+          }
+        })
+      },
+
+      //保存
       submitForm(module,moduleName){
         var data  = {
           'merchantId': this.merchantId,

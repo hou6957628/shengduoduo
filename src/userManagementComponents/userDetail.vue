@@ -11,9 +11,9 @@
       <!--<router-link :to="{name:'jiben',params: {cusCustomer: this.cusCustomer,idCard: this.idCard}}" tag="li">基本信息</router-link>-->
       <router-link :to="'/jiben/'+this.id" tag="li">基本信息</router-link>
       <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表{{this.id}}</router-link>
-      <router-link target="_blank" :to="'/yunying/' + this.id" tag="a">运营商通讯录比对{{this.id}}</router-link>
+      <router-link :to="'/yunying/' + this.id" tag="a">运营商通讯录比对{{this.id}}</router-link>
       <router-link target="_blank" :to="'/tianji' + this.id" tag="a">天机报告{{this.id}}</router-link>
-      <router-link to="/zhifu" tag="li">支付宝报告</router-link>
+      <router-link target="_blank" to="/zhifu" tag="li">支付宝报告</router-link>
       <router-link to="/yonghu" tag="li">用户催收记录</router-link>
       <router-link to="/dingdan" tag="li">订单记录</router-link>
       <router-link to="/fangkuan" tag="li">放款记录</router-link>

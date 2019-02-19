@@ -169,9 +169,9 @@ axios.interceptors.response.use(
 //额度
 // Vue.prototype.baseUrl="localhost:9991";
 //订单
-Vue.prototype.baseUrl="localhost:9997";
+// Vue.prototype.baseUrl="localhost:9997";
 //产品operate
-// Vue.prototype.baseUrl="localhost:8888";
+Vue.prototype.baseUrl="localhost:8888";
 //用户中心
 // Vue.prototype.baseUrl="localhost:9995";
 // Vue.prototype.baseUrl="192.168.20.216:9999";

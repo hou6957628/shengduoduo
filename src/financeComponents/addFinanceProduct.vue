@@ -202,12 +202,12 @@
           {key:1,Id:'是'},
         ],
         electDataMethod:[
-          {key:0,Id:'等额本息'},
-          {key:1,Id:'先息后本'},
-          {key:2,Id:'放款时一并收取'},
-          {key:3,Id:'每期付息到期还本'},
-          {key:4,Id:'等本等息'},
-          {key:5,Id:'到期还本付息'},
+          {key:0,Id:'每期等额本息'},
+          {key:1,Id:'每期付息到期还本'},
+          {key:2,Id:'到期还本付息'},
+          {key:3,Id:'等本等息'},
+          {key:4,Id:'等额本金'},
+          {key:5,Id:'放款时一次性收取'},
         ],
         electDataPeriodType:[
           {key:0,Id:'年'},
