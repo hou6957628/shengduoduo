@@ -1,25 +1,25 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/pendingApproval' }">待审批列表</el-breadcrumb-item>
+      <el-breadcrumb-item>待放款列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
         产品：
-        <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+        <el-select v-model="productId" placeholder="请选择">
           <el-option
-            v-for="item in electData1"
-            :key="item.id"
-            :label="item.classifyName"
-            :value="item.classifyId">
+            v-for="item in productList"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productId">
           </el-option>
         </el-select>
       </el-col>
       <el-col :span="6" style="height: 55px;">
         新老户：
-        <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+        <el-select v-model="reBorrow" placeholder="请选择">
           <el-option
-            v-for="item in electData1"
+            v-for="item in reBorrowList"
             :key="item.id"
             :label="item.classifyName"
             :value="item.classifyId">
@@ -27,43 +27,27 @@
         </el-select>
       </el-col>
       <el-col :span="6" style="height: 55px;">
-        主渠道：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="逾期天数"
-                  v-model="overdueNum"
-                  clearable>
-        </el-input>
+        主渠道：<el-input class="searchContent" placeholder="主渠道" v-model="parentChannelName" clearable></el-input>
       </el-col>
       <el-col :span="6" style="height: 55px;">
-        子渠道：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="逾期天数"
-                  v-model="overdueNum"
-                  clearable>
-        </el-input>
+        子渠道：<el-input class="searchContent" placeholder="子渠道" v-model="childrenChannelName" clearable></el-input>
       </el-col>
       <el-col :span="6" style="height: 55px;">
-        性别：
-        <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+        性别：<el-select v-model="sex" placeholder="请选择">
           <el-option
-            v-for="item in electData1"
+            v-for="item in sexList"
             :key="item.id"
             :label="item.classifyName"
             :value="item.classifyId">
           </el-option>
         </el-select>
       </el-col>
-      <el-col :span="6" style="height: 55px;">
-        手机号：
-        <el-input @click="searchProduct" class="searchContent"
-                  placeholder="逾期天数"
-                  v-model="overdueNum"
-                  clearable>
-        </el-input>
+      <el-col :span="8" style="height: 55px;">
+      手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
       </el-col>
-      <el-col :span="12" style="height: 55px;">
+      <el-col :span="10" style="height: 55px;">
         <template>
-          申请时间时间：
+          申请时间：
           <el-date-picker style="margin-left: 0px"
                           v-model="value5"
                           type="datetimerange"
@@ -95,61 +79,65 @@
         </el-table-column>
         <el-table-column
           fixed
-          prop="productCode"
+          prop="id"
           label="订单ID"
-          width="120">
+          width="110">
         </el-table-column>
         <el-table-column
           fixed
-          prop="realName"
+          prop="name"
           label="姓名"
-          width="120">
+          min-width="80">
+        </el-table-column>
+        <el-table-column
+          fixed
+          prop="gender"
+          label="性别"
+          :formatter="genderFormatter"
+          min-width="80">
         </el-table-column>
         <el-table-column
           prop="mobile"
-          label="性别"
-          width="80">
-        </el-table-column>
-        <el-table-column
-          prop="productId"
           label="手机号"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="productId"
+          prop="borrowingPeriod"
           label="借款期限"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="createDate"
+          prop="borrowingCapital"
           label="借款金额"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="status"
           label="订单状态"
+          :formatter="statusFormatter"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="subChannelName"
+          prop="parentChannelName"
           label="主渠道"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="interestMethods"
+          prop="childrenChannelName"
           label="子渠道"
-          width="100">
+          width="120">
         </el-table-column>
         <el-table-column
-          prop="updateDate"
+          prop="reBorrow"
           label="用户标识"
-          width="150">
+          :formatter="reBorrowFormatter"
+          width="120">
         </el-table-column>
         <el-table-column
           label="操作"
-          width="60">
+          width="100">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="small">审核</el-button>
+            <el-button @click="detailProduct(scope.row)" type="text" size="medium">审核</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -174,57 +162,78 @@
   import axios from 'axios'
   export default {
     methods: {
-      //查询金融产品
+      //查询所有产品
+      getProduct() {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productList=res.data.body;
+            this.productList.unshift({productId: null, productName: '全部产品'});
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //条件查询列表
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,20,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,20,data,this.finProduct);
-          console.log(data);
-        }
+        this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+          this.sex,this.mobile,this.startDate,this.endDate);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
         this.nowPageSizes=val;
+        this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+          this.sex,this.mobile,this.startDate,this.endDate);
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
-      },
-      //创建金融产品
-      detailProduct(){
-        this.$router.push({
-          path: `/editFinanceProduct`,
-        });
+        this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+          this.sex,this.mobile,this.startDate,this.endDate);
       },
       /**
-       * 获取金融产品列表
+       * 获取待放款订单列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 产品名称
-       * @param data4 产品编号
+       * @param data3 产品id
+       * @param data4 新老户
+       * @param data5 主渠道名称
+       * @param data6 子渠道名称
+       * @param data7 性别
+       * @param data8 手机号
+       * @param data9 开始时间
+       * @param data10 结束时间
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/customer/list",
+          url:"http://"+this.baseUrl+"/order/admin/pending/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            realName: data1,
-            mobile: data2,
-            channelName: data3,
-            channelName: data4,
+            pageNum:data1,
+            pageSize:data2,
+            productId: data3,
+            reBorrow: data4,
+            parentChannelName: data5,
+            childrenChannelName: data6,
+            gender: data7,
+            mobile: data8,
+            startDate: data9,
+            endDate: data10,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+          if(res.data.msgCd=='ZYCASH-200'){
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
@@ -234,106 +243,84 @@
           }
         })
       },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20,this.finProduct,this.finProduct);
+      //审核订单
+      detailProduct(){
+        this.$router.push({
+          path: `/editFinanceProduct`,
+        });
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
+      //全选
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      },
+      //过滤性别字段
+      genderFormatter(row){
+        let gender = row.gender;
+        console.log(gender);
+        if(gender == false){
+          return '男'
+        } else if (gender == true){
+          return '女'
         } else {
-          return '分期产品'
+          return '未知'
+        }
+      },
+      //过滤状态字段
+      statusFormatter(row){
+        let status = row.status;
+        if(status === 0){
+          return '待机审 '
+        } else if (status === 1){
+          return '机器审核中'
+        } else if (status === 2){
+          return '人工审核'
+        }
+      },
+      //过滤用户标识字段
+      reBorrowFormatter(row){
+        let reBorrow = row.status;
+        if(reBorrow === 0){
+          return '新户'
+        } else if (reBorrow === 1){
+          return '老户'
+        } else{
+          return '---'
         }
       },
       //时间筛选
       logTimeChange(){
-        if(this.value7==''||this.value7==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
-        }else {
-          var startTime=this.value7[0];
-          var endTime=this.value7[1];
-          this.startTime=startTime;
-          this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
-        }
-      },
-      //时间筛选1
-      logTimeChange1(){
-        if(this.value6==''||this.value6==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
-        }else {
-          var startTime=this.value6[0];
-          var endTime=this.value6[1];
-          this.startTime=startTime;
-          this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
-        }
-      },
-      //时间筛选2
-      logTimeChange2(){
         if(this.value5==''||this.value5==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
+          this.startDate=null;
+          this.endDate=null;
         }else {
           var startTime=this.value5[0];
           var endTime=this.value5[1];
           this.startTime=startTime;
           this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
         }
       },
-      //下拉选择
-      selectChange(row){
-        console.log(this.electValue);
-      },
-      selectChange1(row){
-        console.log(this.electValue1);
-      },
-      selectChange2(row){
-        console.log(this.electValue2);
-      },
-      //取消分单
-      cancelContent(){
-
-      },
-      //全选
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      }
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      // this.getProductList(1,20,null,null);
+      this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
+      this.endDate=this.dateFormat(new Date());
+      this.value5=[this.startDate,this.endDate];
+      this.getProduct();
+      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
     },
     data() {
       return {
-        electData: [
-          {classifyId:0,classifyName:"全部产品"},
-          {classifyId:1,classifyName:"借点儿"},
-          {classifyId:2,classifyName:"夏花花"},
-          {classifyId:3,classifyName:"取消救济"},
+        productList:[],
+        reBorrowList: [
+          {classifyId:null,classifyName:"全部状态"},
+          {classifyId:0,classifyName:"新户"},
+          {classifyId:1,classifyName:"老户"},
         ],
-        electData1: [
-          {classifyId:0,classifyName:"全部状态"},
-          {classifyId:1,classifyName:"逾期"},
-          {classifyId:2,classifyName:"坏账"},
-          {classifyId:3,classifyName:"逾期已还"},
-          {classifyId:4,classifyName:"坏账已还"},
-        ],
-        electData2: [
-          {classifyId:0,classifyName:"全部状态"},
-          {classifyId:1,classifyName:"新户"},
-          {classifyId:2,classifyName:"老户"},
+        sexList: [
+          {classifyId:null,classifyName:"全部"},
+          {classifyId:0,classifyName:"男"},
+          {classifyId:1,classifyName:"女"},
         ],
         tableData:[],
-        electValue:0,
-        electValue1:0,
-        electValue2:0,
-        finProduct: '',
         pageNum: null,
         proTotal:null,
         pageSize:null,
@@ -366,10 +353,15 @@
             }
           }]
         },
+        productId:null,
+        reBorrow:null,
+        parentChannelName:null,
+        childrenChannelName:null,
+        sex:null,
+        mobile:null,
         value5:'',
-        value6:'',
-        value7:'',
-        overdueNum:'',
+        startDate:null,
+        endDate:null,
       }
     }
   }
@@ -394,6 +386,9 @@
   .operationContent{
     text-align: left;
     margin: 25px 30px 15px 0;
+  }
+  .operationContent .upLoadBtn{
+
   }
   .operationContent .searchContent{
     margin-left:0px;

@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item>委外订单管理</el-breadcrumb-item>
+      <el-breadcrumb-item>委外已还订单管理</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
@@ -290,13 +290,8 @@
     methods: {
       //查询金融产品
       searchContent(){
-        if (this.status=='') {
-          this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
-            this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,this.pageSize,1,this.outSourceStatus);
-        } else {
-          this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
-            this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,this.pageSize,null,this.outSourceStatus);
-        }
+        this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
+          this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,this.pageSize,null,this.outSourceStatus);
       },
       //每页显示多少条
       handleSizeChange(val) {
@@ -472,16 +467,13 @@
       },
     },
     mounted:function () {
-      this.getOrderList(null,null,null,null,null,null,null,null,1,30,1,this.outSourceStatus);
+      this.getOrderList(null,13,null,null,null,null,null,null,1,30,null,this.outSourceStatus);
       this.getProductList();
     },
     data() {
       return {
         electData1: [
-          {classifyId:'',classifyName:"全部状态"},
-          {classifyId:11,classifyName:"逾期未还"},
           {classifyId:13,classifyName:"逾期已还"},
-          {classifyId:12,classifyName:"坏账"},
         ],
         electData2: [
           {classifyId:'',classifyName:"全部状态"},
@@ -492,8 +484,8 @@
         productListData:[],
         outSourceStatus:1,
         productId:null,
-        status:'',
         mobile:'',
+        status:13,
         repaymentOverdueDay:'',
         orderRepaymentDate:'',
         orderDate:'',

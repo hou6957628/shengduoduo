@@ -25,7 +25,7 @@
           <el-button @click="addTag()">添加规则集分类</el-button>
         </el-form-item>
         <el-form-item label="是否启用:" prop="enabled">
-          <el-select v-model="ruleForm.enabled" placeholder="请选择" @change="selectChange">
+          <el-select v-model="ruleForm.enabled" disabled placeholder="请选择" @change="selectChange">
             <el-option
               v-for="item in electDataEnabled"
               :key="item.key"

@@ -14,6 +14,21 @@
           <template slot="prepend">手机号</template>
         </el-input>
       </el-col>
+      <el-col :span="8">
+        <el-date-picker style="margin-left: 20px"
+                        v-model="value7"
+                        type="datetimerange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        :picker-options="pickerOptions2"
+                        format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        @change="logTimeChange()">
+        </el-date-picker>
+      </el-col>
       <el-button id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
@@ -111,16 +126,16 @@
     methods: {
       //条件查询规则集列表
       searchContent(){
-        this.getProductList(1,20,this.cusName,this.mobile);
+        this.getProductList(1,20,this.cusName,this.mobile,this.startDate,this.endDate);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.cusName,this.mobile,this.startDate,this.endDate);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.cusName,this.mobile,this.startDate,this.endDate);
       },
       /**
        * 用户标签列表接口
@@ -129,7 +144,7 @@
        * @param data3 标签名称
        * @param data4 分类名称
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2,data3,data4,data5,data6){
         axios({
           method:"GET",
           url:"http://"+this.baseUrl+"/risk/admin/flow_log/list",
@@ -142,6 +157,8 @@
             pageSize: data2,
             cusName: data3,
             mobile: data4,
+            startDate: data5,
+            endDate: data6,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -223,18 +240,41 @@
           }
         })
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
+      //时间筛选
+      logTimeChange(){
+        if(this.value7==''||this.value7==null){
+          this.value7=[new Date().getTime() - 3600 * 1000 * 24 * 7,new Date()];
+          var startTime=this.value7[0];
+          var endTime=this.value7[1];
+          this.startDate=startTime;
+          this.endDate=endTime;
+        }else {
+          var startTime=this.value7[0];
+          var endTime=this.value7[1];
+          this.startDate=startTime;
+          this.endDate=endTime;
         }
       },
+      dateFormat(date) {
+        var year=date.getFullYear();
+        /* 在日期格式中，月份是从0开始的，因此要加0
+         * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+         * */
+        var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+        var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+        var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+        var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+        var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+        // 拼接
+        // return year+"-"+month+"-"+day+" "+"00:00:00";
+        return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+      }
     },
     mounted:function () {
-      this.getProductList(1,20,null,null);
+      this.endDate=this.dateFormat(new Date());
+      this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()-7, 0, 0, 0));
+      this.value7=[this.startDate,this.endDate];
+      this.getProductList(1,20,null,null,this.value7[0],this.value7[1]);
     },
     data() {
       return {
@@ -243,16 +283,45 @@
         electValue:null,
         cusName: '',
         mobile: '',
+        value7: '',
+        startDate: null,
+        endDate: null,
         pageNum: null,
         proTotal:null,
         pageSize:null,
         pageSizes:[20,30,50],
         nowPageSizes:20,
-        centerDialogVisible:false,
         electDataEnabled: [
           {key:1,Id:'启用'},
           {key:0,Id:'不启用'},
         ],
+        pickerOptions2: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
       }
     }
   }

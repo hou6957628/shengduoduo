@@ -6,14 +6,26 @@
       <el-breadcrumb-item>产品配置</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="ruleForm">
-      <span v-for="item in modeList">
-          <el-button :id="item.module" @click="handleClick(item.module,item.moduleName)" style="width: 150px;margin-bottom: 20px;">{{item.moduleName}}</el-button>
+      <span v-for="(item,index) in modeList">
+          <el-button :id="item.module" @click="handleClick(item.module,item.moduleName,index)" style="width: 150px;margin-bottom: 20px;">{{item.moduleName}}</el-button>
       </span>
       <p style="padding: 20px 0;text-align: center;font-size: 18px; width: 740px;background-color: #fff;">{{moduleAttribute[0].moduleName}}配置</p>
       <div v-for="(item,index) in moduleAttribute">
         <div class="jiegou" v-if="ruleForm.mode==item.module" style="width: 700px">
           <el-form-item :label="item.nameText" prop="nameText">
-            <el-input v-model="item.value"></el-input>
+            <div v-if="ruleForm.count==7 || ruleForm.count==8 || ruleForm.count==13 || ruleForm.count==16">
+              <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+                <el-option
+                  v-for="item in electData1"
+                  :key="item.id"
+                  :label="item.classifyName"
+                  :value="item.classifyId">
+                </el-option>
+              </el-select>
+            </div>
+            <div v-if="!ruleForm.count==7 || !ruleForm.count==8 || !ruleForm.count==13 || !ruleForm.count==16">
+              <el-input v-model="item.value"></el-input>
+            </div>
           </el-form-item>
       </div>
       </div>
@@ -29,6 +41,14 @@
   export default {
     data() {
       return {
+        electData1: [
+          {classifyId:0,classifyName:"全部状态"},
+          {classifyId:1,classifyName:"逾期"},
+          {classifyId:2,classifyName:"坏账"},
+          {classifyId:3,classifyName:"逾期已还"},
+          {classifyId:4,classifyName:"坏账已还"},
+        ],
+        electValue1:'',
         modeList:[ ],
         moduleAttribute:[
           {mode:'',moduleName:'',name:'',nameText:'',value: '',valueId: '',}
@@ -38,6 +58,7 @@
           moduleName:'',
           name:'',
           nameText:"",
+          count:0,
         },
         rules: {
           cpaPrice: [
@@ -45,6 +66,7 @@
             { min: 1, max: 5, message: '', trigger: 'blur' }
           ],
         },
+
       };
     },
     methods: {
@@ -64,7 +86,8 @@
           }
         })
       },
-      handleClick(key,id) {
+      handleClick(key,id,num) {
+        this.ruleForm.count=num;
         this.ruleForm.mode=key;
         axios({
           method:"post",

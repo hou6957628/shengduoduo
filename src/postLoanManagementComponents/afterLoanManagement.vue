@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/afterLoanManagement' }">逾期订单管理</el-breadcrumb-item>
+      <el-breadcrumb-item>逾期订单管理</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
@@ -237,27 +237,27 @@
         <el-table-column
           prop="parentChannelName"
           label="主渠道"
-          width="200">
+          width="150">
         </el-table-column>
         <el-table-column
           prop="childrenChannelName"
           label="子渠道"
-          width="200">
+          width="150">
         </el-table-column>
         <el-table-column
           prop="totalAmount"
           label="是否是黑名单"
-          width="200">
+          width="110">
         </el-table-column>
         <el-table-column
           prop="totalAmount"
           label="逾期次数"
-          width="200">
+          width="110">
         </el-table-column>
         <el-table-column
           prop="collectorName"
           label="催收员"
-          width="200">
+          width="110">
         </el-table-column>
         <el-table-column
           label="操作"
@@ -290,17 +290,34 @@
     methods: {
       //查询金融产品
       searchContent(){
-        this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
-          this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,this.pageSize);
+        if (this.status=='') {
+          this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
+            this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,this.pageSize,1);
+        } else {
+          this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
+            this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,this.pageSize,null);
+        }
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getOrderList(this.pageNum,val,this.finProduct,this.finProduct);
+        if (this.status=='') {
+          this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
+            this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,val,1);
+        } else {
+          this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
+            this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,val,null);
+        }
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        this.getOrderList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        if (this.status=='') {
+          this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
+            this.orderDate,this.repaymentPaymentDate,this.reBorrow,val,this.nowPageSizes,1);
+        } else {
+          this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
+            this.orderDate,this.repaymentPaymentDate,this.reBorrow,val,this.nowPageSizes,null);
+        }
       },
       //查询产品列表
       getProductList(){
@@ -346,8 +363,9 @@
        * @param data8 新老户 0-false-新户 1-true-老户
        * @param data9 分页数量
        * @param data10 分页页数
+       * @param data11 1-逾期，坏账，逾期已还
        */
-      getOrderList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
+      getOrderList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11){
         let orderRepaymentStartDate = null;
         let orderRepaymentEndDate = null;
         let orderStartDate = null;
@@ -389,6 +407,7 @@
             reBorrow: data8,
             pageNum: data9,
             pageSize: data10,
+            orderType: data11,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -453,26 +472,26 @@
       },
     },
     mounted:function () {
-      this.getOrderList(null,10);
+      this.getOrderList(null,null,null,null,null,null,null,null,1,30,1);
       this.getProductList();
     },
     data() {
       return {
         electData1: [
           {classifyId:'',classifyName:"全部状态"},
-          {classifyId:10,classifyName:"逾期未还"},
+          {classifyId:11,classifyName:"逾期未还"},
           {classifyId:13,classifyName:"逾期已还"},
-          {classifyId:11,classifyName:"坏账"},
+          {classifyId:12,classifyName:"坏账"},
         ],
         electData2: [
           {classifyId:'',classifyName:"全部状态"},
-          {classifyId:1,classifyName:"新户"},
-          {classifyId:2,classifyName:"老户"},
+          {classifyId:0,classifyName:"新户"},
+          {classifyId:1,classifyName:"老户"},
         ],
         tableData:[],
         productListData:[],
-        productId:'',
-        status:10,
+        productId:null,
+        status:'',
         mobile:'',
         repaymentOverdueDay:'',
         orderRepaymentDate:'',

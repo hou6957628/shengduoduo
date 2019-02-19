@@ -68,7 +68,6 @@
           {key:0,Id:'不启用'},
           {key:1,Id:'启用'},
         ],
-        electValue:'首页弹窗',
         ruleForm: {
           merchantName: '',
           companyAddress: '',
