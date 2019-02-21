@@ -44,7 +44,7 @@
         :data="tableData"
         @selection-change="handleSelectionChange"
         border
-        style="width: 100%">
+        style="width: 98%">
         <el-table-column
           fixed
           prop="id"

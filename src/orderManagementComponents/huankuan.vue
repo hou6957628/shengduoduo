@@ -2,54 +2,48 @@
   <div>
     <template>
       <el-table
-        :data="count"
+        :data="tableData"
         border
         style="width: 98%;margin-top: 20px;">
         <el-table-column
           fixed
-          prop="id"
-          label="放款编号"
+          prop="name"
+          label="编号"
+          width="150">
+        </el-table-column>
+        <el-table-column
+          prop="realName"
+          label="催收人员"
           width="150">
         </el-table-column>
         <el-table-column
           prop="mobile"
-          label=" 手机号"
+          label="类型"
+          sortable
           width="150">
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="姓名"
+          prop="productId"
+          label="通话类型"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="bankName"
-          label="银行名称"
+          prop="createDate"
+          label="说明"
+          width="300">
+        </el-table-column>
+        <el-table-column
+          prop="channelName"
+          label="时间"
+          sortable
           width="150">
         </el-table-column>
         <el-table-column
-          prop="bankNumber"
-          label="银行卡号"
-          width="200">
-        </el-table-column>
-        <el-table-column
-          prop="tranFlowId"
-          label="交易流水号"
-          width="200">
-        </el-table-column>
-        <el-table-column
-          prop="borrowingPaymentAmount"
-          label="放款金额"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="status"
-          label="状态"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="productName"
-          label="所属平台"
-          width="100">
+          label="操作"
+          width="120">
+          <template slot-scope="scope">
+            <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </template>
@@ -74,7 +68,7 @@
   export default {
     data() {
       return {
-        count: [],
+        tableData: [],
         finProduct: '',
         pageNum: null,
         proTotal:null,
@@ -104,56 +98,9 @@
           path: `/editFinanceProduct/${id}`,
         });
       },
-      //放款记录
-      getCollection(id) {
-        axios({
-          method: "POST",
-          url:"http://"+this.baseUrl+"/user_center/admin/payment/get",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params: {
-            id: id,
-          }
-        }).then((res) => {
-          if (res.data.msgCd == 'ZYCASH-200') {
-            this.count = res.data.body;
-            this.proTotal=res.data.body.total;
-            this.pageSize=res.data.body.pageSize;
-            this.pageNum=res.data.body.pageNum;
-          } else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
     },
     mounted: function () {
-      this.id=this.$route.params.id;
-      this.getCollection(this.id);
-    },
-    filters:{
-      typeFalse:function(arg1){
-        console.log(arg1);
-        if(arg1==true){
-          var result = "是";
-          return result;
-        }else if(arg1==false){
-          var result = "否";
-          return result;
-        }
-
-      },
-      yuqi:function(arg1){
-        if(arg1==9){
-          var result = "是";
-          return result;
-        }else{
-          var result = "否";
-          return result;
-        }
-
-      }
+      // this.getProductList();
     }
   }
 </script>

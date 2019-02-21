@@ -1,16 +1,21 @@
 <template>
-  <div>
+  <div class="content">
+    <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/userProductList' }">用户列表</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/userDetail' }">用户详情</el-breadcrumb-item>
+      <el-breadcrumb-item>运营商通讯录比对</el-breadcrumb-item>
+    </el-breadcrumb>
     <div class="listContent">
       <h4>基本信息</h4>
-      <p>用户姓名：{{this.cusCustomer.realName}}</p>
-      <p>手机号：{{this.cusCustomer.mobile}}</p>
-      <p>身份证号：{{this.cusCustomer.cardNumber}}</p>
+      <p>用户姓名：杨晶晶</p>
+      <p>手机号：13718825134</p>
+      <p>身份证号：370831199012013670</p>
     </div>
     <div class="listContent">
       <h4>联系人</h4>
       <table >
-        <tr><td>第一联系人</td><td>联系人借款关系：{{this.linkManList.relation | myCurrency}}</td><td>姓名：{{this.linkManList.name}}</td><td>手机号：{{this.linkManList.phoneNum}}</td></tr>
-        <tr><td>第二联系人</td><td>联系人借款关系：{{this.linkManList.relation | myCurrency}}</td><td>姓名：{{this.linkManList.name}}</td><td>手机号：{{this.linkManList.phoneNum}}</td></tr>
+        <tr><td>联系人1</td><td>联系人借款关系：父母</td><td>姓名：杨大头</td><td>手机号：13718825134</td></tr>
+        <tr><td>联系人2</td><td>联系人借款关系：兄弟</td><td>姓名：李超</td><td>手机号：18766562305</td></tr>
       </table>
     </div>
     <div class="listContentBox">
@@ -20,7 +25,7 @@
             <h4>通话呼入分析</h4>
             <template>
               <el-table
-                :data="tableDataFrom"
+                :data="tableData"
                 border
                 style="width: 98%;margin-top: 20px;">
                 <el-table-column
@@ -66,8 +71,8 @@
             </template>
             <div class="block">
               <el-pagination class="paginationBox"
-                             @size-change="handleSizeChangeFrom"
-                             @current-change="handleCurrentChangeFrom"
+                             @size-change="handleSizeChange"
+                             @current-change="handleCurrentChange"
                              :unique-opened="true"
                              :current-page="pageNum"
                              :page-sizes="pageSizes"
@@ -83,7 +88,7 @@
             <h4>通话呼出分析</h4>
             <template>
               <el-table
-                :data="tableDataTo"
+                :data="tableData"
                 border
                 style="width: 100%;margin-top: 20px;">
                 <el-table-column
@@ -129,14 +134,14 @@
             </template>
             <div class="block">
               <el-pagination class="paginationBox"
-                             @size-change="handleSizeChangeTo"
-                             @current-change="handleCurrentChangeTo"
+                             @size-change="handleSizeChange"
+                             @current-change="handleCurrentChange"
                              :unique-opened="true"
-                             :current-page="pageNum1"
-                             :page-sizes="pageSizes1"
-                             :page-size="pageSize1"
+                             :current-page="pageNum"
+                             :page-sizes="pageSizes"
+                             :page-size="pageSize"
                              layout="total, sizes, prev, pager, next, jumper"
-                             :total="proTotal1">
+                             :total="proTotal">
               </el-pagination>
             </div>
           </div>
@@ -151,142 +156,41 @@
   export default {
     data() {
       return {
-        tableDataFrom: [],
-        tableDataTo: [],
+        tableData: [],
         finProduct: '',
         pageNum: null,
         proTotal:null,
         pageSize:null,
         pageSizes:[30,50,80],
         nowPageSizes:30,
-        pageNum1: null,
-        proTotal1:null,
-        pageSize1:null,
-        pageSizes1:[30,50,80],
-        nowPageSizes1:30,
         value7:'',
-        linkManList:[],
-        cusCustomer:[],
       }
     },
     methods: {
       //每页显示多少条
-      handleSizeChangeFrom(val) {
-        this.getAddressFrom(this.pageNum,val,this.finProduct,this.finProduct);
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
         this.nowPageSizes=val;
       },
       //翻页
-      handleCurrentChangeFrom(val) {
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
         console.log(this.nowPageSizes);
-        this.getAddressFrom(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
       },
-      //每页显示多少条
-      handleSizeChangeTo(val) {
-        this.getAddressTo(this.pageNum1,val,this.finProduct,this.finProduct);
-        this.nowPageSizes1=val;
-      },
-      //翻页
-      handleCurrentChangeTo(val) {
-        this.getAddressTo(val,this.nowPageSizes1,this.finProduct,this.finProduct);
-      },
-      //运营商通讯录比对---呼入
-      getAddressFrom(id){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/admin/address/get",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-           id:id
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.tableDataFrom=res.data.body.list;
-            this.proTotal=res.data.body.total;
-            this.pageSize=res.data.body.pageSize;
-            this.pageNum=res.data.body.pageNum;
-            this.linkManList=res.data.body.linkMan;
-            this.cusCustomer=res.data.body.cusCustomer;
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
-      //运营商通讯录比对--呼出
-      getAddressTo(id){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/admin/address/get",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id:id
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.tableDataTo=res.data.body.list;
-            this.proTotal=res.data.body.total;
-            this.pageSize=res.data.body.pageSize;
-            this.pageNum=res.data.body.pageNum;
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.relation;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
-      }
     },
     mounted: function () {
-      this.id=this.$route.params.id;
-      this.getAddressFrom(this.id);
-      this.getAddressTo(this.id);
-    },
-    //过滤器的本质 就是一个有参数有返回值的方法
-    filters:{
-      myCurrency:function(arg1){
-        console.log(arg1);
-        //根据业务需要，对传来的数据进行处理
-        // 并返回处理后的结果
-        if(arg1==0){
-          var result = "父母";
-          return result;
-        }else if(arg1==1){
-          var result = "配偶";
-          return result;
-        }
-        else if(arg1==2){
-          var result = "兄弟姐妹";
-          return result;
-        }
-        else if(arg1==3){
-          var result = "同事";
-          return result;
-        }
-        else if(arg1==4){
-          var result = "同学";
-          return result;
-        }
-        else if(arg1==5){
-          var result = "朋友";
-          return result;
-        }
-      }
+      // this.getProductList();
     }
   }
 </script>
 
 <style scoped>
+  .content {
+    padding-left: 200px;
+    padding-top: 80px;
+  }
   .listContent{
     clear: both;
     height: 140px;

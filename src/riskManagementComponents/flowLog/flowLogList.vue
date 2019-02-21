@@ -35,7 +35,7 @@
       <el-table
         :data="tableData"
         border
-        style="width: 100%">
+        style="width: 98%">
         <el-table-column
           fixed
           prop="id"
