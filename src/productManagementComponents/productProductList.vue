@@ -101,12 +101,12 @@
           label="操作"
           width="220">
           <template slot-scope="scope">
-            <el-button @click="configureProduct(scope.row)" type="text" size="small">配置</el-button>
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <!--<el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>-->
-            <el-button @click="copyProduct(scope.row)" type="text" size="small">复制</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
+            <el-button @click="configureProduct(scope.row)" type="text" size="medium">配置</el-button>
+            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <!--<el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>-->
+            <el-button @click="copyProduct(scope.row)" type="text" size="medium">复制</el-button>
+            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
           </template>
         </el-table-column>
       </el-table>

@@ -1,49 +1,48 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/userProductList' }">待审批列表</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/pendingLoan' }">待放款列表</el-breadcrumb-item>
       <el-breadcrumb-item>详情</el-breadcrumb-item>
     </el-breadcrumb>
     <!--<div class="listContent">-->
       <!--<div class="listBox" v-for="(item,index) in productList" :class="isactive == index ? 'addclass' : ''" @click="fen(item,index)">{{item.productName}}</div>-->
     <!--</div>-->
     <div class="jiben">
-    <h3>订单信息</h3>
-    <table>
-      <tr>
-        <td>订单号：{{this.borrowingForm}}</td>
-        <!--<td>订单号：{{this.borrowingForm.orderId}}</td>-->
-        <!--<td>手机号：{{this.borrowingForm.mobile}}</td>-->
-        <!--<td>渠道：{{borrowingForm.parentChannelName==null?'&#45;&#45;':borrowingForm.parentChannelName}}</td>-->
-        <!--<td>订单状态：{{borrowingForm.status}}</td>-->
-        <!--<td>新户老户：{{borrowingForm.reBorrow==true?'老户':'新户'}}</td>-->
-        <!--<td>所属平台：{{borrowingForm.productName}}</td>-->
-      </tr>
-      <!--<tr>-->
-        <!--<td>申请时间：{{borrowingForm.createDate}}</td>-->
-        <!--<td>放款时间：{{borrowingForm.borrowingPaymentDate==null?'&#45;&#45;':borrowingForm.borrowingPaymentDate}}</td>-->
-        <!--<td>预计还款时间：{{borrowingForm.repaymentEndDate}}</td>-->
-        <!--<td>实际还款时间：{{borrowingForm.repaymentPaymentDate==null?'&#45;&#45;':borrowingForm.repaymentPaymentDate}}</td>-->
-        <!--<td>借款金额：{{borrowingForm.borrowingCapital}}</td>-->
-        <!--<td>期限：{{borrowingForm.borrowingPeriod}}</td>-->
-      <!--</tr>-->
-      <!--<tr>-->
-        <!--<td>是否逾期：{{borrowingForm.repaymentOverdueDay==null?'否':'是'}}</td>-->
-        <!--<td>逾期天数：{{borrowingForm.repaymentOverdueDay}}</td>-->
-        <!--<td>应还利息（元）：{{borrowingForm.repaymentOverdueFee}}</td>-->
-        <!--<td>罚息（元）：{{borrowingForm.repaymentPenaltyInterest}}</td>-->
-        <!--<td>滞纳金（元）：没有此字段</td>-->
-        <!--<td>应还总还金额（元）：{{borrowingForm.repaymentOverdueFee + borrowingForm.repaymentPenaltyInterest}}</td>-->
-      <!--</tr>-->
-      <!--<tr>-->
-        <!--<td>是否可展期：{{borrowingForm.defer==1?'是':'否'}}</td>-->
-        <!--<td>展期应还金额：{{borrowingForm.repaymentDefer}}</td>-->
-        <!--<td>展期实际还款金额（元）：{{borrowingForm.repaymentDeferPayment}}</td>-->
-        <!--<td>减免金额：{{borrowingForm.repaymentDiscountAmount}}</td>-->
-        <!--<td>展期次数：没有此字段</td>-->
-        <!--<td>还款方式：没有此字段</td>-->
-      <!--</tr>-->
-    </table>
+      <h3>订单信息</h3>
+      <!--<table>-->
+        <!--<tr>-->
+          <!--<td>订单号：{{this.borrowingForm.orderId}}</td>-->
+          <!--<td>手机号：{{this.borrowingForm.mobile}}</td>-->
+          <!--<td>渠道：{{this.borrowingForm.parentChannelName==null?'&#45;&#45;':this.borrowingForm.parentChannelName}}</td>-->
+          <!--<td>订单状态：{{this.borrowingForm.status}}</td>-->
+          <!--<td>新户老户：{{this.borrowingForm.reBorrow==true?'老户':'新户'}}</td>-->
+          <!--<td>所属平台：{{this.borrowingForm.productName}}</td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+          <!--<td>申请时间：{{this.borrowingForm.createDate}}</td>-->
+          <!--<td>放款时间：{{this.borrowingForm.borrowingPaymentDate==null?'&#45;&#45;':this.borrowingForm.borrowingPaymentDate}}</td>-->
+          <!--<td>预计还款时间：{{this.borrowingForm.repaymentEndDate}}</td>-->
+          <!--<td>实际还款时间：{{this.borrowingForm.repaymentPaymentDate==null?'&#45;&#45;':this.borrowingForm.repaymentPaymentDate}}</td>-->
+          <!--<td>借款金额：{{this.borrowingForm.borrowingCapital}}</td>-->
+          <!--<td>期限：{{this.borrowingForm.borrowingPeriod}}</td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+          <!--<td>是否逾期：{{this.borrowingForm.repaymentOverdueDay==null?'否':'是'}}</td>-->
+          <!--<td>逾期天数：{{this.borrowingForm.repaymentOverdueDay}}</td>-->
+          <!--<td>应还利息（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>-->
+          <!--<td>罚息（元）：{{this.borrowingForm.repaymentPenaltyInterest}}</td>-->
+          <!--<td>滞纳金（元）：没有此字段</td>-->
+          <!--<td>应还总还金额（元）：{{this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+          <!--<td>是否可展期：{{this.borrowingForm.defer==1?'是':'否'}}</td>-->
+          <!--<td>展期应还金额：{{this.borrowingForm.repaymentDefer}}</td>-->
+          <!--<td>展期实际还款金额（元）：{{this.borrowingForm.repaymentDeferPayment}}</td>-->
+          <!--<td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>-->
+          <!--<td>展期次数：没有此字段</td>-->
+          <!--<td>还款方式：没有此字段</td>-->
+        <!--</tr>-->
+      <!--</table>-->
     </div>
     <el-button-group style="margin: 0 auto;width: 500px;display: block;margin-top: 40px;margin-bottom: 40px">
       <el-button class="la" type="danger" @click="batchAuditOrder('0')">同意</el-button>
@@ -101,7 +100,7 @@
       batchAuditOrder(status){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/audit/batchAuditOrder",
+          url:"http://"+this.baseUrl+"/order/admin/pending/batchLoanOrder",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -117,7 +116,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.$router.push('/pendingApproval');
+            this.$router.push('/pendingLoan');
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -161,62 +160,63 @@
         console.log(this.electValue);
       },
       //用户订单信息
-      getOrderInfo(id) {
-        axios({
-          method: "POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/info",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params: {
-            orderId: id,
-          }
-        }).then((res) => {
-          if (res.data.msgCd == 'ZYCASH-200') {
-            this.borrowingForm = res.data.body;
-            console.log(this.borrowingForm);
-            let status = res.data.body.status;
-            if(status==0){
-              this.borrowingForm.status = '待机器审核 ';
-            } else if (status === 1){
-              this.borrowingForm.status = '机器审核中';
-            } else if (status === 2){
-              this.borrowingForm.status = '审核拒绝';
-            } else if (status === 3){
-              this.borrowingForm.status = '人工审核';
-            } else if (status === 4){
-              this.borrowingForm.status = '待放款';
-            } else if (status === 5){
-              this.borrowingForm.status = '放款中';
-            } else if (status === 6){
-              this.borrowingForm.status = '放款失败';
-            } else if (status === 7){
-              this.borrowingForm.status = '取消';
-            } else if (status === 8){
-              this.borrowingForm.status = '放款成功';
-            } else if (status === 9){
-              this.borrowingForm.status = '还款确认中';
-            } else if (status === 10){
-              this.borrowingForm.status = '正常还款 ';
-            } else if (status === 11){
-              this.borrowingForm.status = '逾期未还';
-            } else if (status === 12){
-              this.borrowingForm.status = '坏账';
-            } else if (status === 13){
-              this.borrowingForm.status = '逾期还款';
-            }
-          } else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
+      // getOrderInfo(id) {
+      //   axios({
+      //     method: "POST",
+      //     url:"http://"+this.baseUrl+"/order/admin/borrowing/info",
+      //     headers: {
+      //       'Content-Type': 'application/x-www-form-urlencoded',
+      //       'Authorization': localStorage.token
+      //     },
+      //     params: {
+      //       orderId: id,
+      //     }
+      //   }).then((res) => {
+      //     if (res.data.msgCd == 'ZYCASH-200') {
+      //       this.borrowingForm = res.data.body;
+      //       let status = res.data.body.status;
+      //       if(status==0){
+      //         this.borrowingForm.status = '待机器审核 ';
+      //       } else if (status === 1){
+      //         this.borrowingForm.status = '机器审核中';
+      //       } else if (status === 2){
+      //         this.borrowingForm.status = '审核拒绝';
+      //       } else if (status === 3){
+      //         this.borrowingForm.status = '人工审核';
+      //       } else if (status === 4){
+      //         this.borrowingForm.status = '待放款';
+      //       } else if (status === 5){
+      //         this.borrowingForm.status = '放款中';
+      //       } else if (status === 6){
+      //         this.borrowingForm.status = '放款失败';
+      //       } else if (status === 7){
+      //         this.borrowingForm.status = '取消';
+      //       } else if (status === 8){
+      //         this.borrowingForm.status = '放款成功';
+      //       } else if (status === 9){
+      //         this.borrowingForm.status = '还款确认中';
+      //       } else if (status === 10){
+      //         this.borrowingForm.status = '正常还款 ';
+      //       } else if (status === 11){
+      //         this.borrowingForm.status = '逾期未还';
+      //       } else if (status === 12){
+      //         this.borrowingForm.status = '坏账';
+      //       } else if (status === 13){
+      //         this.borrowingForm.status = '逾期还款';
+      //       }
+      //     } else {
+      //       this.$message.error(res.data.msgInfo);
+      //     }
+      //   })
+      // },
     },
     mounted: function () {
       this.id=this.$route.params.id;
       this.orderId=this.$route.params.orderId;
+      console.log(this.id);
+      console.log(this.orderId);
       this.getUserDetail(this.id);
-      this.getOrderInfo(this.orderId);
+      // this.getOrderInfo(this.orderId);
     }
   }
 </script>

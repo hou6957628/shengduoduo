@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="operationContent">
-          <el-input @click="searchProduct" class="searchContent"
+          <el-input class="searchContent"
                     placeholder="查询编号或触发名称"
                     v-model="finProduct"
                     clearable>
@@ -15,12 +15,12 @@
         style="width: 100%">
         <el-table-column
           fixed
-          prop="productCode"
+          prop="id"
           label="风险命中ID编号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="realName"
+          prop="cusName"
           label="用户姓名"
           width="150">
         </el-table-column>
@@ -30,42 +30,52 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="productId"
+          prop="flowId"
           label="风险编号"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="createDate"
+          prop="itemName"
           label="类型"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="memo"
           label="触发内容"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="subChannelName"
-          label="触发结果"
+          prop="value"
+          label="取值"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="updateDate"
+          prop="result"
+          label="结果"
+          width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.result == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.result == 0 ? '拒绝' : '通过'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
           label="创建时间"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="isActiveApp"
+          prop="updateDate"
           label="更新时间"
           width="200">
         </el-table-column>
         <el-table-column
           label="操作"
           width="120">
-          <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
-            <el-button @click="editProduct(scope.row)" type="text" size="small">修改</el-button>
-          </template>
+          <!--<template slot-scope="scope">-->
+            <!--<el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>-->
+            <!--<el-button @click="editProduct(scope.row)" type="text" size="small">修改</el-button>-->
+          <!--</template>-->
         </el-table-column>
       </el-table>
     </template>
@@ -91,49 +101,40 @@
     methods: {
       //查询金融产品
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,20,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,20,data,this.finProduct);
-          console.log(data);
-        }
+        this.getProductList(this.pageNum,this.pageSize,this.id,this.finProduct);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
         this.nowPageSizes=val;
+        this.getProductList(this.pageNum,val,this.id,this.finProduct);
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.id,this.finProduct);
       },
       /**
-       * 获取金融产品列表
+       * 获取风险命中列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 产品名称
-       * @param data4 产品编号
+       * @param data3 用户id
+       * @param data4 编号或触发名称
        */
       getProductList(data1,data2,data3,data4){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/customer/list",
+          url:"http://"+this.baseUrl+"/risk/admin/flow_log/selectControlFlowLog",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            realName: data1,
-            mobile: data2,
-            channelName: data3,
-            channelName: data4,
+            pageNum: data1,
+            pageSize: data2,
+            customerId:data3,
+            name:data4,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+          if(res.data.msgCd=='ZYCASH-200'){
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
@@ -143,10 +144,6 @@
           }
         })
       },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20,this.finProduct,this.finProduct);
-      },
       //编辑产品接口
       editProduct(row){
         console.log(row.id);
@@ -155,26 +152,10 @@
           path: `/editFinanceProduct/${id}`,
         });
       },
-      //详情接口
-      detailProduct(row){
-        let id=row.id;
-        this.$router.push({
-          path: `/editFinanceProduct/${id}`,
-        });
-      },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
-      },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      this.getProductList(1,20,null,null);
+      this.id=this.$route.params.id;
+      this.getProductList(1,30,this.id,null);
     },
     data() {
       return {

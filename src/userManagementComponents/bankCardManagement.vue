@@ -117,11 +117,12 @@
           width="200">
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作"
           width="120">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">删除</el-button>
-            <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
+            <el-button @click="editProduct(scope.row)" type="text" size="medium">删除</el-button>
+            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
           </template>
         </el-table-column>
       </el-table>

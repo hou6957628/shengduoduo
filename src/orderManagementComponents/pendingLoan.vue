@@ -244,9 +244,11 @@
         })
       },
       //审核订单
-      detailProduct(){
+      detailProduct(row){
+        let id=row.customerId;
+        let orderId=row.orderId;
         this.$router.push({
-          path: `/editFinanceProduct`,
+          path: `/orderDetailPendingLoan/${id}/${orderId}`,
         });
       },
       //全选
@@ -256,7 +258,6 @@
       //过滤性别字段
       genderFormatter(row){
         let gender = row.gender;
-        console.log(gender);
         if(gender == false){
           return '男'
         } else if (gender == true){
@@ -269,11 +270,33 @@
       statusFormatter(row){
         let status = row.status;
         if(status === 0){
-          return '待机审 '
+          return '待机器审核 '
         } else if (status === 1){
           return '机器审核中'
         } else if (status === 2){
+          return '审核拒绝'
+        } else if (status === 3){
           return '人工审核'
+        } else if (status === 4){
+          return '待放款'
+        } else if (status === 5){
+          return '放款中'
+        } else if (status === 6){
+          return '放款失败'
+        } else if (status === 7){
+          return '取消'
+        } else if (status === 8){
+          return '放款成功'
+        } else if (status === 9){
+          return '还款确认中'
+        } else if (status === 10){
+          return '正常还款 '
+        } else if (status === 11){
+          return '逾期未还'
+        } else if (status === 12){
+          return '坏账'
+        } else if (status === 13){
+          return '逾期还款'
         }
       },
       //过滤用户标识字段

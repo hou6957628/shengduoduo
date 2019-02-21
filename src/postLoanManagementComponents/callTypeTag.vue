@@ -26,8 +26,8 @@
           label="操作"
           width="100">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
+            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

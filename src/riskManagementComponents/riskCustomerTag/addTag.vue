@@ -119,7 +119,7 @@
                   :value="item.key">
                 </el-option>
               </el-select>
-              <el-select v-model="domain.fieldValue" multiple style="width: 500px">
+              <el-select v-model="domain.fieldValue" multiple style="width: 500px" @change="changeSelect3(domain.selectValues)">
                 <el-option
                   v-for="item in domain.selectValues"
                   :key="item.value"
@@ -401,7 +401,7 @@
             this.electDataList.domains[this.count].operationalSymbolName='';
             this.electDataList.domains[this.count].symbolCode1='';
             this.electDataList.domains[this.count].symbolCode2='';
-            this.electDataList.domains[this.count].fieldValue='';
+            // this.electDataList.domains[this.count].fieldValue=null;
             this.electDataList.domains[this.count].fieldValue1='';
             this.electDataList.domains[this.count].fieldValue2='';
             var type=res.data.body.rcField.dataType - 1;
@@ -410,8 +410,10 @@
             this.electDataList.domains[this.count].fieldType=res.data.body.rcField.fieldType;
             this.electDataList.domains[this.count].fieldDataType=res.data.body.rcField.dataType;
             this.electDataList.domains[this.count].selectValues=res.data.body.selectValues;
+            console.log(this.electDataList.domains[this.count].selectValues);
             $(".type"+this.count).css("display","none");
             $(".type"+this.count).eq(type).css("display","inline-block");
+            this.$forceUpdate();
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -469,6 +471,9 @@
           return item.key === vId;
         });
         this.electDataList.domains[index].operationalSymbolName=obj.Id;
+      },
+      changeSelect3(data){
+        this.$forceUpdate();
       },
       //添加标签
       addTag(){
@@ -593,14 +598,14 @@
         ],
         electDataList: {
           domains: [{
-            tagItemAlias: "A",fieldValue:'',fieldCode:'',fieldName:'',fieldType:'',fieldDataType:'',selectValues: [],
+            tagItemAlias: "A",fieldValue:null,fieldCode:'',fieldName:'',fieldType:'',fieldDataType:'',selectValues: [],
             operationalSymbolCode: null,operationalSymbolName: '',symbolCode1: '',fieldValue1:'',symbolCode2: '',fieldValue2:'',
           }]
         },
         radio:"",
         symbolCodeList:[
-          {key:1,Id:"是"},
-          {key:0,Id:"否"},
+          {key:1,Id:"命中"},
+          {key:0,Id:"未命中"},
         ],
         fieldCodeList0:[
           {key:"EQ",Id:"等于"},

@@ -103,6 +103,18 @@ import editCollectionPerson from '@/postLoanManagementComponents/editCollectionP
 //订单区域
 import approvalCenter from '@/orderManagementComponents/approvalCenter'
 import pendingApproval from '@/orderManagementComponents/pendingApproval'
+import orderDetail from '@/orderManagementComponents/orderDetail'
+import orderDetailPendingLoan from '@/orderManagementComponents/orderDetailPendingLoan'
+import jibenOrder from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder from '@/orderManagementComponents/yunyingOrder'
+import tianjiOrder from '@/orderManagementComponents/tianjiOrder'
+import zhifuOrder from '@/orderManagementComponents/zhifuOrder'
+import yonghuOrder from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder from '@/orderManagementComponents/huankuanOrder'
+
 import pendingLoan from '@/orderManagementComponents/pendingLoan'
 import loanMade from '@/orderManagementComponents/loanMade'
 import orderList from '@/orderManagementComponents/orderList'
@@ -163,7 +175,7 @@ axios.interceptors.response.use(
     return Promise.reject(error.response)   // 返回接口返回的错误信息
   });
 
-// Vue.prototype.baseUrl="39.105.217.251:31999";
+Vue.prototype.baseUrl="39.105.217.251:31999";
 //风控
 // Vue.prototype.baseUrl="localhost:9998";
 //额度
@@ -171,10 +183,9 @@ axios.interceptors.response.use(
 //订单
 // Vue.prototype.baseUrl="localhost:9997";
 //产品operate
-Vue.prototype.baseUrl="localhost:8888";
+// Vue.prototype.baseUrl="localhost:8888";
 //用户中心
 // Vue.prototype.baseUrl="localhost:9995";
-// Vue.prototype.baseUrl="192.168.20.216:9999";
 Vue.prototype.uurl="window.location.origin";
 
 const vueRouter = new Router({
@@ -928,12 +939,104 @@ const vueRouter = new Router({
       component: pendingApproval
     },
     {
+      path: '/orderDetail/:id/:orderId',
+      name: 'orderDetail',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder/:id",
+          component:jibenOrder
+        },
+        {
+          path:"/fenxianOrder/:id",
+          component:fenxianOrder
+        },
+        {
+          path:"/yunyingOrder/:id",
+          component:yunyingOrder
+        },
+        {
+          path:"/tianjiOrder",
+          component:tianjiOrder
+        },
+        {
+          path:"/zhifuOrder",
+          component:zhifuOrder
+        },
+        {
+          path:"/yonghuOrder/:id",
+          component:yonghuOrder
+        },
+        {
+          path:"/dingdanOrder/:id",
+          component:dingdanOrder
+        },
+        {
+          path:"/fangkuanOrder/:id",
+          component:fangkuanOrder
+        },
+        {
+          path:"/huankuanOrder/:id",
+          component:huankuanOrder
+        }
+      ],
+      component: orderDetail
+    },
+    {
       path: '/pendingLoan',
       name: 'pendingLoan',
       meta: {
         requireAuth: true
       },
       component: pendingLoan
+    },
+    {
+      path: '/orderDetailPendingLoan/:id/:orderId',
+      name: 'orderDetailPendingLoan',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder/:id",
+          component:jibenOrder
+        },
+        {
+          path:"/fenxianOrder/:id",
+          component:fenxianOrder
+        },
+        {
+          path:"/yunyingOrder/:id",
+          component:yunyingOrder
+        },
+        {
+          path:"/tianjiOrder",
+          component:tianjiOrder
+        },
+        {
+          path:"/zhifuOrder",
+          component:zhifuOrder
+        },
+        {
+          path:"/yonghuOrder/:id",
+          component:yonghuOrder
+        },
+        {
+          path:"/dingdanOrder/:id",
+          component:dingdanOrder
+        },
+        {
+          path:"/fangkuanOrder/:id",
+          component:fangkuanOrder
+        },
+        {
+          path:"/huankuanOrder/:id",
+          component:huankuanOrder
+        }
+      ],
+      component: orderDetailPendingLoan
     },
     {
       path: '/loanMade',

@@ -244,9 +244,11 @@
         })
       },
       //审核订单
-      detailProduct(){
+      detailProduct(row){
+        let id=row.customerId;
+        let orderId=row.orderId;
         this.$router.push({
-          path: `/editFinanceProduct`,
+          path: `/orderDetail/${id}/${orderId}`,
         });
       },
       //全选
@@ -256,7 +258,6 @@
       //过滤性别字段
       genderFormatter(row){
         let gender = row.gender;
-        console.log(gender);
         if(gender == false){
           return '男'
         } else if (gender == true){
@@ -278,7 +279,7 @@
       },
       //过滤用户标识字段
       reBorrowFormatter(row){
-        let reBorrow = row.status;
+        let reBorrow = row.reBorrow;
         if(reBorrow === 0){
           return '新户'
         } else if (reBorrow === 1){

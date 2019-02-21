@@ -58,6 +58,7 @@
         <el-table-column
           prop="interestMethods"
           label="利息方式"
+          :formatter="methodFormatter"
           width="120">
         </el-table-column>
         <el-table-column
@@ -91,14 +92,15 @@
           </template>
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作"
           width="200">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="openWarningDelete(scope.row)" type="text" size="small">删除</el-button>
-            <el-button @click="copyProduct(scope.row)" type="text" size="small">复制</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
+            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button @click="openWarningDelete(scope.row)" type="text" size="medium">删除</el-button>
+            <el-button @click="copyProduct(scope.row)" type="text" size="medium">复制</el-button>
+            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -148,14 +150,11 @@
       },
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.getProductList(this.pageNum,val,this.finProduct);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
         this.getProductList(val,this.nowPageSizes,this.finProduct);
       },
       //创建金融产品
@@ -315,6 +314,34 @@
             this.$message.error(res.data.msgInfo);
           }
         })
+      },
+      //过滤性别字段
+      typeFormatter(row){
+        let type = row.type;
+        if(type == 0){
+          return '现金贷'
+        } else if (type == 1){
+          return '分期'
+        } else {
+          return '未知'
+        }
+      },
+      //过滤利息方式
+      methodFormatter(row){
+        let interestMethods = row.interestMethods;
+        if(interestMethods == 0){
+          return '每期等额本息'
+        } else if (interestMethods == 1){
+          return '每期付息到期还本'
+        } else if (interestMethods == 2){
+          return '到期还本付息'
+        } else if (interestMethods == 3){
+          return '等本等息'
+        } else if (interestMethods == 4){
+          return '等额本金'
+        } else if (interestMethods == 5){
+          return '放款时一次性收取'
+        }
       },
     },
     mounted:function () {

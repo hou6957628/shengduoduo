@@ -233,7 +233,7 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             console.log(this.electDataList.domains);
-            if (this.electDataList.domains[0].childItemId=='' | this.electDataList.domains[0].strategy=='') {
+            if (this.electDataList.domains[0].childItemId==null | this.electDataList.domains[0].strategy==null) {
               this.$alert('请填写子项', '提示', {
                 confirmButtonText: '确定',
                 center: true,
@@ -305,7 +305,7 @@
         ],
         electDataList: {
           domains: [{
-            itemAlias: "A",childItemId:'',childItemName:'',childItemType:0,strategy:'',action:'',
+            itemAlias: "A",childItemId:null,childItemName:'',childItemType:0,strategy:null,action:'',
           }]
         },
         radio:"",

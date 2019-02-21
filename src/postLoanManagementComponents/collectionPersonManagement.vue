@@ -76,9 +76,9 @@
           label="操作"
           width="180">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProductTip(scope.row)" type="text" size="small">停用</el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
+            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button v-if="scope.row.enabled" @click="obtainedProductTip(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
