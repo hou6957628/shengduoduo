@@ -128,6 +128,20 @@ import orderFlowLogList from '@/orderExtension/orderFlowLogList'
 
 import axios from 'axios'
 
+//消息
+import createClassify from '@/messageConfigurationComponents/createClassify'
+import createPopUpMessage from '@/messageConfigurationComponents/createPopUpMessage'
+import createPushMessage from '@/messageConfigurationComponents/createPushMessage'
+import createReminderMessage from '@/messageConfigurationComponents/createReminderMessage'
+import createSMS from '@/messageConfigurationComponents/createSMS'
+import messageClassify from '@/messageConfigurationComponents/messageClassify'
+import popUpMessage from '@/messageConfigurationComponents/popUpMessage'
+import pushMessage from '@/messageConfigurationComponents/pushMessage'
+import reminderMessage from '@/messageConfigurationComponents/reminderMessage'
+import smsMessage from '@/messageConfigurationComponents/smsMessage'
+import messageConfigurationList from '@/messageManagementComponents/messageConfigurationList'
+import messageRecord from '@/messageManagementComponents/messageRecord'
+
 Vue.use(Router);
 // http request 拦截器
 axios.interceptors.request.use(
@@ -1015,6 +1029,104 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: orderFlowLogList
+    },
+
+    //消息
+    {
+      path: '/createClassify',
+      name: 'createClassify',
+      meta: {
+        requireAuth: true
+      },
+      component: createClassify
+    },
+    {
+      path: '/createPopUpMessage',
+      name: 'createPopUpMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: createPopUpMessage
+    },
+    {
+      path: '/createPushMessage',
+      name: 'createPushMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: createPushMessage
+    },
+    {
+      path: '/createReminderMessage',
+      name: 'createReminderMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: createReminderMessage
+    },
+    {
+      path: '/createSMS',
+      name: 'createSMS',
+      meta: {
+        requireAuth: true
+      },
+      component: createSMS
+    },
+    {
+      path: '/messageClassify',
+      name: 'messageClassify',
+      meta: {
+        requireAuth: true
+      },
+      component: messageClassify
+    },
+    {
+      path: '/popUpMessage',
+      name: 'popUpMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: popUpMessage
+    },
+    {
+      path: '/pushMessage',
+      name: 'pushMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: pushMessage
+    },
+    {
+      path: '/reminderMessage',
+      name: 'reminderMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: reminderMessage
+    },
+    {
+      path: '/smsMessage',
+      name: 'smsMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: smsMessage
+    },
+    {
+      path: '/messageConfigurationList',
+      name: 'messageConfigurationList',
+      meta: {
+        requireAuth: true
+      },
+      component: messageConfigurationList
+    },
+    {
+      path: '/messageRecord',
+      name: 'messageRecord',
+      meta: {
+        requireAuth: true
+      },
+      component: messageRecord
     },
 ]
 
