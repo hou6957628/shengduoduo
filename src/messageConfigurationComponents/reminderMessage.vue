@@ -219,7 +219,13 @@
         });
         this.getProductList(1,30,null,null);
       },
-      //分类列表
+      //审核订单
+      toAddProduct(){
+        this.$router.push({
+          path: `/createReminderMessage`,
+        });
+      },
+      //审核订单
       toMessageClassify(){
         this.$router.push({
           path: `/messageClassify`,
@@ -395,6 +401,10 @@
         value5:'',
         startDate:null,
         endDate:null,
+        electData: [
+          {key:true,Id:"启用"},
+          {key:false,Id:"停用"},
+        ],
       }
     }
   }

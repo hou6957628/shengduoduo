@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/popUpMessage' }">弹窗消息</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/popUpMessage' }">提醒消息</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建消息&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
@@ -67,18 +67,8 @@
           width="100">
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="弹出位置"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          label="次数"
-          width="100">
-        </el-table-column>
-        <el-table-column
           prop="desc"
-          label="文字内容"
+          label="内容"
           width="200">
         </el-table-column>
         <el-table-column
@@ -229,7 +219,13 @@
         });
         this.getProductList(1,30,null,null);
       },
-      //分类列表
+      //审核订单
+      toAddProduct(){
+        this.$router.push({
+          path: `/createPopUpMessage`,
+        });
+      },
+      //审核订单
       toMessageClassify(){
         this.$router.push({
           path: `/messageClassify`,

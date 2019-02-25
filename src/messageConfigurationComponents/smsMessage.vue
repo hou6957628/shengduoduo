@@ -212,9 +212,15 @@
         })
       },
       //审核订单
-      detailProduct(){
+      toAddProduct(){
         this.$router.push({
-          path: `/editFinanceProduct`,
+          path: `/createSMS`,
+        });
+      },
+      //审核订单
+      toMessageClassify(){
+        this.$router.push({
+          path: `/messageClassify`,
         });
       },
       //下拉选择
@@ -402,6 +408,7 @@
         value5:'',
         startDate:null,
         endDate:null,
+        electData:[],
       }
     }
   }

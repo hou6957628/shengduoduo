@@ -45,13 +45,13 @@
           fixed
           prop="id"
           label="ID"
-          width="110">
+          width="150">
         </el-table-column>
         <el-table-column
           fixed
           prop="name"
           label="分类名称"
-          min-width="80">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="desc"
@@ -61,17 +61,17 @@
         <el-table-column
           prop="borrowingPeriod"
           label="创建时间"
-          width="100">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="borrowingCapital"
           label="更新时间"
-          width="100">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="status"
           label="创建人"
-          width="120">
+          width="150">
         </el-table-column>
         <el-table-column
           label="操作"
@@ -95,6 +95,25 @@
                      :total="proTotal">
       </el-pagination>
     </div>
+    <!--创建分类-->
+    <el-dialog
+      title="复制产品"
+      :visible.sync="centerDialogVisible"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="名称:" prop="productName">
+          <el-input v-model="ruleForm.productName"></el-input>
+        </el-form-item>
+        <el-form-item label="请输入备注:" prop="description">
+          <el-input type="textarea":rows="3" v-model="ruleForm.description"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="saveMessage('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -305,6 +324,42 @@
           }
         })
       },
+      //创建分类
+      toAddProduct(){
+        this.centerDialogVisible=true;
+      },
+      //保存分类
+      saveMessage(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            var param = new FormData();  // 创建form对象
+            param.append('id', this.copyId)  // 通过append向form对象添加数据
+            param.append('productName', this.ruleForm.productName)  // 通过append向form对象添加数据
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/operate/admin/productManage/saveProduct",
+                headers:{
+                  'Content-Type':'application/x-www-form-urlencoded',
+                  'Authorization': localStorage.token
+                },
+                data:param,
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.$message({
+                    message: '保存成功',
+                    type: 'success'
+                  });
+                  this.centerDialogVisible=true;
+                } else {
+                  this.$message.error(res);
+                }
+              })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
     },
     mounted:function () {
       this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
@@ -316,16 +371,11 @@
     data() {
       return {
         productList:[],
-        reBorrowList: [
-          {classifyId:null,classifyName:"全部状态"},
-          {classifyId:0,classifyName:"新户"},
-          {classifyId:1,classifyName:"老户"},
-        ],
-        sexList: [
-          {classifyId:null,classifyName:"全部"},
-          {classifyId:0,classifyName:"男"},
-          {classifyId:1,classifyName:"女"},
-        ],
+        ruleForm: {
+          productName: '',
+          description: '',
+          merchantId: null,
+        },
         finProduct:null,
         tableData:[],
         pageNum: null,
@@ -362,13 +412,20 @@
         },
         productId:null,
         reBorrow:null,
-        parentChannelName:null,
-        childrenChannelName:null,
+        rules: {
+          productName: [
+            { required: true, message: '请输入名称', trigger: 'blur' }
+          ],
+          description: [
+            { required: true, message: '请输入备注', trigger: 'change' }
+          ]
+        },
         sex:null,
         mobile:null,
         value5:'',
         startDate:null,
         endDate:null,
+        centerDialogVisible:false,
       }
     }
   }

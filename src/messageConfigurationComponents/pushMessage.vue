@@ -229,6 +229,18 @@
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
+      //审核订单
+      toAddProduct(){
+        this.$router.push({
+          path: `/createPushMessage`,
+        });
+      },
+      //审核订单
+      toMessageClassify(){
+        this.$router.push({
+          path: `/messageClassify`,
+        });
+      },
       //时间筛选
       logTimeChange(){
         if(this.value5==''||this.value5==null){
@@ -395,6 +407,10 @@
         value5:'',
         startDate:null,
         endDate:null,
+        electData: [
+          {key:true,Id:"启用"},
+          {key:false,Id:"停用"},
+        ],
       }
     }
   }
