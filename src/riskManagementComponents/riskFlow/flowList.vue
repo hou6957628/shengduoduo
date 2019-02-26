@@ -55,7 +55,7 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="220">
+          width="250">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
             <el-button @click="configureProduct(scope.row)" type="text" size="medium">配置</el-button>

@@ -73,6 +73,7 @@
           </template>
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作"
           width="220">
           <template slot-scope="scope">
@@ -141,14 +142,14 @@
       //每页显示多少条
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.finProduct,this.electValue);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
         console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.finProduct,this.electValue);
       },
       //创建标签
       toAddProduct(){

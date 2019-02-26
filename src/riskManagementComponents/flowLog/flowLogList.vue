@@ -53,8 +53,8 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="itemCode"
-          label="风险编号"
+          prop="flowName"
+          label="子流程名称"
           width="300">
         </el-table-column>
         <el-table-column

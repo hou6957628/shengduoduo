@@ -13,12 +13,12 @@
           fixed
           prop="fieldName"
           label="字段名称"
-          width="300">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="description"
           label="字段说明"
-          width="300">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="createDate"
@@ -36,9 +36,19 @@
           width="200">
         </el-table-column>
         <el-table-column
+          prop="nullPass"
+          label="空值通过"
+          width="150">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.nullPass == true ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.nullPass == true ? '通过' : '拒绝'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="enabled"
           label="状态"
-          width="80">
+          width="150">
           <template slot-scope="scope">
             <el-tag
               :type="scope.row.enabled == true ? 'primary' : 'danger'"

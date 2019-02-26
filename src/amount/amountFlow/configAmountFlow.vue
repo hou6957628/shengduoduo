@@ -13,7 +13,7 @@
     <div class="line"></div>
     <el-row :gutter="20">
       <h4 style="padding-left: 10px;padding-top: 20px;padding-bottom: 10px">说明</h4>
-      <el-col>对应使用的额度流程: <div class="grid-content">应用1、应用2、应用3、应用4</div><p style="float: right;color:red;margin-right: 50px">修改记录</p></el-col>
+      <el-col>使用此额度流程的APP: <div class="grid-content">{{this.borrowingProductUsed==null?'无':this.borrowingProductUsed}}</div><p style="float: right;color:red;margin-right: 50px">修改记录</p></el-col>
     </el-row>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" >
       <div class="operationContent">

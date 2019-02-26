@@ -9,8 +9,12 @@
     <div class="listContent">
       <h4>联系人</h4>
       <table >
-        <tr><td>第一联系人</td><td>联系人借款关系：{{this.linkManList.relation | myCurrency}}</td><td>姓名：{{this.linkManList.name}}</td><td>手机号：{{this.linkManList.phoneNum}}</td></tr>
-        <tr><td>第二联系人</td><td>联系人借款关系：{{this.linkManList.relation | myCurrency}}</td><td>姓名：{{this.linkManList.name}}</td><td>手机号：{{this.linkManList.phoneNum}}</td></tr>
+        <template v-for="(item,index) in this.linkManList">
+          <tr>
+            <td>第一联系人</td><td>联系人借款关系：{{item.relation | myCurrency}}</td>
+            <td>姓名：{{item.name}}</td><td>手机号：{{item.phoneNum}}</td>
+          </tr>
+        </template>
       </table>
     </div>
     <div class="listContentBox">
@@ -22,7 +26,7 @@
               <el-table
                 :data="tableDataFrom"
                 border
-                style="width: 98%;margin-top: 20px;">
+                style="width: 100%;margin-top: 20px;">
                 <el-table-column
                   fixed
                   prop="name"
@@ -30,36 +34,33 @@
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="realName"
+                  prop="mobile"
                   label="号码"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="mobile"
+                  prop="netIdenty"
                   label="互联网标识"
-                  sortable
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="productId"
+                  prop="typeLabel"
                   label="类别标签"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="createDate"
+                  prop="location"
                   label="归属地"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="channelName"
+                  prop="time"
                   label="联系时间(分)"
-                  sortable
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="subChannelName"
+                  prop="number"
                   label="被叫次数"
-                  sortable
                   width="150">
                 </el-table-column>
               </el-table>
@@ -93,36 +94,33 @@
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="realName"
+                  prop="mobile"
                   label="号码"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="mobile"
+                  prop="netIdenty"
                   label="互联网标识"
-                  sortable
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="productId"
+                  prop="typeLabel"
                   label="类别标签"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="createDate"
+                  prop="location"
                   label="归属地"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="channelName"
+                  prop="time"
                   label="联系时间(分)"
-                  sortable
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="subChannelName"
-                  label="被叫次数"
-                  sortable
+                  prop="number"
+                  label="主叫次数"
                   width="150">
                 </el-table-column>
               </el-table>
@@ -154,43 +152,42 @@
         tableDataFrom: [],
         tableDataTo: [],
         finProduct: '',
-        pageNum: null,
+        pageNum: 1,
         proTotal:null,
         pageSize:null,
         pageSizes:[30,50,80],
         nowPageSizes:30,
-        pageNum1: null,
+        pageNum1: 1,
         proTotal1:null,
         pageSize1:null,
         pageSizes1:[30,50,80],
         nowPageSizes1:30,
         value7:'',
         linkManList:[],
-        cusCustomer:[],
+        cusCustomer:{},
       }
     },
     methods: {
       //每页显示多少条
       handleSizeChangeFrom(val) {
-        this.getAddressFrom(this.pageNum,val,this.finProduct,this.finProduct);
         this.nowPageSizes=val;
+        this.getAddressFrom(this.pageNum,val,this.id,0);
       },
       //翻页
       handleCurrentChangeFrom(val) {
-        console.log(this.nowPageSizes);
-        this.getAddressFrom(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getAddressFrom(val,this.nowPageSizes,this.id,0);
       },
       //每页显示多少条
       handleSizeChangeTo(val) {
-        this.getAddressTo(this.pageNum1,val,this.finProduct,this.finProduct);
         this.nowPageSizes1=val;
+        this.getAddressTo(this.pageNum1,val,this.id,1);
       },
       //翻页
       handleCurrentChangeTo(val) {
-        this.getAddressTo(val,this.nowPageSizes1,this.finProduct,this.finProduct);
+        this.getAddressTo(val,this.nowPageSizes1,this.id,1);
       },
       //运营商通讯录比对---呼入
-      getAddressFrom(id){
+      getAddressFrom(data1,data2,data3,data4){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/user_center/admin/address/get",
@@ -199,14 +196,17 @@
             'Authorization': localStorage.token
           },
           params:{
-           id:id
+            pageNum:data1,
+            pageSize:data2,
+            id:data3,
+            type:data4
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.tableDataFrom=res.data.body.list;
-            this.proTotal=res.data.body.total;
-            this.pageSize=res.data.body.pageSize;
-            this.pageNum=res.data.body.pageNum;
+            this.tableDataFrom=res.data.body.callInRecord.list;
+            this.proTotal=res.data.body.callInRecord.total;
+            this.pageSize=res.data.body.callInRecord.pageSize;
+            this.pageNum=res.data.body.callInRecord.pageNum;
             this.linkManList=res.data.body.linkMan;
             this.cusCustomer=res.data.body.cusCustomer;
           }else {
@@ -215,7 +215,7 @@
         })
       },
       //运营商通讯录比对--呼出
-      getAddressTo(id){
+      getAddressTo(data1,data2,data3,data4){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/user_center/admin/address/get",
@@ -224,38 +224,31 @@
             'Authorization': localStorage.token
           },
           params:{
-            id:id
+            pageNum:data1,
+            pageSize:data2,
+            id:data3,
+            type:data4
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.tableDataTo=res.data.body.list;
-            this.proTotal=res.data.body.total;
-            this.pageSize=res.data.body.pageSize;
-            this.pageNum=res.data.body.pageNum;
+            this.tableDataTo=res.data.body.calloutRecord.list;
+            this.proTotal=res.data.body.calloutRecord.total;
+            this.pageSize=res.data.body.calloutRecord.pageSize;
+            this.pageNum=res.data.body.calloutRecord.pageNum;
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.relation;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
-      }
     },
     mounted: function () {
       this.id=this.$route.params.id;
-      this.getAddressFrom(this.id);
-      this.getAddressTo(this.id);
+      this.getAddressFrom(1,30,this.id,0);
+      this.getAddressTo(1,30,this.id,1);
     },
     //过滤器的本质 就是一个有参数有返回值的方法
     filters:{
       myCurrency:function(arg1){
-        console.log(arg1);
         //根据业务需要，对传来的数据进行处理
         // 并返回处理后的结果
         if(arg1==0){

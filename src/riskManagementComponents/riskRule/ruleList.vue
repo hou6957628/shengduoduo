@@ -6,7 +6,7 @@
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建规则<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-button class="upLoadBtn" @click="tolabelList()" type="primary">规则分类列表<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-input @click="searchProduct" class="searchContent"
+      <el-input class="searchContent"
         placeholder="规则名称、编号搜索"
         v-model="finProduct"
         clearable>
@@ -73,6 +73,7 @@
           </template>
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作"
           width="220">
           <template slot-scope="scope">
@@ -140,12 +141,12 @@
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.finProduct,this.electValue);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.finProduct,this.electValue);
       },
       //创建规则
       toAddProduct(){
@@ -190,10 +191,6 @@
             this.$message.error(res.data.msgInfo);
           }
         })
-      },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20,this.finProduct,this.finProduct,null);
       },
       //编辑规则接口
       editProduct(row){

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3>用户催收记录</h3>
     <template>
       <el-table
         :data="collection"

@@ -1,7 +1,8 @@
 <template>
   <div>
+    <h3>风险命中列表</h3>
     <div class="operationContent">
-          <el-input @click="searchProduct" class="searchContent"
+          <el-input class="searchContent"
                     placeholder="查询编号或触发名称"
                     v-model="finProduct"
                     clearable>
@@ -30,12 +31,12 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="flowId"
-          label="风险编号"
+          prop="flowName"
+          label="子流程名称"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="flowName"
+          prop="itemName"
           label="类型"
           width="150">
         </el-table-column>
@@ -45,9 +46,19 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="action"
-          label="触发结果"
+          prop="value"
+          label="取值"
           width="150">
+        </el-table-column>
+        <el-table-column
+          prop="result"
+          label="结果"
+          width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.result == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.result == 0 ? '拒绝' : '通过'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
           prop="createDate"
@@ -91,25 +102,16 @@
     methods: {
       //查询金融产品
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,20,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,20,data,this.finProduct);
-          console.log(data);
-        }
+        this.getProductList(this.pageNum,this.pageSize,this.id,this.finProduct);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
         this.nowPageSizes=val;
+        this.getProductList(this.pageNum,val,this.id,this.finProduct);
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.id,this.finProduct);
       },
       /**
        * 获取风险命中列表
@@ -118,16 +120,19 @@
        * @param data3 用户id
        * @param data4 编号或触发名称
        */
-      getProductList(id){
+      getProductList(data1,data2,data3,data4){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/admin/control_flow/list",
+          url:"http://"+this.baseUrl+"/risk/admin/flow_log/selectControlFlowLog",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            id:id,
+            pageNum: data1,
+            pageSize: data2,
+            customerId:data3,
+            name:data4,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -140,10 +145,6 @@
           }
         })
       },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20,this.finProduct,this.finProduct);
-      },
       //编辑产品接口
       editProduct(row){
         console.log(row.id);
@@ -152,17 +153,10 @@
           path: `/editFinanceProduct/${id}`,
         });
       },
-      //详情接口
-      detailProduct(row){
-        let id=row.id;
-        this.$router.push({
-          path: `/editFinanceProduct/${id}`,
-        });
-      },
     },
     mounted:function () {
       this.id=this.$route.params.id;
-      this.getProductList(this.id);
+      this.getProductList(1,30,this.id,null);
     },
     data() {
       return {

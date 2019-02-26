@@ -393,8 +393,6 @@
             'Authorization': localStorage.token
           },
           params:{
-            // this.getOrderList(this.productId,this.status,this.mobile,this.repaymentOverdueDay,this.orderRepaymentDate,
-            // this.orderDate,this.repaymentPaymentDate,this.reBorrow,this.pageNum,this.pageSize
             productId: data1,
             status: data2,
             mobile: data3,

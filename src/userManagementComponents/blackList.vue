@@ -5,6 +5,17 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
+        产品名称：
+        <el-select v-model="productId" placeholder="请选择" @change="selectChange">
+          <el-option
+            v-for="item in productListData"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
         <template>姓名：
           <el-input class="searchContent" placeholder="用户姓名" v-model="realName" clearable> </el-input>
         </template>
@@ -29,24 +40,26 @@
           <el-input class="searchContent" placeholder="子渠道名称" v-model="subChannelName" clearable></el-input>
         </template>
       </el-col>
-      <template>
-        时间筛选:
-        <el-date-picker style="margin-left: 25px"
-                        v-model="value7"
-                        type="datetimerange"
-                        align="right"
-                        unlink-panels
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        :picker-options="pickerOptions2"
-                        format="yyyy-MM-dd HH:mm:ss"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        @change="logTimeChange()">
-        </el-date-picker>
-      </template>
-      <el-button id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
-      <el-button type="primary" id="blackBtn" @click="blackBtn()" slot="append" icon="">添加黑名单</el-button>
+        <template>
+          时间筛选:
+          <el-date-picker style="margin-left: 25px"
+                          v-model="value7"
+                          type="datetimerange"
+                          align="right"
+                          unlink-panels
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          :picker-options="pickerOptions2"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          @change="logTimeChange()">
+          </el-date-picker>
+        </template>
+    </div>
+    <div style="margin-bottom: 20px">
+      <el-button style="float: left;" id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button style="min-width: 50px;" type="primary" id="blackBtn" @click="blackBtn()" slot="append" icon="">添加黑名单</el-button>
     </div>
     <template>
       <el-table
@@ -159,18 +172,22 @@
   import axios from 'axios'
   export default {
     methods: {
+      //根据产品查询
+      selectChange() {
+        this.getProductList(1,20,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
+      },
       //查询金融产品
       searchContent(data){
-        this.getProductList(1,20,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime);
+        this.getProductList(1,20,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime);
+        this.getProductList(this.pageNum,val,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime);
+        this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
       },
       //创建金融产品
       toAddProduct(){
@@ -189,8 +206,9 @@
        * @param data7 子渠道
        * @param data8 开始时间
        * @param data9 结束时间
+       * @param data10 产品id
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
         axios({
           method:"GET",
           url:"http://"+this.baseUrl+"/user_center/admin/black/list",
@@ -208,6 +226,7 @@
             subChannelName: data7,
             startDate: data8,
             endDate: data9,
+            productId: data10,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -226,7 +245,6 @@
       },
       //编辑产品接口
       editProduct(row){
-        console.log(row.id);
         let id=row.id;
         this.$router.push({
           path: `/editFinanceProduct/${id}`,
@@ -260,12 +278,33 @@
           this.endTime='';
         }
       },
+      //查询产品列表
+      getProducts(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productListData=res.data.body;
+            this.productListData.unshift({productId: null, productName: '全部产品'});
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted:function () {
-      this.getProductList(1,20,null,null,null,null,null,null);
+      this.getProductList(1,20,null,null,null,null,null,null,null,null);
+      this.getProducts();
     },
     data() {
       return {
+        productListData: [],
+        productId:null,
         tableData: [],
         pageNum: null,
         proTotal:null,

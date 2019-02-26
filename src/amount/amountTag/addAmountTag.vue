@@ -33,7 +33,7 @@
             字段名称：<el-button @click="xuan(index)" :id="['btn'+index]">点击选择</el-button>
             <!--数字类型type=0：两个输入框-->
             <div class="noDisplay" :class="['type'+index]">
-              <el-select v-model="domain.symbolCode1">
+              <el-select v-model="domain.symbolCode1" @change="selectChange">
                 <el-option
                   v-for="item in fieldCodeList0"
                   :key="item.key"
@@ -42,7 +42,7 @@
                 </el-option>
               </el-select>
               <el-input type="text" style="width: 200px" v-model="domain.fieldValue1" @keyup.native="numberCheck1(index)"></el-input>
-              <el-select v-model="domain.symbolCode2">
+              <el-select v-model="domain.symbolCode2" @change="selectChange">
                 <el-option
                   v-for="item in fieldCodeList0"
                   :key="item.key"
@@ -91,8 +91,6 @@
       checkName(rule, value, callback) {
         if (!value) {
           callback(new Error('请输入名称'));
-        } else if (value.length < 3 | value.length > 10) {
-          callback(new Error('长度在 3 到 10 个字符'));
         } else {
           axios({
             method:"GET",
@@ -169,9 +167,9 @@
           }
         });
       },
-      selectChange(key,id){
-        // console.log("我是key----" + rkey);
-        // console.log("我是id----" + id);
+      //强制刷新
+      selectChange(){
+        this.$forceUpdate();
       },
       //添加数据
       addDomain() {

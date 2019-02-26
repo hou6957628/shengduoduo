@@ -16,7 +16,7 @@
       <el-table
         :data="tableData"
         border
-        style="width: 100%">
+        style="width: 98%">
         <el-table-column
           fixed
           prop="tagCode"
@@ -26,7 +26,7 @@
         <el-table-column
           prop="tagName"
           label="标签名称"
-          width="200">
+          width="250">
         </el-table-column>
         <el-table-column
           prop="createDate"
@@ -46,7 +46,7 @@
         <el-table-column
           prop="description"
           label="标签说明"
-          width="120">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="enabled"
@@ -165,9 +165,9 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.tableData=res.data.body.list;
-            this.proTotal=res.data.body.list.total;
-            this.pageSize=res.data.body.list.pageSize;
-            this.pageNum=res.data.body.list.pageNum;
+            this.proTotal=res.data.body.total;
+            this.pageSize=res.data.body.pageSize;
+            this.pageNum=res.data.body.pageNum;
           }else {
             this.$message.error(res.data.msgInfo);
           }

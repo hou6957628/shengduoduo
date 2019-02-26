@@ -34,7 +34,7 @@
                       <el-button @click="xuan(index)" :id="['btn'+index]" v-if="!domain.fieldName">点击选择</el-button>
             <!--数字类型type=0：两个输入框-->
             <div style="display: inline-block;height: 1px">
-              <el-select v-model="domain.symbolCode1">
+              <el-select v-model="domain.symbolCode1" @change="selectChange">
                 <el-option
                   v-for="item in fieldCodeList0"
                   :key="item.key"
@@ -43,7 +43,7 @@
                 </el-option>
               </el-select>
               <el-input type="text" style="width: 200px" v-model="domain.fieldValue1" @keyup.native="numberCheck1(index)"></el-input>
-              <el-select v-model="domain.symbolCode2">
+              <el-select v-model="domain.symbolCode2" @change="selectChange">
                 <el-option
                   v-for="item in fieldCodeList0"
                   :key="item.key"
@@ -140,9 +140,8 @@
           }
         });
       },
-      selectChange(key,id){
-        // console.log("我是key----" + rkey);
-        // console.log("我是id----" + id);
+      selectChange(){
+        this.$forceUpdate();
       },
       //添加数据
       addDomain() {

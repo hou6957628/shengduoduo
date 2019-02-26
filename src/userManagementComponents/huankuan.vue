@@ -1,6 +1,7 @@
 <template>
   <div>
     <template>
+      <h3>还款记录</h3>
       <el-table
         :data="count"
         border
@@ -8,103 +9,120 @@
         <el-table-column
           fixed
           prop="id"
-          label="还款编号"
-          width="150">
+          label="ID"
+          width="110">
         </el-table-column>
         <el-table-column
-          prop="mobile"
+          fixed
+          prop="memo"
           label="还款方式"
-          width="150">
-        </el-table-column>
-        <el-table-column
-          prop="status"
-          label="还款通道"
-          width="150">
-        </el-table-column>
-        <el-table-column
-          prop="cardNumber"
-          label="状态"
-          width="150">
+          min-width="120">
+          <!--:formatter="methodFormatter"-->
         </el-table-column>
         <el-table-column
           prop="gender"
-          label="姓名"
-          width="200">
-        </el-table-column>
-        <el-table-column
-          prop="birthDate"
-          label="手机号"
-          width="200">
-        </el-table-column>
-        <el-table-column
-          prop="createDate"
-          label="交易流水号"
-          width="100">
+          label="还款通道"
+          :formatter="genderFormatter"
+          min-width="120">
         </el-table-column>
         <el-table-column
           prop="status"
-          label="合同额"
+          label="状态"
+          :formatter="statusFormatter"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="姓名"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="mobile"
+          label="手机号"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="tranFlowId"
+          label="交易流水号"
+          width="250">
+        </el-table-column>
+        <el-table-column
+          prop="borrowingCapital"
+          label="合同金额"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="productName"
+          prop="lagInterest"
           label="逾期费用"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="productName"
-          label="罚息金额"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="productName"
+          prop="repaymentCapital"
           label="总费用"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="productName"
-          label="减免金额"
+          prop="discountAmount"
+          label="已减免金额"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="productName"
+          prop="paymentAmount"
           label="实际还款金额"
+          width="110">
+        </el-table-column>
+        <el-table-column
+          prop="partial"
+          label="是否部分还款"
+          width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.partial == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.partial == 1 ? '是' : '否'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="partialRepayment"
+          label="部分还款应还金额"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="productName"
-          label="是否是部分还款"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="productName"
-          label="部分还款金额"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="productName"
+          prop="defer"
           label="是否展期"
           width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.defer == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.defer == 1 ? '是' : '否'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="repaymentDefer"
+          label="展期还款金额"
+          width="110">
         </el-table-column>
         <el-table-column
           prop="productName"
-          label="展期还款金额"
+          label="收款账户"
+          width="110">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="收款平台"
           width="100">
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="创建时间"
+          width="200">
+        </el-table-column>
+        <el-table-column
+          prop="updateDate"
+          label="更新时间"
+          width="200">
         </el-table-column>
       </el-table>
     </template>
-    <div class="block">
-      <el-pagination class="paginationBox"
-                     @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange"
-                     :unique-opened="true"
-                     :current-page="pageNum"
-                     :page-sizes="pageSizes"
-                     :page-size="pageSize"
-                     layout="total, sizes, prev, pager, next, jumper"
-                     :total="proTotal">
-      </el-pagination>
-    </div>
   </div>
 </template>
 
@@ -115,35 +133,10 @@
     data() {
       return {
         count: [],
-        finProduct: '',
-        pageNum: null,
-        proTotal:null,
-        pageSize:null,
-        pageSizes:[30,50,80],
-        nowPageSizes:30,
-        value7:'',
       };
     },
     methods: {
-      //每页显示多少条
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
-        this.nowPageSizes=val;
-      },
-      //翻页
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
-      },
-      //详情
-      detailProduct(row){
-        let id=row.id;
-        this.$router.push({
-          path: `/editFinanceProduct/${id}`,
-        });
-      },
+      //查询还款记录
       getCollection(id) {
         axios({
           method: "POST",
@@ -166,33 +159,29 @@
           }
         })
       },
+      //过滤还款通道字段
+      genderFormatter(row){
+        return '合利宝'
+      },
+      //过滤状态字段
+      statusFormatter(row){
+        let status = row.status;
+        if(status === 0){
+          return '订单生成 '
+        } else if (status === 1){
+          return '付款交易进行中'
+        } else if (status === 2){
+          return '已完成'
+        } else if (status === 3){
+          return '已取消'
+        } else if (status === 4){
+          return '失败'
+        }
+      },
     },
     mounted: function () {
       this.id=this.$route.params.id;
       this.getCollection(this.id);
-    },
-    filters:{
-      typeFalse:function(arg1){
-        console.log(arg1);
-        if(arg1==true){
-          var result = "是";
-          return result;
-        }else if(arg1==false){
-          var result = "否";
-          return result;
-        }
-
-      },
-      yuqi:function(arg1){
-        if(arg1==9){
-          var result = "是";
-          return result;
-        }else{
-          var result = "否";
-          return result;
-        }
-
-      }
     }
   }
 </script>

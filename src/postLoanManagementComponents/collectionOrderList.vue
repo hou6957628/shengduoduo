@@ -1,15 +1,15 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/afterLoanManagement' }">逾期订单管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/afterLoanManagement' }">催收已分订单管理</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
         订单状态：
-        <el-select v-model="electValue1" placeholder="请选择" @change="selectChange1">
+        <el-select v-model="status" placeholder="请选择">
           <el-option
-            v-for="item in electData1"
-            :key="item.id"
+            v-for="item in statusList"
+            :key="item.classifyId"
             :label="item.classifyName"
             :value="item.classifyId">
           </el-option>
@@ -17,11 +17,7 @@
       </el-col>
       <el-col :span="6" style="height: 55px;">
       <template>手机号码：
-      <el-input @click="searchProduct" class="searchContent"
-        placeholder="用户手机号"
-        v-model="finProduct"
-        clearable>
-      </el-input>
+        <el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
       </template>
       </el-col>
       <el-col :span="12" style="height: 55px;">
@@ -29,24 +25,6 @@
           下单时间：
           <el-date-picker style="margin-left: 0px"
                           v-model="value5"
-                          type="datetimerange"
-                          align="right"
-                          unlink-panels
-                          range-separator="至"
-                          start-placeholder="开始日期"
-                          end-placeholder="结束日期"
-                          :picker-options="pickerOptions2"
-                          format="yyyy-MM-dd HH:mm:ss"
-                          value-format="yyyy-MM-dd HH:mm:ss"
-                          @change="logTimeChange()">
-          </el-date-picker>
-        </template>
-      </el-col>
-      <el-col :span="12" style="height: 55px;">
-        <template>
-          放款时间：
-          <el-date-picker style="margin-left: 0"
-                          v-model="value6"
                           type="datetimerange"
                           align="right"
                           unlink-panels
@@ -64,7 +42,7 @@
         <template>
           放款时间：
           <el-date-picker style="margin-left: 0"
-                          v-model="value7"
+                          v-model="value6"
                           type="datetimerange"
                           align="right"
                           unlink-panels
@@ -78,33 +56,47 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-col :span="6" style="height: 55px;">
-        逾期天数：
-          <el-input @click="searchProduct" class="searchContent"
-                    placeholder="逾期天数"
-                    v-model="overdueNum"
-                    clearable>
-          </el-input>
+      <el-col :span="12" style="height: 55px;">
+        <template>
+          预计还款时间：
+          <el-date-picker style="margin-left: 0"
+                          v-model="value7"
+                          type="datetimerange"
+                          align="right"
+                          unlink-panels
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          :picker-options="pickerOptions2"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          @change="logTimeChange3()">
+          </el-date-picker>
+        </template>
       </el-col>
       <el-col :span="6" style="height: 55px;">
+        逾期天数：
+          <el-input class="searchContent" placeholder="逾期天数" v-model="repaymentOverdueDay" clearable></el-input>
+      </el-col>
+      <el-col :span="5.5" style="height: 55px;">
         所属平台：
-        <el-select v-model="electValue2" placeholder="请选择" @change="selectChange2">
+        <el-select v-model="productId" placeholder="请选择" @change="selectChange">
           <el-option
-            v-for="item in electData2"
-            :key="item.id"
-            :label="item.classifyName"
-            :value="item.classifyId">
+            v-for="item in productList"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productId">
           </el-option>
         </el-select>
       </el-col>
       <el-col :span="6" style="height: 55px;">
         催收员：
-        <el-select v-model="electValue2" placeholder="请选择" @change="selectChange2">
+        <el-select v-model="adminId" placeholder="请选择">
           <el-option
-            v-for="item in electData2"
+            v-for="item in collectionList"
             :key="item.id"
-            :label="item.classifyName"
-            :value="item.classifyId">
+            :label="item.roleName"
+            :value="item.id">
           </el-option>
         </el-select>
       </el-col>
@@ -124,13 +116,13 @@
         </el-table-column>
         <el-table-column
           fixed
-          prop="productCode"
+          prop="id"
           label="订单ID"
           width="120">
         </el-table-column>
         <el-table-column
           fixed
-          prop="realName"
+          prop="name"
           label="姓名"
           min-width="80">
         </el-table-column>
@@ -140,77 +132,79 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="productId"
+          prop="borrowingPeriod"
           label="借款期限"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="createDate"
+          prop="borrowingCapital"
           label="借款金额"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="channelName"
+          prop="status"
           label="订单状态"
+          :formatter="statusFormatter"
           width="120">
         </el-table-column>
         <el-table-column
-          prop="subChannelName"
+          prop="borrowingInterest"
           label="综合费用"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="interestMethods"
+          prop="borrowingPaymentAmount"
           label="到账金额"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="updateDate"
+          prop="repaymentOverdueDay"
           label="逾期天数"
-          width="150">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="applyNumber"
+          prop="repaymentPenaltyInterest"
           label="逾期费用"
-          width="110">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="loanNumber"
+          prop="repaymentPenaltyInterest"
           label="应还金额"
-          width="80">
+          :formatter="shouldFormatter"
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="isBlackList"
-          label="实际还款金额"
-          width="110">
-        </el-table-column>
-        <el-table-column
-          prop="overdueNumber"
-          label="已减免金额"
-          width="80">
-        </el-table-column>
-        <el-table-column
-          prop="reBorrow"
+          prop="defer"
           label="是否展期"
           width="80">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.defer == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.defer == 1 ? '是' : '否'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="repaymentDefer"
+          label="展期还款金额"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
           label="应用"
-          width="80">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="createDate"
           label="下单时间"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="borrowingPaymentDate"
           label="放款时间"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="parentChannelName"
           label="主渠道"
           width="200">
         </el-table-column>
@@ -235,7 +229,7 @@
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="outSourceDate"
           label="转出时间"
           width="200">
         </el-table-column>
@@ -245,22 +239,23 @@
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="outSourceDate"
           label="委外天数"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="reBorrow"
           label="用户标识"
+          :formatter="reBorrowFormatter"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="collectorName"
           label="催收员"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="collectorName"
           label="委外公司"
           width="200">
         </el-table-column>
@@ -293,57 +288,129 @@
   import axios from 'axios'
   export default {
     methods: {
-      //查询金融产品
-      searchContent(data){
-        if(data==""){
-          this.getProductList(1,20,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,20,data,this.finProduct);
-          console.log(data);
-        }
-      },
-      //每页显示多少条
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
-        this.nowPageSizes=val;
-      },
-      //翻页
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
-      },
-      //创建金融产品
-      detailProduct(){
-        this.$router.push({
-          path: `/editFinanceProduct`,
-        });
-      },
-      /**
-       * 获取金融产品列表
-       * @param data1 查询第几页
-       * @param data2 每页显示多少条数据
-       * @param data3 产品名称
-       * @param data4 产品编号
-       */
-      getProductList(data1,data2,data3,data4){
+      //查询所有产品
+      getProduct() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/customer/list",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productList=res.data.body;
+            this.productList.unshift({productId: null, productName: '全部产品'});
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //二级联动：选择平台后加载对应催收员
+      selectChange(){
+        this.getCollectionList();
+      },
+      //查询所有催收员
+      getCollectionList() {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/getCollection",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            realName: data1,
-            mobile: data2,
-            channelName: data3,
-            channelName: data4,
+            productId: this.productId,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.collectionList=res.data.body;
+            this.collectionList.unshift({id:null,roleName:"全部"});
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //条件查询
+      searchContent(data){
+        if (this.status==null) {
+          this.getProductList(this.pageNum,this.pageSize,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
+            this.repaymentPaymentEndDate,this.orderRepaymentStartDate,this.orderRepaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId,1);
+        } else {
+          this.getProductList(this.pageNum,this.pageSize,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
+            this.repaymentPaymentEndDate,this.orderRepaymentStartDate,this.orderRepaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId,null);
+        }
+      },
+      //每页显示多少条
+      handleSizeChange(val) {
+        if (this.status==null) {
+          this.getProductList(this.pageNum,val,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
+            this.repaymentPaymentEndDate,this.orderRepaymentStartDate,this.orderRepaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId,1);
+        } else {
+          this.getProductList(this.pageNum,val,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
+            this.repaymentPaymentEndDate,this.orderRepaymentStartDate,this.orderRepaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId,null);
+        }
+        this.nowPageSizes=val;
+      },
+      //翻页
+      handleCurrentChange(val) {
+        if (this.status==null) {
+          this.getProductList(val,this.nowPageSizes,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
+            this.repaymentPaymentEndDate,this.orderRepaymentStartDate,this.orderRepaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId,1);
+        } else {
+          this.getProductList(val,this.nowPageSizes,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
+            this.repaymentPaymentEndDate,this.orderRepaymentStartDate,this.orderRepaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId,null);
+        }
+      },
+      /**
+       * 催收已分订单列表
+       * @param data1 查询第几页
+       * @param data2 每页显示多少条数据
+       * @param data3 订单状态
+       * @param data4 手机号码
+       * @param data5 下单开始时间
+       * @param data6 下单结束时间
+       * @param data7 放款开始时间
+       * @param data8 放款结束时间
+       * @param data9 到期开始时间
+       * @param data10 到期结束时间
+       * @param data11 逾期天数
+       * @param data12 所属平台
+       * @param data13 催收员
+       * @param data14 1-逾期，坏账，逾期已还
+       */
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/findAssignedOrder",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum: data1,
+            pageSize: data2,
+            status: data3,
+            mobile: data4,
+            orderStartDate: data5,
+            orderEndDate: data6,
+            repaymentPaymentStartDate: data7,
+            repaymentPaymentEndDate: data8,
+            orderRepaymentStartDate: data9,
+            orderRepaymentEndDate: data10,
+            repaymentOverdueDay: data11,
+            productId: data12,
+            adminId: data13,
+            orderType: data14,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
@@ -353,106 +420,166 @@
           }
         })
       },
-      //查询产品接口
-      searchProduct(){
-        this.getProductList(1,20,this.finProduct,this.finProduct);
-      },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
+      //过滤状态字段
+      statusFormatter(row){
+        let status = row.status;
         if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
+          return '待机审 '
+        } else if (status === 1){
+          return '机器审核中'
+        } else if (status === 2){
+          return '审核拒绝'
+        } else if (status === 3){
+          return '人工审核'
+        } else if (status === 4){
+          return '待放款'
+        } else if (status === 5){
+          return '放款中'
+        } else if (status === 6){
+          return '放款失败'
+        } else if (status === 7){
+          return '取消'
+        } else if (status === 8){
+          return '放款成功，待还款'
+        } else if (status === 9){
+          return '还款确认中'
+        } else if (status === 10){
+          return '正常还款 '
+        } else if (status === 11){
+          return '逾期未还'
+        } else if (status === 12){
+          return '坏账'
+        } else if (status === 13){
+          return '逾期还款'
         }
       },
-      //时间筛选
-      logTimeChange(){
-        if(this.value7==''||this.value7==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
-        }else {
-          var startTime=this.value7[0];
-          var endTime=this.value7[1];
-          this.startTime=startTime;
-          this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
-        }
+      //应还金额字段
+      shouldFormatter(row){
+        let repaymentCapital = row.repaymentCapital;
+        let repaymentOverdueFee = row.repaymentOverdueFee;
+        let repaymentPenaltyInterest = row.repaymentPenaltyInterest;
+        return repaymentCapital + repaymentOverdueFee + repaymentPenaltyInterest;
       },
-      //时间筛选1
+      //下单时间筛选
       logTimeChange1(){
-        if(this.value6==''||this.value6==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
-        }else {
-          var startTime=this.value6[0];
-          var endTime=this.value6[1];
-          this.startTime=startTime;
-          this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
-        }
-      },
-      //时间筛选2
-      logTimeChange2(){
-        if(this.value5==''||this.value5==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
-        }else {
+        if(this.value5!=''||this.value5!=null){
           var startTime=this.value5[0];
           var endTime=this.value5[1];
-          this.startTime=startTime;
-          this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
+          this.orderStartDate=startTime;
+          this.orderEndDate=endTime;
         }
       },
-      //下拉选择
-      selectChange(row){
-        console.log(this.electValue);
+      //放款时间筛选
+      logTimeChange2(){
+        if(this.value6!=''||this.value6!=null){
+          var startTime=this.value6[0];
+          var endTime=this.value6[1];
+          this.repaymentPaymentStartDate=startTime;
+          this.repaymentPaymentEndDate=endTime;
+        }
       },
-      selectChange1(row){
-        console.log(this.electValue1);
-      },
-      selectChange2(row){
-        console.log(this.electValue2);
+      //预计还款时间筛选
+      logTimeChange3(){
+        if(this.value7!=''||this.value7!=null){
+          var startTime=this.value7[0];
+          var endTime=this.value7[1];
+          this.orderRepaymentStartDate=startTime;
+          this.orderRepaymentEndDate=endTime;
+        }
       },
       //取消分单
       cancelContent(){
-
+        if (this.orderIds.length==0) {
+          this.$message({
+            showClose: true,
+            message: '请选择至少一个订单',
+            type: 'warning'
+          });
+        } else {
+          this.$confirm('是否确认取消分单?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+          }).then(() => {
+            var data = {
+              'ids':this.orderIds,
+            };
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/order/admin/borrowing/cancelAssignedOrder",
+              headers:{
+                'Content-Type':'application/json',
+                'Authorization': localStorage.token
+              },
+              data:JSON.stringify(data),
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+              }else if(res.data.msgCd=='ZYCASH-1009'){
+                this.$message.error(res.data.msgInfo);
+              }
+              else {
+                this.$message.error(res);
+              }
+            })
+          });
+        }
       },
       //全选
       handleSelectionChange(val) {
         this.multipleSelection = val;
-      }
+        let ids = []
+        this.multipleSelection.map((item)=> {
+          ids.push(item.orderId);
+        })
+        this.orderIds = ids;
+      },
+      //过滤用户标识字段
+      reBorrowFormatter(row){
+        let reBorrow = row.reBorrow;
+        if(reBorrow === false){
+          return '新户'
+        } else if (reBorrow === true){
+          return '老户'
+        } else{
+          return '---'
+        }
+      },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      // this.getProductList(1,20,null,null);
+      this.getProduct();
+      this.getProductList(1,30,null,null,null,null,null,null,null,null,null,null,null,1);
     },
     data() {
       return {
-        electData: [
-          {classifyId:0,classifyName:"全部产品"},
-          {classifyId:1,classifyName:"借点儿"},
-          {classifyId:2,classifyName:"夏花花"},
-          {classifyId:3,classifyName:"取消救济"},
-        ],
-        electData1: [
-          {classifyId:0,classifyName:"全部状态"},
-          {classifyId:1,classifyName:"逾期"},
-          {classifyId:2,classifyName:"坏账"},
-          {classifyId:3,classifyName:"逾期已还"},
-          {classifyId:4,classifyName:"坏账已还"},
-        ],
-        electData2: [
-          {classifyId:0,classifyName:"全部状态"},
-          {classifyId:1,classifyName:"新户"},
-          {classifyId:2,classifyName:"老户"},
+        productList:[],
+        statusList: [
+          {classifyId:null,classifyName:"全部状态"},
+          {classifyId:11,classifyName:"逾期未还"},
+          {classifyId:12,classifyName:"坏账"},
+          {classifyId:13,classifyName:"逾期已还"},
         ],
         tableData:[],
-        electValue:0,
-        electValue1:0,
-        electValue2:0,
-        finProduct: '',
+        status:null,
+        mobile:null,
+        orderStartDate:null,
+        orderEndDate:null,
+        repaymentPaymentStartDate:null,
+        repaymentPaymentEndDate:null,
+        orderRepaymentStartDate: null,
+        orderRepaymentEndDate: null,
+        repaymentOverdueDay: null,
+        productId:null,
+        adminId: null,
+        value5:'',
+        value6:'',
+        value7:'',
+        collectionList:'',
+        orderIds:[],
         pageNum: null,
         proTotal:null,
         pageSize:null,
@@ -485,10 +612,6 @@
             }
           }]
         },
-        value5:'',
-        value6:'',
-        value7:'',
-        overdueNum:'',
       }
     }
   }

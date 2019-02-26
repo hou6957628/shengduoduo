@@ -58,9 +58,7 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             axios({
-              // url:"http://localhost:8888/operate/admin/user/login",
-              // url:"http://"+this.baseUrl+"/operate/admin/user/login",
-              url:"http://39.105.217.251:31999/operate/admin/user/login",
+              url:"http://"+this.baseUrl+"/operate/admin/user/login",
               method:"post",
               data:data,
               headers:{

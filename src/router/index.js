@@ -2,12 +2,15 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import login from '@/components/login'
 import home from '@/home'
+//金融产品
 import financeProductList from '@/financeComponents/financeProductList'
 import addFinanceProduct from '@/financeComponents/addFinanceProduct'
 import editFinanceProduct from '@/financeComponents/editFinanceProduct'
+//商户
 import merchantProductList from '@/merchantComponents/merchantProductList'
 import addMerchant from '@/merchantComponents/addMerchant'
 import editMerchant from '@/merchantComponents/editMerchant'
+//产品
 import productProductList from '@/productManagementComponents/productProductList'
 import addProduct from '@/productManagementComponents/addProduct'
 import editProduct from '@/productManagementComponents/editProduct'
@@ -18,8 +21,6 @@ import userDetail from '@/userManagementComponents/userDetail'
 import jiben from '@/userManagementComponents/jiben'
 import fenxian from '@/userManagementComponents/fenxian'
 import yunying from '@/userManagementComponents/yunying'
-import tianji from '@/userManagementComponents/tianji'
-import zhifu from '@/userManagementComponents/zhifu'
 import yonghu from '@/userManagementComponents/yonghu'
 import dingdan from '@/userManagementComponents/dingdan'
 import fangkuan from '@/userManagementComponents/fangkuan'
@@ -100,26 +101,59 @@ import editAccount from '@/privilegeManagementComponents/editAccount'
 import editRole from '@/privilegeManagementComponents/editRole'
 import editCollectionPerson from '@/postLoanManagementComponents/editCollectionPerson'
 
-//订单区域
 import approvalCenter from '@/orderManagementComponents/approvalCenter'
+//订单区域-待审批
 import pendingApproval from '@/orderManagementComponents/pendingApproval'
 import orderDetail from '@/orderManagementComponents/orderDetail'
-import orderDetailPendingLoan from '@/orderManagementComponents/orderDetailPendingLoan'
 import jibenOrder from '@/orderManagementComponents/jibenOrder'
 import fenxianOrder from '@/orderManagementComponents/fenxianOrder'
 import yunyingOrder from '@/orderManagementComponents/yunyingOrder'
-import tianjiOrder from '@/orderManagementComponents/tianjiOrder'
-import zhifuOrder from '@/orderManagementComponents/zhifuOrder'
 import yonghuOrder from '@/orderManagementComponents/yonghuOrder'
 import dingdanOrder from '@/orderManagementComponents/dingdanOrder'
 import fangkuanOrder from '@/orderManagementComponents/fangkuanOrder'
 import huankuanOrder from '@/orderManagementComponents/huankuanOrder'
-
+//订单区域-待放款
 import pendingLoan from '@/orderManagementComponents/pendingLoan'
+import orderDetailPendingLoan from '@/orderManagementComponents/orderDetailPendingLoan'
+import jibenOrder1 from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder1 from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder1 from '@/orderManagementComponents/yunyingOrder'
+import yonghuOrder1 from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder1 from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder1 from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder1 from '@/orderManagementComponents/huankuanOrder'
+//订单区域-已放款
 import loanMade from '@/orderManagementComponents/loanMade'
+import orderDetailLoanMade from '@/orderManagementComponents/orderDetailLoanMade'
+import jibenOrder2 from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder2 from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder2 from '@/orderManagementComponents/yunyingOrder'
+import yonghuOrder2 from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder2 from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder2 from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder2 from '@/orderManagementComponents/huankuanOrder'
+//订单区域-订单管理
 import orderList from '@/orderManagementComponents/orderList'
+//订单区域-还款记录
 import paymentHistory from '@/orderManagementComponents/paymentHistory'
+import orderDetailPaymentHistory from '@/orderManagementComponents/orderDetailPaymentHistory'
+import jibenOrder4 from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder4 from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder4 from '@/orderManagementComponents/yunyingOrder'
+import yonghuOrder4 from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder4 from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder4 from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder4 from '@/orderManagementComponents/huankuanOrder'
+//订单区域-放款记录
 import loanRecord from '@/orderManagementComponents/loanRecord'
+import orderDetailLoanRecord from '@/orderManagementComponents/orderDetailLoanRecord'
+import jibenOrder5 from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder5 from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder5 from '@/orderManagementComponents/yunyingOrder'
+import yonghuOrder5 from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder5 from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder5 from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder5 from '@/orderManagementComponents/huankuanOrder'
 //额度
 import amountFieldList from '@/amount/amountField/amountFieldList'
 import amountTagList from '@/amount/amountTag/amountTagList'
@@ -176,6 +210,7 @@ axios.interceptors.response.use(
   });
 
 Vue.prototype.baseUrl="39.105.217.251:31999";
+Vue.prototype.baseIp="http://39.105.217.251";
 //风控
 // Vue.prototype.baseUrl="localhost:9998";
 //额度
@@ -749,14 +784,6 @@ const vueRouter = new Router({
           component:yunying
         },
         {
-          path:"/tianji",
-          component:tianji
-        },
-        {
-          path:"/zhifu",
-          component:zhifu
-        },
-        {
           path:"/yonghu/:id",
           component:yonghu
         },
@@ -773,6 +800,8 @@ const vueRouter = new Router({
           component:huankuan
         }
       ],
+      //重定向
+      redirect: '/jiben/:id',
       component: userDetail
     },
     {
@@ -946,7 +975,7 @@ const vueRouter = new Router({
       },
       children:[
         {
-          path:"/jibenOrder/:id",
+          path:"/jibenOrder/:id/:orderId",
           component:jibenOrder
         },
         {
@@ -956,14 +985,6 @@ const vueRouter = new Router({
         {
           path:"/yunyingOrder/:id",
           component:yunyingOrder
-        },
-        {
-          path:"/tianjiOrder",
-          component:tianjiOrder
-        },
-        {
-          path:"/zhifuOrder",
-          component:zhifuOrder
         },
         {
           path:"/yonghuOrder/:id",
@@ -982,6 +1003,8 @@ const vueRouter = new Router({
           component:huankuanOrder
         }
       ],
+      //重定向
+      redirect: '/jibenOrder/:id/:orderId',
       component: orderDetail
     },
     {
@@ -1000,42 +1023,36 @@ const vueRouter = new Router({
       },
       children:[
         {
-          path:"/jibenOrder/:id",
-          component:jibenOrder
+          path:"/jibenOrder1/:id/:orderId",
+          component:jibenOrder1
         },
         {
-          path:"/fenxianOrder/:id",
-          component:fenxianOrder
+          path:"/fenxianOrder1/:id",
+          component:fenxianOrder1
         },
         {
-          path:"/yunyingOrder/:id",
-          component:yunyingOrder
+          path:"/yunyingOrder1/:id",
+          component:yunyingOrder1
         },
         {
-          path:"/tianjiOrder",
-          component:tianjiOrder
+          path:"/yonghuOrder1/:id",
+          component:yonghuOrder1
         },
         {
-          path:"/zhifuOrder",
-          component:zhifuOrder
+          path:"/dingdanOrder1/:id",
+          component:dingdanOrder1
         },
         {
-          path:"/yonghuOrder/:id",
-          component:yonghuOrder
+          path:"/fangkuanOrder1/:id",
+          component:fangkuanOrder1
         },
         {
-          path:"/dingdanOrder/:id",
-          component:dingdanOrder
-        },
-        {
-          path:"/fangkuanOrder/:id",
-          component:fangkuanOrder
-        },
-        {
-          path:"/huankuanOrder/:id",
-          component:huankuanOrder
+          path:"/huankuanOrder1/:id",
+          component:huankuanOrder1
         }
       ],
+      //重定向
+      redirect: '/jibenOrder1/:id/:orderId',
       component: orderDetailPendingLoan
     },
     {
@@ -1045,6 +1062,46 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: loanMade
+    },
+    {
+      path: '/orderDetailLoanMade/:id/:orderId',
+      name: 'orderDetailLoanMade',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder2/:id/:orderId",
+          component:jibenOrder2
+        },
+        {
+          path:"/fenxianOrder2/:id",
+          component:fenxianOrder2
+        },
+        {
+          path:"/yunyingOrder2/:id",
+          component:yunyingOrder2
+        },
+        {
+          path:"/yonghuOrder2/:id",
+          component:yonghuOrder2
+        },
+        {
+          path:"/dingdanOrder2/:id",
+          component:dingdanOrder2
+        },
+        {
+          path:"/fangkuanOrder2/:id",
+          component:fangkuanOrder2
+        },
+        {
+          path:"/huankuanOrder2/:id",
+          component:huankuanOrder2
+        }
+      ],
+      //重定向
+      redirect: '/jibenOrder2/:id/:orderId',
+      component: orderDetailLoanMade
     },
     {
       path: '/orderList',
@@ -1063,12 +1120,92 @@ const vueRouter = new Router({
       component: paymentHistory
     },
     {
+      path: '/orderDetailPaymentHistory/:id/:orderId',
+      name: 'orderDetailPaymentHistory',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder4/:id/:orderId",
+          component:jibenOrder4
+        },
+        {
+          path:"/fenxianOrder4/:id",
+          component:fenxianOrder4
+        },
+        {
+          path:"/yunyingOrder4/:id",
+          component:yunyingOrder4
+        },
+        {
+          path:"/yonghuOrder4/:id",
+          component:yonghuOrder4
+        },
+        {
+          path:"/dingdanOrder4/:id",
+          component:dingdanOrder4
+        },
+        {
+          path:"/fangkuanOrder4/:id",
+          component:fangkuanOrder4
+        },
+        {
+          path:"/huankuanOrder4/:id",
+          component:huankuanOrder4
+        }
+      ],
+      //重定向
+      redirect: '/jibenOrder4/:id/:orderId',
+      component: orderDetailPaymentHistory
+    },
+    {
       path: '/loanRecord',
       name: 'loanRecord',
       meta: {
         requireAuth: true
       },
       component: loanRecord
+    },
+    {
+      path: '/orderDetailLoanRecord/:id/:orderId',
+      name: 'orderDetailLoanRecord',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder5/:id/:orderId",
+          component:jibenOrder5
+        },
+        {
+          path:"/fenxianOrder5/:id",
+          component:fenxianOrder5
+        },
+        {
+          path:"/yunyingOrder5/:id",
+          component:yunyingOrder5
+        },
+        {
+          path:"/yonghuOrder5/:id",
+          component:yonghuOrder5
+        },
+        {
+          path:"/dingdanOrder5/:id",
+          component:dingdanOrder5
+        },
+        {
+          path:"/fangkuanOrder5/:id",
+          component:fangkuanOrder5
+        },
+        {
+          path:"/huankuanOrder5/:id",
+          component:huankuanOrder5
+        }
+      ],
+      //重定向
+      redirect: '/jibenOrder5/:id/:orderId',
+      component: orderDetailLoanRecord
     },
     //展期
     {

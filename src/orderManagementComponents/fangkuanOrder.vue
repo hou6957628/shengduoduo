@@ -1,6 +1,7 @@
 <template>
   <div>
     <template>
+      <h3>放款记录</h3>
       <el-table
         :data="count"
         border
@@ -9,22 +10,22 @@
           fixed
           prop="id"
           label="放款编号"
-          width="150">
+          width="80">
         </el-table-column>
         <el-table-column
           prop="mobile"
           label=" 手机号"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="name"
           label="姓名"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="bankName"
           label="银行名称"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="bankNumber"
@@ -34,7 +35,7 @@
         <el-table-column
           prop="tranFlowId"
           label="交易流水号"
-          width="200">
+          width="250">
         </el-table-column>
         <el-table-column
           prop="borrowingPaymentAmount"
@@ -44,7 +45,8 @@
         <el-table-column
           prop="status"
           label="状态"
-          width="100">
+          :formatter="statusFormatter"
+          width="120">
         </el-table-column>
         <el-table-column
           prop="productName"
@@ -53,18 +55,6 @@
         </el-table-column>
       </el-table>
     </template>
-    <div class="block">
-      <el-pagination class="paginationBox"
-                     @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange"
-                     :unique-opened="true"
-                     :current-page="pageNum"
-                     :page-sizes="pageSizes"
-                     :page-size="pageSize"
-                     layout="total, sizes, prev, pager, next, jumper"
-                     :total="proTotal">
-      </el-pagination>
-    </div>
   </div>
 </template>
 
@@ -75,35 +65,9 @@
     data() {
       return {
         count: [],
-        finProduct: '',
-        pageNum: null,
-        proTotal:null,
-        pageSize:null,
-        pageSizes:[30,50,80],
-        nowPageSizes:30,
-        value7:'',
       };
     },
     methods: {
-      //每页显示多少条
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
-        this.nowPageSizes=val;
-      },
-      //翻页
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
-      },
-      //详情
-      detailProduct(row){
-        let id=row.id;
-        this.$router.push({
-          path: `/editFinanceProduct/${id}`,
-        });
-      },
       //放款记录
       getCollection(id) {
         axios({
@@ -127,34 +91,26 @@
           }
         })
       },
+      //过滤状态字段
+      statusFormatter(row){
+        let status = row.status;
+        if(status === 0){
+          return '订单生成 '
+        } else if (status === 1){
+          return '付款交易进行中'
+        } else if (status === 2){
+          return '已完成'
+        } else if (status === 3){
+          return '已取消'
+        } else if (status === 4){
+          return '失败'
+        }
+      },
     },
     mounted: function () {
       this.id=this.$route.params.id;
       this.getCollection(this.id);
     },
-    filters:{
-      typeFalse:function(arg1){
-        console.log(arg1);
-        if(arg1==true){
-          var result = "是";
-          return result;
-        }else if(arg1==false){
-          var result = "否";
-          return result;
-        }
-
-      },
-      yuqi:function(arg1){
-        if(arg1==9){
-          var result = "是";
-          return result;
-        }else{
-          var result = "否";
-          return result;
-        }
-
-      }
-    }
   }
 </script>
 

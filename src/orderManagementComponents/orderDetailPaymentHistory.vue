@@ -1,62 +1,61 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/pendingApproval' }">待审批列表</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/pendingLoan' }">还款记录列表</el-breadcrumb-item>
       <el-breadcrumb-item>详情</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="jiben">
-    <h3>订单信息</h3>
-    <table>
-      <tr>
-        <td>订单号：{{this.borrowingForm.orderId}}</td>
-        <td>手机号：{{this.borrowingForm.mobile}}</td>
-        <td>渠道：{{this.borrowingForm.parentChannelName==null?'--':this.borrowingForm.parentChannelName}}</td>
-        <td>订单状态：{{this.borrowingForm.status | statusFalse}}</td>
-        <td>新户老户：{{this.borrowingForm.reBorrow==true?'老户':'新户'}}</td>
-        <td>所属平台：{{this.borrowingForm.productName}}</td>
-      </tr>
-      <tr>
-        <td>申请时间：{{this.borrowingForm.createDate}}</td>
-        <td>放款时间：{{this.borrowingForm.borrowingPaymentDate==null?'--':this.borrowingForm.borrowingPaymentDate}}</td>
-        <td>预计还款时间：{{this.borrowingForm.repaymentEndDate}}</td>
-        <td>实际还款时间：{{this.borrowingForm.repaymentPaymentDate==null?'--':this.borrowingForm.repaymentPaymentDate}}</td>
-        <td>借款金额：{{this.borrowingForm.borrowingCapital}}</td>
-        <td>期限：{{this.borrowingForm.borrowingPeriod}}</td>
-      </tr>
-      <tr>
-        <td>是否逾期：{{this.borrowingForm.repaymentOverdueDay==null?'否':'是'}}</td>
-        <td>逾期天数：{{this.borrowingForm.repaymentOverdueDay}}</td>
-        <td>应还利息（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
-        <td>罚息（元）：{{this.borrowingForm.repaymentPenaltyInterest}}</td>
-        <td>滞纳金（元）：没有此字段</td>
-        <td>应还总还金额（元）：{{this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
-      </tr>
-      <tr>
-        <td>是否可展期：{{this.borrowingForm.defer==1?'是':'否'}}</td>
-        <td>展期应还金额：{{this.borrowingForm.repaymentDefer}}</td>
-        <td>展期实际还款金额（元）：{{this.borrowingForm.repaymentDeferPayment}}</td>
-        <td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>
-        <td>展期次数：没有此字段</td>
-        <td>还款方式：没有此字段</td>
-      </tr>
-    </table>
+      <h3>订单信息</h3>
+      <table>
+        <tr>
+          <td>订单号：{{this.borrowingForm.orderId}}</td>
+          <td>手机号：{{this.borrowingForm.mobile}}</td>
+          <td>渠道：{{this.borrowingForm.parentChannelName==null?'--':this.borrowingForm.parentChannelName}}</td>
+          <td>订单状态：{{this.borrowingForm.status | statusFalse}}</td>
+          <td>新户老户：{{this.borrowingForm.reBorrow==true?'老户':'新户'}}</td>
+          <td>所属平台：{{this.borrowingForm.productName}}</td>
+        </tr>
+        <tr>
+          <td>申请时间：{{this.borrowingForm.createDate}}</td>
+          <td>放款时间：{{this.borrowingForm.borrowingPaymentDate==null?'--':this.borrowingForm.borrowingPaymentDate}}</td>
+          <td>预计还款时间：{{this.borrowingForm.repaymentEndDate}}</td>
+          <td>实际还款时间：{{this.borrowingForm.repaymentPaymentDate==null?'--':this.borrowingForm.repaymentPaymentDate}}</td>
+          <td>借款金额：{{this.borrowingForm.borrowingCapital}}</td>
+          <td>期限：{{this.borrowingForm.borrowingPeriod}}</td>
+        </tr>
+        <tr>
+          <td>是否逾期：{{this.borrowingForm.repaymentOverdueDay==null?'否':'是'}}</td>
+          <td>逾期天数：{{this.borrowingForm.repaymentOverdueDay}}</td>
+          <td>应还利息（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
+          <td>罚息（元）：{{this.borrowingForm.repaymentPenaltyInterest}}</td>
+          <td>滞纳金（元）：没有此字段</td>
+          <td>应还总还金额（元）：{{this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
+        </tr>
+        <tr>
+          <td>是否可展期：{{this.borrowingForm.defer==1?'是':'否'}}</td>
+          <td>展期应还金额：{{this.borrowingForm.repaymentDefer}}</td>
+          <td>展期实际还款金额（元）：{{this.borrowingForm.repaymentDeferPayment}}</td>
+          <td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>
+          <td>展期次数：没有此字段</td>
+          <td>还款方式：没有此字段</td>
+        </tr>
+      </table>
     </div>
     <el-button-group style="margin: 0 auto;width: 500px;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button class="la" type="danger" @click="batchAuditOrder('0')">同意</el-button>
-      <el-button class="la" type="danger" @click="batchAuditOrder('1')">拒绝</el-button>
-      <el-button class="la" type="danger" @click="cancelAuditOrder()">取消</el-button>
+      <el-button v-if="!this.cusCustomer.isBlackList" class="la" type="danger" @click="addBlack()">拉黑</el-button>
+      <el-button v-if="this.cusCustomer.isBlackList" class="la" type="danger" @click="removeBlack()">移除黑名单</el-button>
       <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
     </el-button-group>
     <div class="listContent">
-      <router-link :to="'/jibenOrder/'+this.id+'/'+this.orderId2" tag="li">基本信息</router-link>
-      <router-link :to="'/fenxianOrder/' + this.id" tag="li">风险命中列表</router-link>
-      <router-link :to="'/yunyingOrder/' + this.id" tag="li">运营商通讯录比对</router-link>
+      <router-link :to="'/jibenOrder4/'+this.id+'/'+this.orderId2" tag="li">基本信息</router-link>
+      <router-link :to="'/fenxianOrder4/' + this.id" tag="li">风险命中列表</router-link>
+      <router-link :to="'/yunyingOrder4/' + this.id" tag="li">运营商通讯录比对</router-link>
       <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
       <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>
-      <router-link :to="'/yonghuOrder/' + this.id" tag="li">用户催收记录</router-link>
-      <router-link :to="'/dingdanOrder/' + this.id" tag="li">订单记录</router-link>
-      <router-link :to="'/fangkuanOrder/' + this.id" tag="li">放款记录</router-link>
-      <router-link :to="'/huankuanOrder/' + this.id" tag="li">还款记录</router-link>
+      <router-link :to="'/yonghuOrder4/' + this.id" tag="li">用户催收记录</router-link>
+      <router-link :to="'/dingdanOrder4/' + this.id" tag="li">订单记录</router-link>
+      <router-link :to="'/fangkuanOrder4/' + this.id" tag="li">放款记录</router-link>
+      <router-link :to="'/huankuanOrder4/' + this.id" tag="li">还款记录</router-link>
     </div>
     <router-view/>
   </div>
@@ -68,7 +67,7 @@
   export default {
     data() {
       return {
-        borrowingForm:[],
+        borrowingForm:{},
         productList:[],
         zhimaFen:{},
         bankCard:[],
@@ -82,66 +81,66 @@
         id:null,
         orderId2:'',
         authorizationStatus:[],
-        basicInfo:{},
+        basicInfo:null,
         tableData:[],
         electValue:0,
         isactive:0,
       };
     },
     methods: {
-      //审核订单
-      batchAuditOrder(status){
+      //拉黑
+      addBlack() {
         axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/audit/batchAuditOrder",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/black/setBlack",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
-          params:{
-            orderIds: this.orderId2,
-            status: status,
-            memo: null,
+          params: {
+            customerId: this.id,
+            description: '后台系统手动拉黑',
           }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
             this.$message({
               message: '操作成功',
               type: 'success'
             });
-            this.$router.push('/pendingApproval');
-          }else {
+            this.$router.push('/userProductList');
+          } else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //取消订单
-      cancelAuditOrder(){
+      //移除黑名单
+      removeBlack() {
         axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/cancel",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/black/delete",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
-          params:{
-            orderId: this.orderId2,
+          params: {
+            customerId: this.id,
+            description: '后台系统手动拉黑',
           }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
             this.$message({
               message: '操作成功',
               type: 'success'
             });
-            this.$router.push('/pendingApproval');
-          }else {
+            this.$router.push('/userProductList');
+          } else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
       //取消按钮
       resetForm() {
-        this.$router.push('/pendingApproval');
+        this.$router.push('/paymentHistory');
       },
       //用户基本信息
       getUserDetail1(id) {
@@ -172,10 +171,6 @@
             this.$message.error(res.data.msgInfo);
           }
         })
-      },
-      //下拉选择
-      selectChange(row){
-        console.log(this.electValue);
       },
       //用户订单信息
       getOrderInfo(id) {

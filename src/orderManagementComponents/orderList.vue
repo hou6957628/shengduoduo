@@ -87,13 +87,8 @@
       <el-table
         ref="multipleTable"
         :data="tableData"
-        @selection-change="handleSelectionChange"
         border
         style="width: 98%">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
         <el-table-column
           fixed
           prop="id"
@@ -131,7 +126,7 @@
           prop="status"
           label="订单状态"
           :formatter="statusFormatter"
-          width="120">
+          width="150">
         </el-table-column>
         <el-table-column
           prop="borrowingCapital"
@@ -259,12 +254,17 @@
           label="操作"
           width="450">
           <template slot-scope="scope">
-            <el-button @click="offlineRepaymentTip(scope.row)" type="text" size="medium">线下还款</el-button>
-            <el-button @click="onlineReliefTip(scope.row)" type="text" size="medium">线上减免</el-button>
-            <el-button @click="separateDeductionTip(scope.row)" type="text" size="medium">单独扣款</el-button>
-            <el-button @click="lineDefferTip(scope.row)" type="text" size="medium">展期还款</el-button>
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">部分还款</el-button>
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            <div v-if="scope.row.status==8 || scope.row.status==9 || scope.row.status==11 || scope.row.status==12">
+              <el-button @click="offlineRepaymentTip(scope.row)" type="text" size="medium">线下还款</el-button>
+              <el-button @click="onlineReliefTip(scope.row)" type="text" size="medium">线上减免</el-button>
+              <el-button @click="separateDeductionTip(scope.row)" type="text" size="medium">单独扣款</el-button>
+              <el-button @click="lineDefferTip(scope.row)" type="text" size="medium">展期还款</el-button>
+              <el-button @click="detailProduct(scope.row)" type="text" size="medium">部分还款</el-button>
+              <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            </div>
+            <div v-else>
+              <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -461,6 +461,8 @@
             mobile: data8,
             startDate: data9,
             endDate: data10,
+            sortColumn: 'create_date',
+            direction: 'desc',
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -701,21 +703,32 @@
           }
         });
       },
-
-      //审核订单
-      detailProduct(){
-        this.$router.push({
-          path: `/editFinanceProduct`,
-        });
-      },
-      //全选
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
+      //详情
+      detailProduct(row){
+        let status=row.status;
+        let id=row.customerId;
+        let orderId=row.orderId;
+        if (status == 0 || status == 1 || status == 3) {
+          this.$router.push({
+            path: `/orderDetail/${id}/${orderId}`,
+          });
+        } else if (status == 4 || status == 5) {
+          this.$router.push({
+            path: `/orderDetailPaymentLoan/${id}/${orderId}`,
+          });
+        } else if (status == 8) {
+          this.$router.push({
+            path: `/orderDetailLoanMade/${id}/${orderId}`,
+          });
+        }else {
+          this.$router.push({
+            path: `/orderDetailPaymentHistory/${id}/${orderId}`,
+          });
+        }
       },
       //过滤性别字段
       genderFormatter(row){
         let gender = row.gender;
-        console.log(gender);
         if(gender == false){
           return '男'
         } else if (gender == true){
@@ -728,7 +741,7 @@
       statusFormatter(row){
         let status = row.status;
         if(status === 0){
-          return '待机器审核 '
+          return '待机审 '
         } else if (status === 1){
           return '机器审核中'
         } else if (status === 2){
@@ -744,7 +757,7 @@
         } else if (status === 7){
           return '取消'
         } else if (status === 8){
-          return '放款成功'
+          return '放款成功，待还款'
         } else if (status === 9){
           return '还款确认中'
         } else if (status === 10){

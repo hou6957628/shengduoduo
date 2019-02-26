@@ -1,9 +1,20 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/blackList' }">用户列表</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
+      <el-col :span="6" style="height: 55px;">
+        产品名称：
+        <el-select v-model="productId" placeholder="请选择" @change="selectChange">
+          <el-option
+            v-for="item in productListData"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productId">
+          </el-option>
+        </el-select>
+      </el-col>
       <el-col :span="6" style="height: 55px;">
         <template>姓名：
           <el-input class="searchContent" placeholder="用户姓名" v-model="realName" clearable> </el-input>
@@ -40,7 +51,7 @@
                         @change="logTimeChange()">
         </el-date-picker>
       </template>
-      <el-button id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
@@ -164,18 +175,22 @@
   import axios from 'axios'
   export default {
     methods: {
+      //根据产品查询
+      selectChange() {
+        this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
+      },
       //条件查询
       searchContent(){
-        this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime);
+        this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime);
+        this.getProductList(this.pageNum,val,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime);
+        this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
       },
       /**
        * 获取金融产品列表
@@ -187,8 +202,9 @@
        * @param data6 子渠道
        * @param data7 开始时间
        * @param data8 结束时间
+       * @param data9 产品id
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9){
         axios({
           method:"GET",
           url:"http://"+this.baseUrl+"/user_center/admin/customer/list",
@@ -205,6 +221,7 @@
             subChannelName: data6,
             startDate: data7,
             endDate: data8,
+            productId: data9,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -243,13 +260,34 @@
           this.endTime='';
         }
       },
+      //查询产品列表
+      getProducts(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productListData=res.data.body;
+            this.productListData.unshift({productId: null, productName: '全部产品'});
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted:function () {
-      this.getProductList(1,20,null,null,null,null,null,null);
+      this.getProductList(1,20,null,null,null,null,null,null,null);
+      this.getProducts();
     },
     data() {
       return {
         tableData: [],
+        productListData: [],
+        productId:null,
         pageNum: null,
         proTotal:null,
         pageSize:null,

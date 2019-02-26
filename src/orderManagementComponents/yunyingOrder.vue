@@ -9,8 +9,12 @@
     <div class="listContent">
       <h4>联系人</h4>
       <table >
-        <tr><td>第一联系人</td><td>联系人借款关系：{{this.linkManList[0].relation | myCurrency}}</td><td>姓名：{{this.linkManList[0].name}}</td><td>手机号：{{this.linkManList[0].phoneNum}}</td></tr>
-        <tr><td>第二联系人</td><td>联系人借款关系：{{this.linkManList[1].relation | myCurrency}}</td><td>姓名：{{this.linkManList[1].name}}</td><td>手机号：{{this.linkManList[1].phoneNum}}</td></tr>
+        <template v-for="(item,index) in this.linkManList">
+          <tr>
+            <td>第一联系人</td><td>联系人借款关系：{{item.relation | myCurrency}}</td>
+            <td>姓名：{{item.name}}</td><td>手机号：{{item.phoneNum}}</td>
+          </tr>
+        </template>
       </table>
     </div>
     <div class="listContentBox">
@@ -50,12 +54,12 @@
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="time"
+                  prop="calledTime"
                   label="联系时间(分)"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="number"
+                  prop="calledNumber"
                   label="被叫次数"
                   width="150">
                 </el-table-column>
@@ -110,12 +114,12 @@
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="time"
+                  prop="callTime"
                   label="联系时间(分)"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="number"
+                  prop="callNumber"
                   label="主叫次数"
                   width="150">
                 </el-table-column>
@@ -160,13 +164,12 @@
         nowPageSizes1:30,
         value7:'',
         linkManList:[],
-        cusCustomer:null,
+        cusCustomer:{},
       }
     },
     methods: {
       //每页显示多少条
       handleSizeChangeFrom(val) {
-        console.log(val);
         this.nowPageSizes=val;
         this.getAddressFrom(this.pageNum,val,this.id,0);
       },
@@ -201,7 +204,6 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.tableDataFrom=res.data.body.callInRecord.list;
-            console.log(this.tableDataFrom + '呼入');
             this.proTotal=res.data.body.callInRecord.total;
             this.pageSize=res.data.body.callInRecord.pageSize;
             this.pageNum=res.data.body.callInRecord.pageNum;
@@ -230,24 +232,14 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.tableDataTo=res.data.body.calloutRecord.list;
-            console.log(this.tableDataTo + '呼出');
-            this.proTotal=res.data.body.calloutRecord.total;
-            this.pageSize=res.data.body.calloutRecord.pageSize;
-            this.pageNum=res.data.body.calloutRecord.pageNum;
+            this.proTotal1=res.data.body.calloutRecord.total;
+            this.pageSize1=res.data.body.calloutRecord.pageSize;
+            this.pageNum1=res.data.body.calloutRecord.pageNum;
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.relation;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
-      }
     },
     mounted: function () {
       this.id=this.$route.params.id;

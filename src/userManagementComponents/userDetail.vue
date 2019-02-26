@@ -8,11 +8,10 @@
       <div class="listBox" v-for="(item,index) in productList" :class="isactive == index ? 'addclass' : ''" @click="fen(item,index)">{{item.productName}}</div>
     </div>
     <div class="listContent">
-      <!--<router-link :to="{name:'jiben',params: {cusCustomer: this.cusCustomer,idCard: this.idCard}}" tag="li">基本信息</router-link>-->
       <router-link :to="'/jiben/'+this.id" tag="li">基本信息</router-link>
       <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
       <router-link :to="'/yunying/' + this.id" tag="li">运营商通讯录比对</router-link>
-      <a href="http://www.baidu.com" target="_blank" class="ddd">天机报告</a>
+      <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
       <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>
       <router-link :to="'/yonghu/' + this.id" tag="li">用户催收记录</router-link>
       <router-link :to="'/dingdan/' + this.id" tag="li">订单记录</router-link>
@@ -30,22 +29,18 @@
     data() {
       return {
         productList:[],
-        zhimaFen:null,
+        zhimaFen:{},
         bankCard:[],
-        cusCustomer:null,
-        tianjiReport:null,
-        idCard:null,
-        idFace:null,
+        cusCustomer:{},
+        tianjiReport:{
+          tianjiUrl:''
+        },
+        idCard:{},
+        idFace:{},
         linkMan:[],
         id:null,
         authorizationStatus:[],
-        basicInfo:null,
-        electData: [
-          {key:0,Id:"全部产品"},
-          {key:1,Id:"借点儿"},
-          {key:2,Id:"夏花花"},
-          {key:3,Id:"取消救济"},
-        ],
+        basicInfo:{},
         tableData:[],
         electValue:0,
         isactive:0,
@@ -71,6 +66,7 @@
             this.bankCard = res.data.body.bankCard;
             this.cusCustomer = res.data.body.cusCustomer;
             this.tianjiReport = res.data.body.tianjiReport;
+            this.tianjiReport.tianjiUrl = res.data.body.tianjiReport.html;
             this.idCard = res.data.body.idCard;
             this.idFace = res.data.body.idFace;
             this.linkMan = res.data.body.linkMan;
@@ -141,6 +137,59 @@
     mounted: function () {
       this.id=this.$route.params.id;
       this.getUserDetail(this.id);
+    },
+    filters:{
+      typeFalse:function(arg1){
+        if(arg1==true){
+          var result = "是";
+          return result;
+        }else if(arg1==false){
+          var result = "否";
+          return result;
+        }
+      },
+      reborrowFalse:function(arg1){
+        if(arg1==true){
+          return "老户";
+        }else if(arg1==false){
+          return "新户";
+        }
+      },
+      statusFalse:function(arg1){
+        if(arg1==0){
+          return '待机器审核 ';
+        } else if (arg1 === 1){
+          return '机器审核中';
+        } else if (arg1 === 2){
+          return '审核拒绝';
+        } else if (arg1 === 3){
+          return '人工审核';
+        } else if (arg1 === 4){
+          return '待放款';
+        } else if (arg1 === 5){
+          return '放款中';
+        } else if (arg1 === 6){
+          return '放款失败';
+        } else if (arg1 === 7){
+          return '取消';
+        } else if (arg1 === 8){
+          return '放款成功';
+        } else if (arg1 === 9){
+          return '还款确认中';
+        } else if (arg1 === 10){
+          return '正常还款 ';
+        } else if (arg1 === 11){
+          return '逾期未还';
+        } else if (arg1 === 12){
+          return '坏账';
+        } else if (arg1 === 13){
+          return '逾期还款';
+        }
+      },
+      htmlFalse:function(arg1){
+        var result = arg1.substring(13);
+        return 'http://39.105.217.251' + result;
+      }
     }
   }
 </script>

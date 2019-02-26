@@ -64,7 +64,7 @@
         </template>
       </el-col>
       <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
-      <el-button type="primary" id="cancelBtn" @click="cancelContent()" slot="append">批量审批</el-button>
+      <el-button type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>
     </div>
     <template>
       <el-table
@@ -95,6 +95,11 @@
           label="性别"
           :formatter="genderFormatter"
           min-width="80">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="产品"
+          width="120">
         </el-table-column>
         <el-table-column
           prop="mobile"
@@ -154,6 +159,16 @@
         :total="proTotal">
       </el-pagination>
     </div>
+    <!--批量审核结构-->
+    <el-dialog
+      title="批量审批"
+      :visible.sync="centerDialogVisible1"
+      width="40%"
+      center>
+      <center><el-button type="primary" @click="batchAuditOrder('0')" size="medium">同意</el-button>
+        <el-button type="danger" @click="batchAuditOrder('1')">拒绝</el-button>
+        <el-button type="info"  @click="centerDialogVisible1 = false">取消</el-button></center>
+    </el-dialog>
   </div>
 </template>
 
@@ -162,6 +177,47 @@
   import axios from 'axios'
   export default {
     methods: {
+      //批量审核弹窗
+      batchAuditOrderTip(){
+        if (this.orderIds.length==0) {
+          this.$message({
+            showClose: true,
+            message: '请选择至少一个订单',
+            type: 'warning'
+          });
+        } else {
+          this.centerDialogVisible1=true;
+        }
+      },
+      //批量审核订单
+      batchAuditOrder(status){
+        let orderIdsStr = this.orderIds.join(',');
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/pending/batchLoanOrder",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            orderIds: orderIdsStr,
+            status: status,
+            memo: null,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.centerDialogVisible1=false;
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+              this.sex,this.mobile,this.startDate,this.endDate);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
       //查询所有产品
       getProduct() {
         axios({
@@ -231,6 +287,8 @@
             mobile: data8,
             startDate: data9,
             endDate: data10,
+            sortColumn: 'create_date',
+            direction: 'desc',
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -238,6 +296,7 @@
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
             this.pageNum=res.data.body.pageNum;
+            this.$forceUpdate();
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -254,6 +313,11 @@
       //全选
       handleSelectionChange(val) {
         this.multipleSelection = val;
+        let ids = []
+        this.multipleSelection.map((item)=> {
+          ids.push(item.orderId);
+        })
+        this.orderIds = ids;
       },
       //过滤性别字段
       genderFormatter(row){
@@ -270,7 +334,7 @@
       statusFormatter(row){
         let status = row.status;
         if(status === 0){
-          return '待机器审核 '
+          return '待机审 '
         } else if (status === 1){
           return '机器审核中'
         } else if (status === 2){
@@ -301,10 +365,10 @@
       },
       //过滤用户标识字段
       reBorrowFormatter(row){
-        let reBorrow = row.status;
-        if(reBorrow === 0){
+        let reBorrow = row.reBorrow;
+        if(reBorrow == false){
           return '新户'
-        } else if (reBorrow === 1){
+        } else if (reBorrow == true){
           return '老户'
         } else{
           return '---'
@@ -332,6 +396,8 @@
     },
     data() {
       return {
+        multipleSelection:[],
+        orderIds:[],
         productList:[],
         reBorrowList: [
           {classifyId:null,classifyName:"全部状态"},
@@ -385,6 +451,7 @@
         value5:'',
         startDate:null,
         endDate:null,
+        centerDialogVisible1:false,
       }
     }
   }

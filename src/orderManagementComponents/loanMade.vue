@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item>待放款列表</el-breadcrumb-item>
+      <el-breadcrumb-item>已放款列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
@@ -87,13 +87,8 @@
       <el-table
         ref="multipleTable"
         :data="tableData"
-        @selection-change="handleSelectionChange"
         border
         style="width: 98%">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
         <el-table-column
           fixed
           prop="id"
@@ -132,7 +127,112 @@
           prop="status"
           label="订单状态"
           :formatter="statusFormatter"
-          width="120">
+          width="150">
+        </el-table-column>
+        <el-table-column
+          prop="borrowingCapital"
+          label="综合费用"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="borrowingPaymentAmount"
+          label="到账金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentOverdueDay"
+          label="逾期天数"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentOverdueFee"
+          label="逾期费用"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentPenaltyInterest"
+          label="罚息"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentCapital"
+          label="应还金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentPaymentAmount"
+          label="实际还款金额"
+          width="110">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentDiscountAmount"
+          label="已减免金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="defer"
+          label="是否展期"
+          width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.defer == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.defer == 1 ? '是' : '否'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="repaymentDefer"
+          label="展期应还金额"
+          width="110">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentDefer"
+          label="实际展期还款金额"
+          width="110">
+        </el-table-column>
+        <el-table-column
+          prop="partial"
+          label="是否部分还款"
+          width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.partial == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.partial == 1 ? '是' : '否'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="partialRepayment"
+          label="部分还款应还金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="partialUnpaidAmount"
+          label="剩余还款金额"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="应用"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="createDate"
+          label="申请时间"
+          width="200">
+        </el-table-column>
+        <el-table-column
+          prop="borrowingPaymentDate"
+          label="放款时间"
+          width="200">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentEndDate"
+          label="应还款日期"
+          width="200">
+        </el-table-column>
+        <el-table-column
+          prop="repaymentPaymentDate"
+          label="实际还款时间"
+          width="200">
         </el-table-column>
         <el-table-column
           prop="parentChannelName"
@@ -151,6 +251,7 @@
           width="120">
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作"
           width="100">
           <template slot-scope="scope">
@@ -252,7 +353,9 @@
             endDate: data10,
             startDateLoan: data11,
             endDateLoan: data12,
-            status:8,
+            statusGeq:8,
+            sortColumn: 'create_date',
+            direction: 'desc',
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -265,20 +368,17 @@
           }
         })
       },
-      //审核订单
-      detailProduct(){
+      //详情
+      detailProduct(row){
+        let id=row.customerId;
+        let orderId=row.orderId;
         this.$router.push({
-          path: `/editFinanceProduct`,
+          path: `/orderDetailLoanMade/${id}/${orderId}`,
         });
-      },
-      //全选
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
       },
       //过滤性别字段
       genderFormatter(row){
         let gender = row.gender;
-        console.log(gender);
         if(gender == false){
           return '男'
         } else if (gender == true){
@@ -291,19 +391,41 @@
       statusFormatter(row){
         let status = row.status;
         if(status === 0){
-          return '待机审 '
+          return '待机器审核 '
         } else if (status === 1){
           return '机器审核中'
         } else if (status === 2){
+          return '审核拒绝'
+        } else if (status === 3){
           return '人工审核'
+        } else if (status === 4){
+          return '待放款'
+        } else if (status === 5){
+          return '放款中'
+        } else if (status === 6){
+          return '放款失败'
+        } else if (status === 7){
+          return '取消'
+        } else if (status === 8){
+          return '放款成功，待还款'
+        } else if (status === 9){
+          return '还款确认中'
+        } else if (status === 10){
+          return '正常还款 '
+        } else if (status === 11){
+          return '逾期未还'
+        } else if (status === 12){
+          return '坏账'
+        } else if (status === 13){
+          return '逾期还款'
         }
       },
       //过滤用户标识字段
       reBorrowFormatter(row){
-        let reBorrow = row.status;
-        if(reBorrow === 0){
+        let reBorrow = row.reBorrow;
+        if(reBorrow == false){
           return '新户'
-        } else if (reBorrow === 1){
+        } else if (reBorrow == true){
           return '老户'
         } else{
           return '---'

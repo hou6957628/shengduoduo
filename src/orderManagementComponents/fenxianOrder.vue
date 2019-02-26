@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3>风险命中列表</h3>
     <div class="operationContent">
           <el-input class="searchContent"
                     placeholder="查询编号或触发名称"
@@ -30,8 +31,8 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="flowId"
-          label="风险编号"
+          prop="flowName"
+          label="子流程名称"
           width="150">
         </el-table-column>
         <el-table-column

@@ -56,8 +56,6 @@
       checkName(rule, value, callback) {
         if (!value) {
           callback(new Error('请输入名称'));
-        } else if (value.length < 3 | value.length > 20) {
-          callback(new Error('长度在 3 到 20 个字符'));
         } else {
           axios({
             method:"GET",

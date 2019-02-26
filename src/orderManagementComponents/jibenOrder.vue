@@ -26,7 +26,7 @@
           <td>西瓜分：{{this.tianjiReport==null?'--':this.tianjiReport.xgScore}}</td>
         </tr>
         <tr>
-          <td>性别：{{this.idCard.gender==false?'男':'女'}}</td><td>身份证有效期：{{this.idCard.validatedDate==null?'--':this.idCard.validatedDate}}</td>
+          <td>性别：{{this.idCard.gender==false?'男':'女'}}</td><td>身份证有效期：{{this.idCard.validDate==null?'--':this.idCard.validDate}}</td>
           <td>身份证住址：{{this.idCard.address==null?'--':this.idCard.address}}</td><td>民族：{{this.idCard.race==null?'--':this.idCard.race}}</td>
         </tr>
       </table>
@@ -46,13 +46,12 @@
       </table>
       <h3>联系人</h3>
       <table >
-        <tr>
-          <td>联系人1：{{this.linkMan[0].name}}</td><td>联系人借款关系：{{this.linkMan[0].relation}}</td><td>手机号：{{this.linkMan[0].phoneNum}}</td>
-          <td rowspan="2"><el-button @click="">手机通讯录</el-button></td>
-        </tr>
-        <tr>
-          <td>联系人2：{{this.linkMan[1].name}}</td><td>联系人借款关系：{{this.linkMan[1].relation}}</td><td>手机号：{{this.linkMan[1].phoneNum}}</td>
-        </tr>
+        <template v-for="(item,index) in this.linkMan">
+          <tr>
+            <td>联系人{{index}}：{{item.name}}</td><td>联系人借款关系：{{item.relation}}</td><td>手机号：{{item.phoneNum}}</td>
+            <td rowspan="2" v-if="index==0"><el-button @click="">手机通讯录</el-button></td>
+          </tr>
+        </template>
       </table>
       <h3>绑卡信息</h3>
       <table >
@@ -62,11 +61,13 @@
       </table>
       <h3>认证信息</h3>
       <table >
-        <tr><td>身份证：{{this.authorizationStatus[1].authorizationStatus}}</td><td>身份证认证时间：{{this.authorizationStatus[1].createDate}}</td></tr>
-        <tr><td>人脸识别认证：{{this.authorizationStatus[2].authorizationStatus}}</td><td>人脸识别认证时间：{{this.authorizationStatus[2].createDate}}</td></tr>
-        <tr><td>运营商手机认证：{{this.authorizationStatus[5].authorizationStatus}}</td><td>运营商手机认证时间：{{this.authorizationStatus[5].createDate}}</td></tr>
-        <tr><td>支付宝认证：{{this.authorizationStatus[6].authorizationStatus}}</td><td>支付宝认证时间：{{this.authorizationStatus[6].createDate}}</td></tr>
-        <tr><td>绑卡：{{this.authorizationStatus[0].authorizationStatus}}</td><td>绑卡时间：{{this.authorizationStatus[0].createDate}}</td></tr>
+        <template v-for="(item,index) in this.authorizationStatus">
+          <tr v-if="index==0"><td>身份证：{{item.authorizationStatus}}</td><td>身份证认证时间：{{item.createDate}}</td></tr>
+          <tr v-if="index==1"><td>人脸识别认证：{{item.authorizationStatus}}</td><td>人脸识别认证时间：{{item.createDate}}</td></tr>
+          <tr v-if="index==2"><td>运营商手机认证：{{item.authorizationStatus}}</td><td>运营商手机认证时间：{{item.createDate}}</td></tr>
+          <tr v-if="index==3"><td>支付宝认证：{{item.authorizationStatus}}</td><td>支付宝认证时间：{{item.createDate}}</td></tr>
+          <tr v-if="index==4"><td>绑卡：{{item.authorizationStatus}}</td><td>绑卡时间：{{item.createDate}}</td></tr>
+        </template>
       </table>
     </div>
   </div>
@@ -79,15 +80,21 @@
     data() {
       return {
         productList:[],
-        zhimaFen:null,
+        zhimaFen:{},
         bankCard:[],
-        cusCustomer:null,
-        tianjiReport:null,
+        cusCustomer:{},
+        tianjiReport:{},
         idCard:[],
         idFace:[],
-        front:null,
+        front:{},
         id:null,
-        linkMan:[],
+        linkMan:[
+          {
+            name:'',
+            relation:"",
+            phoneNum:""
+          }
+        ],
         authorizationStatus:[],
         basicInfo:{
           marital:'',
@@ -211,8 +218,8 @@
       },
     },
     mounted: function () {
-      console.log(this.$route.params.id);
       this.id=this.$route.params.id;
+      this.orderId2=this.$route.params.orderId;
       this.getUserDetail(this.id);
     }
   }

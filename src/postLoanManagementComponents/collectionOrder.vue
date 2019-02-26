@@ -1,10 +1,10 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/collectionOrder' }">催收分单</el-breadcrumb-item>
+      <el-breadcrumb-item>催收分单</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="listContent">
-      <div class="listBox" v-for="(item,index) in productList" :key="index" @click="fen(item)">{{item.productName}}</div>
+      <div class="listBox" v-for="(item,index) in productList" :key="index">{{item.productName}}</div>
     </div>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
       <el-col :span="11" style="height: 55px;">
@@ -27,18 +27,18 @@
       </el-col>
       <el-col :span="12" style="height: 55px;">
         渠道：
-        <el-select v-model="channelNames" placeholder="请选择" multiple @change="selectChange" style="width: 400px">
+        <el-select v-model="channelNames" placeholder="请选择" multiple style="width: 400px">
           <el-option
             v-for="item in channelList"
-            :key="item.subChannelCode"
+            :key="item.subChannelName"
             :label="item.subChannelName"
-            :value="item.subChannelCode">
+            :value="item.subChannelName">
           </el-option>
         </el-select>
       </el-col>
       <el-col :span="10" style="height: 55px;">
         期数：
-        <el-select v-model="period" placeholder="请选择" @change="selectChange1">
+        <el-select v-model="period" placeholder="请选择">
           <el-option
             v-for="item in periodList"
             :key="item.id"
@@ -49,7 +49,7 @@
       </el-col>
       <el-col :span="8" style="height: 55px;">
         新老户：
-        <el-select v-model="reBorrow" placeholder="请选择" @change="selectChange2">
+        <el-select v-model="reBorrow" placeholder="请选择">
           <el-option
             v-for="item in reBorrowList"
             :key="item.id"
@@ -65,11 +65,9 @@
       <el-col :span="24">
         <h3 style="color: #606266;font-weight: 400;height: 40px">导入催收员</h3>
         <el-form-item style="margin-left: 0" class="labelList" v-for="(domain, index) in adminIds" :key="index">
-            <!--<el-input style="height: 2px;display: inline-block;width: 2px" type="hidden" v-model="domain.itemAlias"></el-input>-->
-            <!--<el-input style="height: 2px;display: inline-block;width: 2px" type="hidden" v-model="domain.symbolCode"></el-input>-->
             <div style="margin-left: -100px">
             催收员{{index}}： 姓名：
-              <el-select v-model="id" @change="changeSelect($event,collectionList)">
+              <el-select v-model="adminId" @change="changeSelect($event,collectionList)">
                 <el-option
                   v-for="item in collectionList"
                   :key="item.id"
@@ -121,7 +119,8 @@
         casesNumber:'',
         centerDialogVisible:false,
         adminIds:[null],
-        adminNames:[],
+        adminId:null,
+        adminNames:[null],
 
         periodList:[
           {id:null,value:'全部期数'},
@@ -139,13 +138,6 @@
           {name:"张磊",value:102},
           {name:"张磊",value:103},
           {name:"张磊",value:104},
-        ],
-        electData:[
-          {key:0,Id:'不启用'},
-          {key:1,Id:'启用'},
-          {key:2,Id:'启用1'},
-          {key:3,Id:'启用2'},
-          {key:4,Id:'启用3'}
         ],
         electValue:"",
         electValue1:"",
@@ -218,7 +210,8 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
             this.productId=this.productList[0].productId;
-            this.getCaseNumber(null,null,null,this.startDate,this.startDate,this.productId);
+            // this.getCaseNumber(null,null,null,this.startDate,this.startDate,this.productId);
+            this.getCaseNumber(null,null,null,this.startDate,this.startDate,61);
             // this.getCollectionList(this.productId);
             this.getCollectionList(17);
           }else if(res.data.msgCd=='ZYCASH-1009'){
@@ -275,7 +268,8 @@
       },
       //条件查询规则集列表
       searchContent(){
-        this.getCaseNumber(this.channelNames,this.period,this.reBorrow,this.startDate,this.endDate,this.productId);
+        // this.getCaseNumber(this.channelNames,this.period,this.reBorrow,this.startDate,this.endDate,this.productId);
+        this.getCaseNumber(this.channelNames,this.period,this.reBorrow,this.startDate,this.endDate,61);
       },
       /**
        * 查询案件数量
@@ -287,21 +281,22 @@
        * @param data6 产品id
        */
       getCaseNumber(data1,data2,data3,data4,data5,data6) {
+        var data = {
+          'channelNames':data1,
+          'period':data2,
+          'reBorrow':data3,
+          'startDate':data4,
+          'endDate':data5,
+          'productId':data6,
+        };
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/find",
           headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
+            'Content-Type':'application/json',
             'Authorization': localStorage.token
           },
-          params:{
-            channelNames: data1,
-            period: data2,
-            reBorrow: data3,
-            startDate: data4,
-            endDate: data5,
-            productId: data6,
-          }
+          data:JSON.stringify(data),
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.casesNumber=res.data.body;
@@ -320,18 +315,29 @@
         obj = list.find((item)=>{
           return item.id === vId;
         });
-        this.adminIds[localStorage.num].id=obj.id;
-        this.adminNames[localStorage.num].name=obj.roleName;
+        this.adminIds[localStorage.num]=obj.id;
+        this.adminNames[localStorage.num]=obj.roleName;
       },
       //添加数据
       addDomain() {
         localStorage.num++;
-        this.adminIds[localStorage.num]=null;
-        this.adminNames[localStorage.num]=null;
+        this.adminIds[localStorage.num] = null;
+        this.adminNames[localStorage.num] = null;
+        console.log(this.adminIds);
       },
       //分单提醒
       fendan(){
         this.centerDialogVisible=true;
+        var data = {
+          'channelNames':this.channelNames,
+          'period':this.period,
+          'reBorrow':this.reBorrow,
+          'startDate':this.startDate,
+          'endDate':this.endDate,
+          'productId':this.productId,
+          'adminIds':this.adminIds,
+          'adminNames':this.adminNames,
+        };
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/assignForm",
@@ -339,16 +345,7 @@
             'Content-Type':'application/json',
             'Authorization': localStorage.token
           },
-          params:{
-            channelNames: this.channelNames,
-            period: this.period,
-            reBorrow: this.reBorrow,
-            startDate: this.startDate,
-            endDate: this.endDate,
-            productId: this.productId,
-            adminIds: JSON.stringify(this.electDataList.domains),
-            adminNames: JSON.stringify(this.electDataList.domains2)
-          }
+          data:JSON.stringify(data),
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.collectionList=res.data.body;
@@ -360,9 +357,7 @@
           }
         })
       },
-
-
-
+      //真正分单
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -435,16 +430,16 @@
       },
 
       fen(data){
-        this.idd=data;
-        this.value7=null;
-        this.electValue=null;
-        this.electValue1=null;
-        this.electValue2=null;
-        this.casesNumber=null;
-        this.electDataList.domains=[{
-          itemAlias: 1,symbolCode: null,fieldCode:null,
-        }];
-        console.log(data);
+        // this.idd=data;
+        // this.value7=null;
+        // this.electValue=null;
+        // this.electValue1=null;
+        // this.electValue2=null;
+        // this.casesNumber=null;
+        // this.electDataList.domains=[{
+        //   itemAlias: 1,symbolCode: null,fieldCode:null,
+        // }];
+        // console.log(data);
       },
       editTag(){
         this.centerDialogVisible=true;
@@ -463,21 +458,11 @@
           this.endDate=endTime;
         }
       },
-      //下拉选择
-      selectChange(row){
-        console.log(this.electValue);
-      },
-      selectChange1(row){
-        console.log(this.electValue1);
-      },
-      selectChange2(row){
-        console.log(this.electValue2);
-      },
-
     },
     mounted:function () {
       this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0));
-      this.value7=[this.startDate,this.startDate];
+      this.endDate=this.startDate;
+      this.value7=[this.startDate,this.endDate];
       localStorage.num=0;
       this.getProductList();
       this.getChannelList();
@@ -509,6 +494,7 @@
   .listContent{
     width: 100%;
     height: 80px;
+    margin-bottom: 30px;
   }
   .listBox{
     display: inline-block;
