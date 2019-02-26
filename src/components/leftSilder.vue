@@ -209,6 +209,39 @@
                 <el-menu-item index="/orderFlowLogList">命中列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
+            <el-submenu index="12" style="padding-left:0 ;">
+              <template style="padding-left: 5px" slot="title">
+                <i class="el-icon-menu"></i>
+                <span>消息管理</span>
+              </template>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/messageClassify">分类列表</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/smsMessage">短信消息</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/reminderMessage">提醒消息</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/popUpMessage">弹窗消息</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/pushMessage">推送消息</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="13" style="padding-left:0 ;">
+              <template style="padding-left: 5px" slot="title">
+                <i class="el-icon-menu"></i>
+                <span>消息配置</span>
+              </template>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/messageConfigurationList">任务列表</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/messageRecord">日志列表</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
           </el-menu>
         </el-col>
       </el-row>
