@@ -187,6 +187,7 @@ import reminderMessage from '@/messageConfigurationComponents/reminderMessage'
 import smsMessage from '@/messageConfigurationComponents/smsMessage'
 import messageConfigurationList from '@/messageManagementComponents/messageConfigurationList'
 import messageRecord from '@/messageManagementComponents/messageRecord'
+import noticeMessage from '@/messageManagementComponents/noticeMessage'
 
 Vue.use(Router);
 // http request 拦截器
@@ -1367,6 +1368,14 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: messageRecord
+    },
+    {
+      path: '/noticeMessage',
+      name: 'noticeMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: noticeMessage
     },
 ]
 

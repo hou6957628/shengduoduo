@@ -1,10 +1,11 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">消息配置</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">消息分类列表</el-breadcrumb-item>
+      <el-breadcrumb-item>选择短信</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-select v-model="ruleForm.productName" placeholder="请选择产品" @change="selectChange($event,electData)">
+      <el-select v-model="ruleForm.productName" placeholder="请选择类型" @change="selectChange($event,electData)">
         <el-option
           v-for="item in electData"
           :key="item.productCode"
@@ -12,91 +13,65 @@
           :value="item.productCode">
         </el-option>
       </el-select>
-      <el-select v-model="ruleForm.productName" placeholder="请选择形式" @change="selectChange1($event,electData1)">
-        <el-option
-          v-for="item in electData1"
-          :key="item.productCode"
-          :label="item.productName"
-          :value="item.productCode">
-        </el-option>
-      </el-select>
-      <el-select v-model="ruleForm.productName" placeholder="请选择分类" @change="selectChange2($event,electData2)">
-        <el-option
-          v-for="item in electData2"
-          :key="item.productCode"
-          :label="item.productName"
-          :value="item.productCode">
-        </el-option>
-      </el-select>
-      <template>
-        申请时间：
-        <el-date-picker style="margin-left: 0px;margin-right: 15px;"
-                        v-model="value5"
-                        type="datetimerange"
-                        align="right"
-                        unlink-panels
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        :picker-options="pickerOptions2"
-                        format="yyyy-MM-dd HH:mm:ss"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        @change="logTimeChange()">
-        </el-date-picker>
-      </template>
       <el-input style="width: 350px;" class="searchContent"
                 placeholder="输入名称或ID"
                 v-model="finProduct"
                 clearable>
         <el-button id="searchBtn" @click="searchContent(finProduct)" slot="append" icon="el-icon-search">查询</el-button>
       </el-input>
+      <el-button type="primary" id="cancelBtn" @click="cancelContent()" slot="append">批量审批</el-button>
     </div>
     <template>
       <el-table
+        ref="multipleTable"
         :data="tableData"
         @selection-change="handleSelectionChange"
         border
         style="width: 98%">
         <el-table-column
+          type="selection"
+          label="批量"
+          width="55">
+        </el-table-column>
+        <el-table-column
           fixed
           prop="id"
           label="ID"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          label="所属APP"
           width="150">
         </el-table-column>
         <el-table-column
+          fixed
           prop="name"
-          label="消息名称"
-          width="200">
-        </el-table-column>
-        <el-table-column
-          prop="desc"
-          label="消息名称"
-          width="200">
-        </el-table-column>
-        <el-table-column
-          prop="desc"
-          label="消息分类"
+          label="分类名称"
           width="200">
         </el-table-column>
         <el-table-column
           prop="desc"
           label="备注"
-          width="300">
+          width="400">
         </el-table-column>
         <el-table-column
-          prop="state"
-          label="状态"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="time"
-          label="执行时间"
+          prop="borrowingPeriod"
+          label="创建时间"
           width="200">
+        </el-table-column>
+        <el-table-column
+          prop="borrowingCapital"
+          label="更新时间"
+          width="200">
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="创建人"
+          width="150">
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width="100">
+          <template slot-scope="scope">
+            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </template>
@@ -112,6 +87,25 @@
                      :total="proTotal">
       </el-pagination>
     </div>
+    <!--创建分类-->
+    <el-dialog
+      title="复制产品"
+      :visible.sync="centerDialogVisible"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="名称:" prop="productName">
+          <el-input v-model="ruleForm.productName"></el-input>
+        </el-form-item>
+        <el-form-item label="请输入备注:" prop="description">
+          <el-input type="textarea":rows="3" v-model="ruleForm.description"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="saveMessage('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -207,42 +201,43 @@
           path: `/editFinanceProduct`,
         });
       },
-      //下拉选择
-      selectChange(vId,list) {
-        let obj = {};
-        obj = list.find((item) => {
-          console.log(item.productName === vId);
-          return item.productName === vId;
-        });
-        this.getProductList(1,30,null,null);
-      },
-      //下拉选择
-      selectChange1(vId,list) {
-        let obj = {};
-        obj = list.find((item) => {
-          console.log(item.productName === vId);
-          return item.productName === vId;
-        });
-        this.getProductList(1,30,null,null);
-      },
-      //下拉选择
-      selectChange2(vId,list) {
-        let obj = {};
-        obj = list.find((item) => {
-          console.log(item.productName === vId);
-          return item.productName === vId;
-        });
-        this.getProductList(1,30,null,null);
-      },
-      //分类列表
-      toMessageClassify(){
-        this.$router.push({
-          path: `/messageClassify`,
-        });
-      },
       //全选
       handleSelectionChange(val) {
         this.multipleSelection = val;
+      },
+      //过滤性别字段
+      genderFormatter(row){
+        let gender = row.gender;
+        console.log(gender);
+        if(gender == false){
+          return '男'
+        } else if (gender == true){
+          return '女'
+        } else {
+          return '未知'
+        }
+      },
+      //过滤状态字段
+      statusFormatter(row){
+        let status = row.status;
+        if(status === 0){
+          return '待机审 '
+        } else if (status === 1){
+          return '机器审核中'
+        } else if (status === 2){
+          return '人工审核'
+        }
+      },
+      //过滤用户标识字段
+      reBorrowFormatter(row){
+        let reBorrow = row.status;
+        if(reBorrow === 0){
+          return '新户'
+        } else if (reBorrow === 1){
+          return '老户'
+        } else{
+          return '---'
+        }
       },
       //时间筛选
       logTimeChange(){
@@ -321,30 +316,41 @@
           }
         })
       },
-      //复制接口
-      copeProduct(row){
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/delete",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: row.id,
-            status: 1,
+      //创建分类
+      toAddProduct(){
+        this.centerDialogVisible=true;
+      },
+      //保存分类
+      saveMessage(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            var param = new FormData();  // 创建form对象
+            param.append('id', this.copyId)  // 通过append向form对象添加数据
+            param.append('productName', this.ruleForm.productName)  // 通过append向form对象添加数据
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/operate/admin/productManage/saveProduct",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              data:param,
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.$message({
+                  message: '保存成功',
+                  type: 'success'
+                });
+                this.centerDialogVisible=true;
+              } else {
+                this.$message.error(res);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            });
-            this.getProductList(1,10,1,null);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        });
       },
     },
     mounted:function () {
@@ -358,14 +364,9 @@
       return {
         productList:[],
         ruleForm: {
-          id: '',
-          parentChannelName: '',
-          subChannelName: '',
-          longUrl: '',
-          cpaPrice: '',
-          cpsPrice: '',
           productName: '',
-          productCode: '',
+          description: '',
+          merchantId: null,
         },
         finProduct:null,
         tableData:[],
@@ -403,25 +404,20 @@
         },
         productId:null,
         reBorrow:null,
-        parentChannelName:null,
-        childrenChannelName:null,
+        rules: {
+          productName: [
+            { required: true, message: '请输入名称', trigger: 'blur' }
+          ],
+          description: [
+            { required: true, message: '请输入备注', trigger: 'change' }
+          ]
+        },
         sex:null,
         mobile:null,
         value5:'',
         startDate:null,
         endDate:null,
-        electData: [
-          {productCode:1,productName:"启用"},
-          {productCode:0,productName:"停用"},
-        ],
-        electData1: [
-          {productCode:1,productName:"启用1"},
-          {productCode:0,productName:"停用1"},
-        ],
-        electData2: [
-          {productCode:1,productName:"启用2"},
-          {productCode:0,productName:"停用2"},
-        ],
+        centerDialogVisible:false,
       }
     }
   }
