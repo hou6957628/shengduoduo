@@ -5,7 +5,7 @@
     </el-breadcrumb>
     <div class="operationContent">
       <div style="margin-bottom: 15px">
-      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建消息&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button class="upLoadBtn" @celectDatalick="toAddProduct()" type="primary">创建消息&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">分类列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-button type="primary" id="cancelBtn" @click="cancelContent()" slot="append">批量删除</el-button>
       <el-button type="primary" id="cancelBtn1" @click="cancelContent()" slot="append">批量停用</el-button>

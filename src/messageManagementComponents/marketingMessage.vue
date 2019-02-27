@@ -27,7 +27,7 @@
         <el-button type="primary">推送</el-button>
         <el-button type="primary">提醒消息</el-button>
       </el-form-item>
-      <el-form-item label="内容:" style="text-align: left;margin-top: 30px;">
+      <el-form-item  label="内容:" style="text-align: left;margin-top: 30px;">
         <template>
           <el-table
             :data="tableData4"
@@ -69,34 +69,6 @@
             </el-table-column>
           </el-table>
         </template>
-      </el-form-item>
-      <el-form-item label="设定日期:" prop="dataTime" style="text-align: left">
-        <el-radio-group v-model="ruleForm.time" @change="changeTime()">
-          <el-radio label="1">每一天</el-radio>
-          <el-radio label="2">时间段</el-radio>
-          <el-radio label="3">某天</el-radio>
-          <el-radio label="4">每隔多少天</el-radio>
-          <el-radio label="5">立即执行</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="时间段:" prop="user" v-if="this.ruleForm.time==2" style="margin-top: 20px;width: 480px">
-        <el-input v-model="ruleForm.user"></el-input>
-      </el-form-item>
-      <el-form-item label="日期:" prop="user" v-if="this.ruleForm.time==3" style="margin-top: 20px;width: 480px">
-        <el-select style="width: 320px" v-model="ruleForm.roleName" value-key="id" placeholder="请选择" @change="selectChange1($event,electData1)">
-          <el-option
-            v-for="item in electData1"
-            :key="item.roleId"
-            :label="item.roleName"
-            :value="item.roleId">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="相隔天数:" prop="user" v-if="this.ruleForm.time==4" style="margin-top: 20px;width: 480px">
-        <el-input v-model="ruleForm.user"></el-input>
-      </el-form-item>
-      <el-form-item label="输入具体时间:" prop="user" v-if="this.ruleForm.time==1" style="margin-top: 20px;width: 480px">
-        <el-input v-model="ruleForm.user"></el-input>
       </el-form-item>
       <el-form-item label="备注:" prop="desc">
         <el-input type="textarea" :rows="4" placeholder="请输入备注" v-model="ruleForm.desc"></el-input>
@@ -169,8 +141,6 @@
           roleName: '',
           productName1: '',
           enabled: true,
-          time:"1",
-          dataTime:'',
         },
         user:false,
         rules: {
@@ -415,10 +385,6 @@
           path: `/editFinanceProduct`,
         });
       },
-      //选择时间
-      changeTime(){
-        console.log(this.ruleForm.time);
-      }
     },
     mounted: function () {
       this.getProductList1();

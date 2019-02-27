@@ -2,7 +2,7 @@
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">消息分类列表</el-breadcrumb-item>
-      <el-breadcrumb-item>选择短信</el-breadcrumb-item>
+      <el-breadcrumb-item>选择消息</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-select v-model="ruleForm.productName" placeholder="请选择类型" @change="selectChange($event,electData)">
@@ -28,18 +28,13 @@
         :data="tableData"
         @selection-change="handleSelectionChange"
         border
-        style="width: 791px">
+        align="center"
+        style="width: 791px;">
         <el-table-column
           type="selection"
           label="选择"
           align="center"
           width="40">
-        </el-table-column>
-        <el-table-column
-          prop="id"
-          label="APP"
-          align="center"
-          width="150">
         </el-table-column>
         <el-table-column
           prop="name"
@@ -51,7 +46,7 @@
           prop="desc"
           label="内容"
           align="center"
-          width="400">
+          width="550">
         </el-table-column>
       </el-table>
     </template>

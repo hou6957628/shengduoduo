@@ -2,7 +2,7 @@
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">消息配置</el-breadcrumb-item>
-      <el-breadcrumb-item>创建短信</el-breadcrumb-item>
+      <el-breadcrumb-item>创建营销</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" class="demo-ruleForm">
       <el-form-item style="margin-top: 20px;width: 480px" label="选择所属APP:" prop="roleName">
@@ -16,7 +16,9 @@
         </el-select>
       </el-form-item>
       <el-form-item style="text-align: left">
-        <el-button @click="addUser()" type="primary" plain>添加用户</el-button>
+        <el-button @click="addUser()" type="primary" plain>选择用户</el-button>
+        <el-button @click="ImportUser()" type="primary" plain>导入用户</el-button>
+        <el-button @click="previewUser()" type="primary" plain>预览</el-button>
       </el-form-item>
       <el-form-item label="用户:" prop="user" v-if="user" style="margin-top: 20px;width: 480px">
         <el-input disabled="disabled" v-model="ruleForm.user"></el-input>
@@ -418,7 +420,15 @@
       //选择时间
       changeTime(){
         console.log(this.ruleForm.time);
-      }
+      },
+      //导入用户
+      ImportUser(){
+        console.log();
+      },
+      //预览
+      previewUser(){
+        console.log();
+      },
     },
     mounted: function () {
       this.getProductList1();
