@@ -7,6 +7,7 @@
     <div class="listContent">
       <div class="listBox" v-for="(item,index) in productList" :class="isactive == index ? 'addclass' : ''" @click="fen(item,index)">{{item.productName}}</div>
     </div>
+    <div class="line" ></div>
     <div class="listContent">
       <router-link :to="'/jiben/'+this.id" tag="li">基本信息</router-link>
       <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
@@ -215,14 +216,19 @@
   .listBox{
     display: inline-block;
     float: left;
-    padding: 10px 20px;
+    padding: 15px 30px;
     margin: 0 5px;
     font-size: 17px;
     color: #000;
-    background-color: #dedede;
-    border: 1px solid #b0b0b0;
-    border-radius: 10px;
+    background-color: #ffffff;
+    border: 1px solid #dcdfe6;
     cursor: pointer;
+  }
+  .listBox:hover{
+    border: 1px solid #b5b5b5;
+    -moz-box-shadow:2px 6px 15px #b5b5b5;
+    -webkit-box-shadow:2px 6px 15px #b5b5b5;
+    box-shadow:2px 6px 15px #b5b5b5;
   }
   .content {
     padding-left: 200px;
@@ -255,6 +261,15 @@
     margin-bottom: 20px;
   }
   .addclass{
-    background-color: #118efe;
+    color: #67c23a;
+    background: #f0f9eb;
+    border-color: #c2e7b0;
+  }
+  .line{
+    width: 95%;
+    height: 1px;
+    background-color: #b0b0b0;
+    margin-bottom: 30px;
+    margin-left: 5px;
   }
 </style>

@@ -1,15 +1,17 @@
 <template>
   <div>
-    <el-row>
-      <el-col style="width: 170px;margin-left: 5px" :span="3"><img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.front"/></el-col>
-      <el-col style="width: 170px;margin-left: 20px" :span="3"><img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.back"/></el-col>
-      <el-col style="width: 170px;margin-left: 20px" :span="3"><img style="height: 108px;width: 170px" :src="this.idFace.image"/></el-col>
+    <div style="width: 1000px;margin: 0 auto;">
+    <el-row style="text-align: center;margin: 0 auto">
+      <el-col style="width: 200px;margin-left: 5px" :span="4"><img class="ID1"  style="height: auto;width: 200px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.front"/></el-col>
+      <el-col style="width: 200px;margin-left: 50px" :span="4"><img class="ID2" style="height: auto;width: 200px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.back"/></el-col>
+      <el-col style="width: 200px;margin-left: 50px" :span="4"><img class="Face" style="height: auto;width: 200px" :src="this.idFace.image"/></el-col>
     </el-row>
-    <el-row>
-    <el-col :span="3" style="width: 170px;text-align: center;margin-left: 5px;">身份证正面</el-col>
-    <el-col :span="3" style="width: 170px;text-align: center;margin-left: 20px;">身份证正面</el-col>
-    <el-col :span="3" style="width: 170px;text-align: center;margin-left: 20px;">人脸识别照片</el-col>
+    <el-row style="text-align: center;margin: 0 auto">
+    <el-col :span="4" style="width: 200px;text-align: center;margin-left: 5px;z-index: 1">身份证正面</el-col>
+    <el-col :span="4" style="width: 200px;text-align: center;margin-left: 50px;z-index: 1">身份证正面</el-col>
+    <el-col :span="4" style="width: 200px;text-align: center;margin-left: 50px;z-index: 1">人脸识别照片</el-col>
     </el-row>
+    </div>
     <div class="jiben">
       <h3>基本信息</h3>
       <table >
@@ -256,4 +258,52 @@
   }
   table,table tr th, table tr td { border:1px solid #838383; }
   table { width: 95%; min-height: 40px; line-height: 40px; text-align: center; border-collapse: collapse; padding:10px 5px;margin-top: 20px}
+  .ID1{
+    transition: All 0.4s ease-in-out;
+    -webkit-transition: All 0.4s ease-in-out;
+    -moz-transition: All 0.4s ease-in-out;
+    -o-transition: All 0.4s ease-in-out;
+    z-index: 1000;
+    cursor: pointer;
+  }
+  .ID1:hover{
+    transform: scale(3);
+    -webkit-transform: scale(3);
+    -moz-transform: scale(3);
+    -o-transform: scale(3);
+    -ms-transform: scale(3);
+    z-index: 1000;
+  }
+  .ID2{
+    transition: All 0.4s ease-in-out;
+    -webkit-transition: All 0.4s ease-in-out;
+    -moz-transition: All 0.4s ease-in-out;
+    -o-transition: All 0.4s ease-in-out;
+    z-index: 1000;
+    cursor: pointer;
+  }
+  .ID2:hover{
+    transform: scale(3);
+    -webkit-transform: scale(3);
+    -moz-transform: scale(3);
+    -o-transform: scale(3);
+    -ms-transform: scale(3);
+    z-index: 1000;
+  }
+  .Face{
+    transition: All 0.4s ease-in-out;
+    -webkit-transition: All 0.4s ease-in-out;
+    -moz-transition: All 0.4s ease-in-out;
+    -o-transition: All 0.4s ease-in-out;
+    z-index: 1000;
+    cursor: pointer;
+  }
+  .Face:hover{
+    transform: scale(3);
+    -webkit-transform: scale(3);
+    -moz-transform: scale(3);
+    -o-transform: scale(3);
+    -ms-transform: scale(3);
+    z-index: 1000;
+  }
 </style>
