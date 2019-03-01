@@ -72,7 +72,8 @@
         </template>
       </table>
       <el-button-group style="margin: 0 auto;width: 500px;display: block;margin-top: 40px;">
-        <el-button class="la" @click="addBlack()" type="danger">拉黑</el-button>
+        <el-button v-if="!this.cusCustomer.isBlackList" class="la" @click="addBlack()" type="danger">拉黑</el-button>
+        <el-button v-if="this.cusCustomer.isBlackList" class="la" @click="removeBlack()" type="danger">移除黑名单</el-button>
         <el-button class="guan" @click="resetForm()" style="margin-left: 40px">关闭</el-button>
       </el-button-group>
     </div>
@@ -224,6 +225,30 @@
               type: 'success'
             });
             this.$router.push('/userProductList');
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //移除黑名单
+      removeBlack() {
+        axios({
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/customer/deleteBlack",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            id: this.id,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.$router.go(-1);
           } else {
             this.$message.error(res.data.msgInfo);
           }

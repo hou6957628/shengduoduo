@@ -25,7 +25,7 @@
           <el-button @click="addTag()">添加规则集分类</el-button>
         </el-form-item>
         <el-form-item label="是否启用:" prop="enabled">
-          <el-select v-model="ruleForm.enabled" disabled placeholder="请选择" @change="selectChange">
+          <el-select v-model="ruleForm.enabled" disabled placeholder="请选择">
             <el-option
               v-for="item in electDataEnabled"
               :key="item.key"
@@ -55,6 +55,7 @@
             <el-button @click="xuan(index)" :id="['btn'+index]" v-if="domain.ruleId">{{domain.ruleName}}</el-button>
             <el-button @click="xuan(index)" :id="['btn'+index]" v-if="!domain.ruleId">点击选择</el-button>
             <el-button @click.prevent="removeDomain(domain)">删除</el-button>
+            <el-button @click.prevent="toDetailRule(domain)" type="primary" plain>查看规则详情</el-button>
           </el-form-item>
         </el-form-item >
         <p class="topText" style="margin: 60px 0 20px 0;">运算规则集设置&nbsp;&nbsp;&nbsp;<el-tag class="fs15">&&:且</el-tag>&nbsp;&nbsp;<el-tag class="fs15">|:或</el-tag>&nbsp;&nbsp;<el-tag class="fs15">{}:最后执行</el-tag>&nbsp;&nbsp;<el-tag class="fs15">():优先执行</el-tag></p>
@@ -307,6 +308,13 @@
           this.electDataList.domains.splice(index, 1)
         }
       },
+      //查看规则详情
+      toDetailRule(item) {
+        var id=item.ruleId;
+        this.$router.push({
+          path: `/editRule/${id}`,
+        });
+      },
       //点击选择所有规则
       xuan(index){
         this.count=index;
@@ -427,7 +435,6 @@
         rules: {
           collectionName: [
             { required: true, message: '请输入规则集名称', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
           ],
           classifyId: [
             { required: true, message: '请选择规则集分类', trigger: 'change' }

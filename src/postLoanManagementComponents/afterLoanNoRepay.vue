@@ -481,7 +481,7 @@
       }
     },
     mounted:function () {
-      this.getOrderList(null,10,null,null,null,null,null,null,1,30,null);
+      this.getOrderList(null,11,null,null,null,null,null,null,1,30,null);
       this.getProductList();
     },
     data() {

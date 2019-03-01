@@ -252,9 +252,9 @@
       },
       //详情接口
       detailProduct(row){
-        let id=row.id;
+        let id=row.customerId;
         this.$router.push({
-          path: `/editFinanceProduct/${id}`,
+          path: `/userDetail/${id}`,
         });
       },
       //过滤类型字段

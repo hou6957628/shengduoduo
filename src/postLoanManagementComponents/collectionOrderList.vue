@@ -95,7 +95,7 @@
           <el-option
             v-for="item in collectionList"
             :key="item.id"
-            :label="item.roleName"
+            :label="item.userName"
             :value="item.id">
           </el-option>
         </el-select>

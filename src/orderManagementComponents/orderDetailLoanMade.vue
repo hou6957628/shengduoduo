@@ -42,7 +42,7 @@
     </table>
     </div>
     <el-button-group v-if="this.borrowingForm.partial" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button v-if="this.borrowingForm.partial" class="la" type="danger" @click="cancelAuditOrder()">部分还款</el-button>
+      <el-button v-if="this.borrowingForm.partial" class="la" type="danger" @click="partialTip()">部分还款</el-button>
       <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
     </el-button-group>
     <div v-if="!this.borrowingForm.partial" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
