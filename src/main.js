@@ -36,6 +36,12 @@ Vue.prototype.validatorNumber = (rule, value, callback) => {
     }
   }
 };
+//当前时间
+Vue.prototype.currentDate=new Date();
+//当天零点
+Vue.prototype.currentDateZero=new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0);
+//当前时间前一个月
+Vue.prototype.beforeOneMonth=new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0);
 
 new Vue({
   el: '#app',

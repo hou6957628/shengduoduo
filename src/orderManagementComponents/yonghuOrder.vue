@@ -10,17 +10,16 @@
           fixed
           prop="id"
           label="编号"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="collectorName"
           label="催收人员"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="collectionLabelName"
           label="类型"
-          sortable
           width="150">
         </el-table-column>
         <el-table-column
@@ -29,15 +28,14 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="cardNumber"
+          prop="memo"
           label="说明"
-          width="300">
+          width="400">
         </el-table-column>
         <el-table-column
           prop="createDate"
           label="时间"
-          sortable
-          width="150">
+          width="200">
         </el-table-column>
         <el-table-column
           label="操作"
@@ -70,37 +68,32 @@
     data() {
       return {
         collection: [],
-        finProduct: '',
         pageNum: null,
         proTotal:null,
         pageSize:null,
         pageSizes:[30,50,80],
         nowPageSizes:30,
-        value7:'',
       };
     },
     methods: {
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
+        this.getProductList(this.pageNum,val,this.id);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.id);
       },
       //详情
       detailProduct(row){
         let id=row.id;
         this.$router.push({
-          path: `/editFinanceProduct/${id}`,
+          path: `/editCollectRecord/${id}`,
         });
       },
-      //用户基本信息
-      getCollection(id) {
+      //用户催收记录
+      getCollection(data1,data2,data3) {
         axios({
           method: "POST",
           url:"http://"+this.baseUrl+"/user_center/admin/collection/get",
@@ -109,7 +102,9 @@
             'Authorization': localStorage.token
           },
           params: {
-            id: id,
+            pageNum: data1,
+            pageSize: data2,
+            id: data3,
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
@@ -122,19 +117,10 @@
           }
         })
       },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
-        } else {
-          return '分期产品'
-        }
-      },
     },
     mounted: function () {
       this.id=this.$route.params.id;
-      this.getCollection(this.id);
+      this.getCollection(1,30,this.id);
     }
   }
 </script>

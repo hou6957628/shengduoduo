@@ -49,7 +49,7 @@
         <template v-for="(item,index) in this.linkMan">
           <tr>
             <td>联系人{{index}}：{{item.name}}</td><td>联系人借款关系：{{item.relation}}</td><td>手机号：{{item.phoneNum}}</td>
-            <td rowspan="2" v-if="index==0"><el-button @click="">手机通讯录</el-button></td>
+            <td rowspan="2" v-if="index==0"><el-button @click="addressList">手机通讯录</el-button></td>
           </tr>
         </template>
       </table>
@@ -103,6 +103,13 @@
       };
     },
     methods: {
+      //通讯录
+      addressList(){
+        let id=this.id;
+        this.$router.push({
+          path: `/addressList/${id}`,
+        });
+      },
       //取消按钮
       resetForm(formName) {
         this.$router.push('/pendingApproval');
