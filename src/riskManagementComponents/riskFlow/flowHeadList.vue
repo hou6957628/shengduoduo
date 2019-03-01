@@ -26,22 +26,22 @@
         <el-table-column
           prop="flowName"
           label="总流程名称"
-          width="200">
+          width="160">
         </el-table-column>
         <el-table-column
           prop="borrowingProductUsed"
           label="使用中的应用"
-          width="300">
+          width="260">
         </el-table-column>
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="updateDate"
           label="更新时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="creator"
@@ -59,9 +59,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          fixed="right"
           label="操作"
-          width="250">
+          width="230">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
             <el-button @click="configureProduct(scope.row)" type="text" size="medium">配置</el-button>

@@ -21,7 +21,7 @@
           fixed
           prop="flowCode"
           label="子流程编号"
-          width="150">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="flowName"
@@ -31,12 +31,12 @@
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="updateDate"
           label="更新时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="creator"
