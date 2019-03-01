@@ -29,10 +29,10 @@
           <td>应还利息（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
           <td>罚息（元）：{{this.borrowingForm.repaymentPenaltyInterest}}</td>
           <td>滞纳金（元）：没有此字段</td>
-          <td>应还总还金额（元）：{{this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
+          <td>应还总还金额（元）：{{this.borrowingForm.repaymentCapital + this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
         </tr>
         <tr>
-          <td>是否可展期：{{this.borrowingForm.defer==1?'是':'否'}}</td>
+          <td>是否可展期：{{this.borrowingForm.enableDefer | enableDeferFalse}}</td>
           <td>展期应还金额：{{this.borrowingForm.repaymentDefer}}</td>
           <td>展期实际还款金额（元）：{{this.borrowingForm.repaymentDeferPayment}}</td>
           <td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>
@@ -41,7 +41,7 @@
         </tr>
       </table>
     </div>
-    <el-button-group style="margin: 0 auto;width: 500px;display: block;margin-top: 40px;margin-bottom: 40px">
+    <el-button-group style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
       <el-button v-if="!this.cusCustomer.isBlackList" class="la" type="danger" @click="addBlack()">拉黑</el-button>
       <el-button v-if="this.cusCustomer.isBlackList" class="la" type="danger" @click="removeBlack()">移除黑名单</el-button>
       <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
@@ -107,7 +107,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.$router.push('/userProductList');
+            this.$router.go(-1);
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -117,14 +117,13 @@
       removeBlack() {
         axios({
           method: "POST",
-          url:"http://"+this.baseUrl+"/user_center/admin/black/delete",
+          url:"http://"+this.baseUrl+"/user_center/admin/customer/deleteBlack",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params: {
-            customerId: this.id,
-            description: '后台系统手动拉黑',
+            id: this.id,
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
@@ -132,7 +131,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.$router.push('/userProductList');
+            this.$router.go(-1);
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -140,7 +139,7 @@
       },
       //取消按钮
       resetForm() {
-        this.$router.push('/paymentHistory');
+        this.$router.go(-1);
       },
       //用户基本信息
       getUserDetail1(id) {
@@ -250,7 +249,16 @@
       htmlFalse:function(arg1){
         var result = arg1.substring(13);
         return 'http://39.105.217.251' + result;
-      }
+      },
+      enableDeferFalse:function(arg1){
+        if(arg1==null){
+          return "未跑展期流程";
+        }else if(arg1==false){
+          return "否";
+        }else if(arg1==true){
+          return "是";
+        }
+      },
     }
   }
 </script>

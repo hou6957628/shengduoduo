@@ -138,7 +138,7 @@
       },
       //取消按钮
       resetForm() {
-        this.$router.push('/paymentHistory');
+        this.$router.go(-1);
       },
       //用户基本信息
       getUserDetail1(id) {

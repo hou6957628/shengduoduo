@@ -46,9 +46,9 @@
         style="width: 98%">
         <el-table-column
           fixed
-          prop="id"
-          label="ID"
-          width="110">
+          prop="orderId"
+          label="订单ID"
+          width="250">
         </el-table-column>
         <el-table-column
           fixed

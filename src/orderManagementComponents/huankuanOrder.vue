@@ -8,9 +8,9 @@
         style="width: 100%;margin-top: 20px;">
         <el-table-column
           fixed
-          prop="id"
-          label="还款编号"
-          width="80">
+          prop="orderId"
+          label="订单ID"
+          width="250">
         </el-table-column>
         <el-table-column
           prop="memo"

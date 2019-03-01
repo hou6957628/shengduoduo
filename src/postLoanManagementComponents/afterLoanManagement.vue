@@ -118,9 +118,9 @@
         style="width: 98%">
         <el-table-column
           fixed
-          prop="id"
+          prop="orderId"
           label="订单ID"
-          width="110">
+          width="250">
         </el-table-column>
         <el-table-column
           fixed
@@ -132,6 +132,12 @@
           prop="mobile"
           label="手机号"
           width="120">
+        </el-table-column>
+        <el-table-column
+          prop="reBorrow"
+          label="用户标识"
+          :formatter="reBorrowFormatter"
+          width="100">
         </el-table-column>
         <el-table-column
           prop="borrowingPeriod"
@@ -177,6 +183,7 @@
         <el-table-column
           prop="loanNumber"
           label="应还金额"
+          :formatter="shouldFormatter"
           width="110">
         </el-table-column>
         <el-table-column
@@ -422,12 +429,23 @@
       //过滤状态字段
       statusFormatter(row){
         let status = row.status;
-        if(status === 10){
+        if(status === 11){
           return '逾期未还 '
-        } else if (status === 11){
+        } else if (status === 12){
           return '坏账'
         } else if (status === 13){
-          return '逾期已还'
+          return '逾期还款'
+        }
+      },
+      //过滤用户标识字段
+      reBorrowFormatter(row){
+        let reBorrow = row.reBorrow;
+        if(reBorrow === false){
+          return '新户'
+        } else if (reBorrow === true){
+          return '老户'
+        } else{
+          return '---'
         }
       },
       //时间筛选
@@ -469,6 +487,28 @@
           // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
         }
       },
+      //应还金额字段
+      shouldFormatter(row){
+        let repaymentCapital = row.repaymentCapital;
+        let repaymentOverdueFee = row.repaymentOverdueFee;
+        let repaymentPenaltyInterest = row.repaymentPenaltyInterest;
+        return repaymentCapital + repaymentOverdueFee + repaymentPenaltyInterest;
+      },
+      //详情
+      detailProduct(row){
+        let id=row.customerId;
+        let orderId=row.orderId;
+        let status=row.status;
+        if (status == 11) {
+          this.$router.push({
+            path: `/orderDetailAfterLoanNoRepay/${id}/${orderId}`,
+          });
+        } else if (status == 13) {
+          this.$router.push({
+            path: `/orderDetailAfterLoanRepayed/${id}/${orderId}`,
+          });
+        }
+      }
     },
     mounted:function () {
       this.getOrderList(null,null,null,null,null,null,null,null,1,30,1);

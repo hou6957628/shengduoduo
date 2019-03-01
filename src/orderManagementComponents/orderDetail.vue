@@ -109,7 +109,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.$router.push('/pendingApproval');
+            this.$router.go(-1);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -133,7 +133,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.$router.push('/pendingApproval');
+            this.$router.go(-1);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -141,7 +141,7 @@
       },
       //取消按钮
       resetForm() {
-        this.$router.push('/pendingApproval');
+        this.$router.go(-1);
       },
       //用户基本信息
       getUserDetail1(id) {

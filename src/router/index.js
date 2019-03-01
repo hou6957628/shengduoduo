@@ -26,6 +26,7 @@ import dingdan from '@/userManagementComponents/dingdan'
 import fangkuan from '@/userManagementComponents/fangkuan'
 import huankuan from '@/userManagementComponents/huankuan'
 import modifyUserInformation from '@/userManagementComponents/modifyUserInformation'
+import editCollectRecord from '@/userManagementComponents/editCollectRecord'
 //用户管理-黑名单列表
 import blackList from '@/userManagementComponents/blackList'
 //用户管理-银行卡管理列表
@@ -68,12 +69,33 @@ import editHeadFlow from '@/riskManagementComponents/riskFlow/editHeadFlow'
 import configHeadFlow from '@/riskManagementComponents/riskFlow/configHeadFlow'
 //风险命中列表
 import flowLogList from '@/riskManagementComponents/flowLog/flowLogList'
-//逾期订单、委外订单、催收标签、通话类型
+//逾期订单
 import afterLoanManagement from '@/postLoanManagementComponents/afterLoanManagement'
+//逾期未还
 import afterLoanNoRepay from '@/postLoanManagementComponents/afterLoanNoRepay'
+import orderDetailAfterLoanNoRepay from '@/postLoanManagementComponents/orderDetailAfterLoanNoRepay'
+import jibenOrder6 from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder6 from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder6 from '@/orderManagementComponents/yunyingOrder'
+import yonghuOrder6 from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder6 from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder6 from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder6 from '@/orderManagementComponents/huankuanOrder'
+//逾期已还
 import afterLoanRepayed from '@/postLoanManagementComponents/afterLoanRepayed'
+import orderDetailAfterLoanRepayed from '@/postLoanManagementComponents/orderDetailAfterLoanRepayed'
+import jibenOrder7 from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder7 from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder7 from '@/orderManagementComponents/yunyingOrder'
+import yonghuOrder7 from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder7 from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder7 from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder7 from '@/orderManagementComponents/huankuanOrder'
+//委外订单
 import outsourcingOrderList from '@/postLoanManagementComponents/outsourcingOrderList'
+//委外已还
 import outsourcingOrderRepayedList from '@/postLoanManagementComponents/outsourcingOrderRepayedList'
+//催收标签、通话类型
 import collectionTag from '@/postLoanManagementComponents/collectionTag'
 import callTypeTag from '@/postLoanManagementComponents/callTypeTag'
 //催收人员、催收群组
@@ -82,12 +104,14 @@ import collectionPerson from '@/postLoanManagementComponents/collectionPerson'
 import collectionGroupManagement from '@/postLoanManagementComponents/collectionGroupManagement'
 import collectionGroup from '@/postLoanManagementComponents/collectionGroup'
 import editCollectionGroup from '@/postLoanManagementComponents/editCollectionGroup'
-
-
+//分单、催回
 import collectionOrder from '@/postLoanManagementComponents/collectionOrder'
 import collectionOrderList from '@/postLoanManagementComponents/collectionOrderList'
 import collectionTaskList from '@/postLoanManagementComponents/collectionTaskList'
 import collectionTaskFinishList from '@/postLoanManagementComponents/collectionTaskFinishList'
+import addressList from '@/postLoanManagementComponents/addressList'
+import addressListEmergency from '@/postLoanManagementComponents/addressListEmergency'
+//角色渠道
 import addRole from '@/privilegeManagementComponents/addRole'
 import roleList from '@/privilegeManagementComponents/roleList'
 import accountManagement from '@/privilegeManagementComponents/accountManagement'
@@ -614,12 +638,92 @@ const vueRouter = new Router({
       component: afterLoanNoRepay
     },
     {
+      path: '/orderDetailAfterLoanNoRepay/:id/:orderId',
+      name: 'orderDetailAfterLoanNoRepay',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder6/:id/:orderId",
+          component:jibenOrder6
+        },
+        {
+          path:"/fenxianOrder6/:id",
+          component:fenxianOrder6
+        },
+        {
+          path:"/yunyingOrder6/:id",
+          component:yunyingOrder6
+        },
+        {
+          path:"/yonghuOrder6/:id",
+          component:yonghuOrder6
+        },
+        {
+          path:"/dingdanOrder6/:id",
+          component:dingdanOrder6
+        },
+        {
+          path:"/fangkuanOrder6/:id",
+          component:fangkuanOrder6
+        },
+        {
+          path:"/huankuanOrder6/:id",
+          component:huankuanOrder6
+        }
+      ],
+      //重定向
+      redirect: '/jibenOrder6/:id/:orderId',
+      component: orderDetailAfterLoanNoRepay
+    },
+    {
       path: '/afterLoanRepayed',
       name: 'afterLoanRepayed',
       meta: {
         requireAuth: true
       },
       component: afterLoanRepayed
+    },
+    {
+      path: '/orderDetailAfterLoanRepayed/:id/:orderId',
+      name: 'orderDetailAfterLoanRepayed',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder7/:id/:orderId",
+          component:jibenOrder7
+        },
+        {
+          path:"/fenxianOrder7/:id",
+          component:fenxianOrder7
+        },
+        {
+          path:"/yunyingOrder7/:id",
+          component:yunyingOrder7
+        },
+        {
+          path:"/yonghuOrder7/:id",
+          component:yonghuOrder7
+        },
+        {
+          path:"/dingdanOrder7/:id",
+          component:dingdanOrder7
+        },
+        {
+          path:"/fangkuanOrder7/:id",
+          component:fangkuanOrder7
+        },
+        {
+          path:"/huankuanOrder7/:id",
+          component:huankuanOrder7
+        }
+      ],
+      //重定向
+      redirect: '/jibenOrder7/:id/:orderId',
+      component: orderDetailAfterLoanRepayed
     },
     {
       path: '/outsourcingOrderList',
@@ -726,6 +830,22 @@ const vueRouter = new Router({
       component: collectionTaskFinishList
     },
     {
+      path: '/addressList/:id',
+      name: 'addressList',
+      meta: {
+        requireAuth: true
+      },
+      component: addressList
+    },
+    {
+      path: '/addressListEmergency/:id',
+      name: 'addressListEmergency',
+      meta: {
+        requireAuth: true
+      },
+      component: addressListEmergency
+    },
+    {
       path: '/addRole',
       name: 'addRole',
       meta: {
@@ -823,6 +943,10 @@ const vueRouter = new Router({
         {
           path:"/huankuan/:id",
           component:huankuan
+        },
+        {
+          path:"/editCollectRecord/:id",
+          component:editCollectRecord
         }
       ],
       //重定向
@@ -837,6 +961,14 @@ const vueRouter = new Router({
       },
       component: modifyUserInformation
     },
+    // {
+    //   path: '/editCollectRecord/:id',
+    //   name: 'editCollectRecord',
+    //   meta: {
+    //     requireAuth: true
+    //   },
+    //   component: editCollectRecord
+    // },
     {
       path: '/blackList',
       name: 'blackList',

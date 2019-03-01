@@ -91,9 +91,9 @@
         style="width: 98%">
         <el-table-column
           fixed
-          prop="id"
+          prop="orderId"
           label="订单ID"
-          width="110">
+          width="250">
         </el-table-column>
         <el-table-column
           fixed
@@ -129,7 +129,7 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="borrowingCapital"
+          prop="borrowingInterest"
           label="综合费用"
           width="100">
         </el-table-column>

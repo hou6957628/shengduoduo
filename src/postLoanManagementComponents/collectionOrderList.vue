@@ -116,9 +116,9 @@
         </el-table-column>
         <el-table-column
           fixed
-          prop="id"
+          prop="orderId"
           label="订单ID"
-          width="120">
+          width="250">
         </el-table-column>
         <el-table-column
           fixed
@@ -209,24 +209,30 @@
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="childrenChannelName"
           label="子渠道"
           width="200">
         </el-table-column>
         <el-table-column
           prop="totalAmount"
           label="是否是黑名单"
-          width="200">
+          width="110">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.isBlackList == true ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.isBlackList == true ? '是' : '否'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="distributDate"
           label="分配时间"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
+          prop="childrenChannelName"
           label="分配状态"
-          width="200">
+          :formatter="distributFormatter"
+          width="100">
         </el-table-column>
         <el-table-column
           prop="outSourceDate"
@@ -236,23 +242,23 @@
         <el-table-column
           prop="totalAmount"
           label="内催天数"
-          width="200">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="outSourceDate"
           label="委外天数"
-          width="200">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="reBorrow"
           label="用户标识"
           :formatter="reBorrowFormatter"
-          width="200">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="collectorName"
           label="催收员"
-          width="200">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="collectorName"
@@ -260,10 +266,11 @@
           width="200">
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作"
           width="60">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
+            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -311,6 +318,7 @@
       },
       //二级联动：选择平台后加载对应催收员
       selectChange(){
+        this.adminId=null;
         this.getCollectionList();
       },
       //查询所有催收员
@@ -460,6 +468,10 @@
         let repaymentPenaltyInterest = row.repaymentPenaltyInterest;
         return repaymentCapital + repaymentOverdueFee + repaymentPenaltyInterest;
       },
+      //分配状态字段
+      distributFormatter(row){
+        return '已分配';
+      },
       //下单时间筛选
       logTimeChange1(){
         if(this.value5!=''||this.value5!=null){
@@ -502,9 +514,6 @@
             type: 'warning',
             center: true
           }).then(() => {
-            var data = {
-              'ids':this.orderIds,
-            };
             axios({
               method:"POST",
               url:"http://"+this.baseUrl+"/order/admin/borrowing/cancelAssignedOrder",
@@ -512,13 +521,20 @@
                 'Content-Type':'application/json',
                 'Authorization': localStorage.token
               },
-              data:JSON.stringify(data),
+              data:JSON.stringify(this.orderIds),
             }).then((res)=>{
               if(res.data.msgCd=='ZYCASH-200'){
                 this.$message({
                   message: '操作成功',
                   type: 'success'
                 });
+                if (this.status==null) {
+                  this.getProductList(this.pageNum,this.pageSize,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
+                    this.repaymentPaymentEndDate,this.orderRepaymentStartDate,this.orderRepaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId,1);
+                } else {
+                  this.getProductList(this.pageNum,this.pageSize,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
+                    this.repaymentPaymentEndDate,this.orderRepaymentStartDate,this.orderRepaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId,null);
+                }
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }
@@ -534,7 +550,7 @@
         this.multipleSelection = val;
         let ids = []
         this.multipleSelection.map((item)=> {
-          ids.push(item.orderId);
+          ids.push(item.id);
         })
         this.orderIds = ids;
       },
@@ -549,6 +565,14 @@
           return '---'
         }
       },
+      //详情
+      detailProduct(row){
+        let id=row.customerId;
+        let orderId=row.orderId;
+        this.$router.push({
+          path: `/orderDetailLoanMade/${id}/${orderId}`,
+        });
+      },
     },
     mounted:function () {
       this.getProduct();
@@ -557,6 +581,7 @@
     data() {
       return {
         productList:[],
+        collectionList:[],
         statusList: [
           {classifyId:null,classifyName:"全部状态"},
           {classifyId:11,classifyName:"逾期未还"},
@@ -578,7 +603,6 @@
         value5:'',
         value6:'',
         value7:'',
-        collectionList:'',
         orderIds:[],
         pageNum: null,
         proTotal:null,

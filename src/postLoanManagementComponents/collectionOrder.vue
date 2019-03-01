@@ -4,7 +4,7 @@
       <el-breadcrumb-item>催收分单</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="listContent">
-      <div class="listBox" v-for="(item,index) in productList" :key="index">{{item.productName}}</div>
+      <div class="listBox" v-for="(item,index) in productList" :class="isactive == index ? 'addclass' : ''" @click="xuan(item,index)" :key="index">{{item.productName}}</div>
     </div>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
       <el-col :span="11" style="height: 55px;">
@@ -29,8 +29,8 @@
         渠道：
         <el-select v-model="channelNames" placeholder="请选择" multiple style="width: 400px">
           <el-option
-            v-for="item in channelList"
-            :key="item.subChannelName"
+            v-for="(item ,index) in channelList"
+            :key="index"
             :label="item.subChannelName"
             :value="item.subChannelName">
           </el-option>
@@ -40,8 +40,8 @@
         期数：
         <el-select v-model="period" placeholder="请选择">
           <el-option
-            v-for="item in periodList"
-            :key="item.id"
+            v-for="(item ,index) in periodList"
+            :key="index"
             :label="item.value"
             :value="item.id">
           </el-option>
@@ -51,8 +51,8 @@
         新老户：
         <el-select v-model="reBorrow" placeholder="请选择">
           <el-option
-            v-for="item in reBorrowList"
-            :key="item.id"
+            v-for="(item ,index) in reBorrowList"
+            :key="index"
             :label="item.value"
             :value="item.id">
           </el-option>
@@ -67,11 +67,11 @@
         <el-form-item style="margin-left: 0" class="labelList" v-for="(domain, index) in adminIds" :key="index">
             <div style="margin-left: -100px">
             催收员{{index}}： 姓名：
-              <el-select v-model="adminId" @change="changeSelect($event,collectionList)">
+              <el-select v-model="domain.adminId" @change="changeSelect($event,collectionList,index)">
                 <el-option
-                  v-for="item in collectionList"
-                  :key="item.id"
-                  :label="item.roleName"
+                  v-for="(item,index) in collectionList"
+                  :key="index"
+                  :label="item.userName"
                   :value="item.id">
                 </el-option>
               </el-select>
@@ -88,13 +88,13 @@
       :visible.sync="centerDialogVisible"
       width="40%"
       center>
-      <el-col :span="6" v-for="(item,index) in orderList" :key="index" style="margin-bottom: 15px">{{item.name}}&nbsp;:&nbsp;{{item.value}}单</el-col>
+      <el-col :span="6" v-for="(item,index) in reminderOrderList" :key="index" style="margin-bottom: 15px">{{item.name}}&nbsp;:&nbsp;{{item.adminSize}}单</el-col>
       <el-col :span="24" style="height: 40px;margin-bottom: 20px">
-        <el-col :span="6" style="font-size: 16px">共计:1008</el-col>
-        <el-col :span="6" style="font-size: 16px">催收员:10人</el-col>
+        <el-col :span="6" style="font-size: 16px">共计：{{totalFormCount}}单</el-col>
+        <el-col :span="6" style="font-size: 16px">催收员：{{totalReminderCount}}人</el-col>
       </el-col>
       <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="editTag()">确 定</el-button>
+      <el-button type="primary" @click="realAssignForm()">确 定</el-button>
       <el-button @click="centerDialogVisible = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -106,11 +106,13 @@
   export default {
     data() {
       return {
-        productId:'',
+        productId:null,
         productList:[],
+        adminIdsList:[],
+        adminNamesList:[],
         channelList:[],
         collectionList:[],
-        value7:null,
+        value7:'',
         startDate:'',
         endDate:'',
         channelNames:[],
@@ -118,10 +120,16 @@
         reBorrow:null,
         casesNumber:'',
         centerDialogVisible:false,
-        adminIds:[null],
-        adminId:null,
-        adminNames:[null],
-
+        adminIds:[
+          {adminId: null}
+        ],
+        adminNames:[],
+        reminderOrderList:[],
+        totalFormCount:'',
+        totalReminderCount:'',
+        ids_reminder:[],
+        ids_form:'',
+        ids_reminder_name:[],
         periodList:[
           {id:null,value:'全部期数'},
           {id:7,value:'7'},
@@ -132,16 +140,6 @@
           {id:0,value:'新户'},
           {id:1,value:'老户'},
         ],
-        orderList:[
-          {name:"张磊",value:100},
-          {name:"张磊",value:101},
-          {name:"张磊",value:102},
-          {name:"张磊",value:103},
-          {name:"张磊",value:104},
-        ],
-        electValue:"",
-        electValue1:"",
-        electValue2:"",
         ruleForm: {
           merchantName: '',
           companyAddress: '',
@@ -194,9 +192,17 @@
             }
           }]
         },
+        isactive:0,
       };
     },
     methods: {
+      //选择不同产品
+      xuan(item,index){
+        this.isactive = index;
+        this.productId = item.productId;
+        this.getCaseNumber(null,null,null,this.startDate,this.startDate,this.productId);
+        this.getCollectionList(this.productId);
+      },
       //查询所有产品
       getProductList() {
         axios({
@@ -210,10 +216,8 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
             this.productId=this.productList[0].productId;
-            // this.getCaseNumber(null,null,null,this.startDate,this.startDate,this.productId);
-            this.getCaseNumber(null,null,null,this.startDate,this.startDate,61);
-            // this.getCollectionList(this.productId);
-            this.getCollectionList(17);
+            this.getCaseNumber(null,null,null,this.startDate,this.startDate,this.productId);
+            this.getCollectionList(this.productId);
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -226,8 +230,7 @@
       getChannelList() {
         axios({
           method:"POST",
-          // url:"http://"+this.baseUrl+"/order/admin/borrowing/getChannelList",
-          url:"http://39.105.217.251:31999/order/admin/borrowing/getChannelList",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/getChannelList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -257,6 +260,7 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            this.$forceUpdate();
             this.collectionList=res.data.body;
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
@@ -268,8 +272,7 @@
       },
       //条件查询规则集列表
       searchContent(){
-        // this.getCaseNumber(this.channelNames,this.period,this.reBorrow,this.startDate,this.endDate,this.productId);
-        this.getCaseNumber(this.channelNames,this.period,this.reBorrow,this.startDate,this.endDate,61);
+        this.getCaseNumber(this.channelNames,this.period,this.reBorrow,this.startDate,this.endDate,this.productId);
       },
       /**
        * 查询案件数量
@@ -309,38 +312,83 @@
         })
       },
       //封装姓名
-      changeSelect(vId,list){
+      changeSelect(vId,list,index){
         this.$forceUpdate();
         let obj = {};
         obj = list.find((item)=>{
           return item.id === vId;
         });
-        this.adminIds[localStorage.num]=obj.id;
-        this.adminNames[localStorage.num]=obj.roleName;
+        this.adminIdsList[index]=obj.id;
+        this.adminNamesList[index]=obj.userName;
       },
       //添加数据
       addDomain() {
         localStorage.num++;
-        this.adminIds[localStorage.num] = null;
-        this.adminNames[localStorage.num] = null;
-        console.log(this.adminIds);
+        this.adminIds.push({
+          adminId: null,
+        });
       },
       //分单提醒
       fendan(){
-        this.centerDialogVisible=true;
+        if (this.adminIds[0].adminId==null) {
+          this.$message({
+            showClose: true,
+            message: '请选择至少一个催收员',
+            type: 'warning'
+          });
+        } else if (this.casesNumber==0) {
+          this.$message({
+            showClose: true,
+            message: '没有可分订单',
+            type: 'warning'
+          });
+        } else {
+          this.centerDialogVisible=true;
+          var data = {
+            'channelNames':this.channelNames,
+            'period':this.period,
+            'reBorrow':this.reBorrow,
+            'startDate':this.startDate,
+            'endDate':this.endDate,
+            'productId':this.productId,
+            'adminIds':this.adminIdsList,
+            'adminNames':this.adminNamesList,
+          };
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/order/admin/borrowing/assignForm",
+            headers:{
+              'Content-Type':'application/json',
+              'Authorization': localStorage.token
+            },
+            data:JSON.stringify(data),
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              this.reminderOrderList=res.data.body.dataMap.reminders;
+              this.totalFormCount=res.data.body.dataMap.totalFormCount;
+              this.totalReminderCount=res.data.body.dataMap.totalReminderCount;
+              this.ids_form=res.data.body.ids_form;
+              this.ids_reminder_name=res.data.body.ids_reminder_name;
+              this.ids_reminder=res.data.body.ids_reminder;
+            }else if(res.data.msgCd=='ZYCASH-1009'){
+              this.$message.error(res.data.msgInfo);
+            }
+            else {
+              this.$message.error(res);
+            }
+          })
+        }
+      },
+      //真正分单
+      realAssignForm() {
         var data = {
-          'channelNames':this.channelNames,
-          'period':this.period,
-          'reBorrow':this.reBorrow,
-          'startDate':this.startDate,
-          'endDate':this.endDate,
-          'productId':this.productId,
-          'adminIds':this.adminIds,
-          'adminNames':this.adminNames,
+          'ids_form':this.ids_form,
+          'ids_reminder':this.ids_reminder,
+          'ids_reminder_name':this.ids_reminder_name,
         };
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/assignForm",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/realAssignForm",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -348,7 +396,14 @@
           data:JSON.stringify(data),
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.collectionList=res.data.body;
+            this.centerDialogVisible=false;
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            //将案件数量归零，催收员归零
+            this.getCaseNumber(this.channelNames,this.period,this.reBorrow,this.startDate,this.endDate,this.productId);
+            this.adminIds = [{adminId: null}];
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -357,95 +412,6 @@
           }
         })
       },
-      //真正分单
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            var param = new FormData();  // 创建form对象
-            param.append('merchantName', this.ruleForm.merchantName)  // 通过append向form对象添加数据
-            param.append('companyAddress', this.ruleForm.companyAddress) // 添加form表单中其他数据
-            param.append('companyDetail', this.ruleForm.companyDetail) // 添加form表单中其他数据
-            param.append('enabled', this.ruleForm.enabled) // 添加form表单中其他数据
-            axios({
-              method:"POST",
-              url:"http://"+this.baseUrl+"/operate/admin/productManage/createProduct",
-              headers:{
-                'Content-Type':'application/x-www-form-urlencoded',
-                'Authorization': localStorage.token
-              },
-              data:param,
-            }).then((res)=>{
-              if(res.data.msgCd=='ZYCASH-200'){
-                this.$message({
-                  message: '添加成功',
-                  type: 'success'
-                });
-                this.$router.push('/productProductList');
-              }else if(res.data.msgCd=='ZYCASH-1009'){
-                this.$message.error(res.data.msgInfo);
-              }
-              else {
-                this.$message.error(res);
-              }
-            })
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      //编辑产品接口
-      editProduct(row){
-        var param = new FormData();  // 创建form对象
-        param.append('merchantName', this.ruleForm.merchantName);
-        param.append('enabled', this.ruleForm.enabled);
-        param.append('enableDelete', 0);
-        param.append('company', null);
-        param.append('companyAddress', this.ruleForm.companyAddress);
-        param.append('companyDetail', this.ruleForm.companyDetail);
-        param.append('email', null);
-        param.append('mobile', null);
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/operate/admin/merchant/get",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          data:param,
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '添加成功',
-              type: 'success'
-            });
-            this.$router.push('/merchantProductList');
-          }else if(res.data.msgCd=='ZYCASH--1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
-            this.$message.error(res);
-          }
-        })
-      },
-
-      fen(data){
-        // this.idd=data;
-        // this.value7=null;
-        // this.electValue=null;
-        // this.electValue1=null;
-        // this.electValue2=null;
-        // this.casesNumber=null;
-        // this.electDataList.domains=[{
-        //   itemAlias: 1,symbolCode: null,fieldCode:null,
-        // }];
-        // console.log(data);
-      },
-      editTag(){
-        this.centerDialogVisible=true;
-      },
-      //创建群组
-      gozu(){},
       //时间筛选2
       logTimeChange2(){
         if(this.value7==''||this.value7==null){
@@ -507,5 +473,8 @@
     border: 1px solid #b0b0b0;
     border-radius: 10px;
     cursor: pointer;
+  }
+  .addclass{
+    background-color: #118efe;
   }
 </style>

@@ -16,6 +16,17 @@
         </el-select>
       </el-col>
       <el-col :span="6" style="height: 55px;">
+        状态：
+        <el-select v-model="status" placeholder="请选择">
+          <el-option
+            v-for="item in electData1"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
         新老户：
         <el-select v-model="reBorrow" placeholder="请选择">
           <el-option
@@ -91,9 +102,9 @@
         style="width: 98%">
         <el-table-column
           fixed
-          prop="id"
+          prop="orderId"
           label="订单ID"
-          width="110">
+          width="250">
         </el-table-column>
         <el-table-column
           fixed
@@ -130,7 +141,7 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="borrowingCapital"
+          prop="borrowingInterest"
           label="综合费用"
           width="100">
         </el-table-column>
@@ -157,6 +168,7 @@
         <el-table-column
           prop="repaymentCapital"
           label="应还金额"
+          :formatter="shouldFormatter"
           width="100">
         </el-table-column>
         <el-table-column
@@ -303,19 +315,34 @@
       },
       //条件查询列表
       searchContent(data){
-        this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan);
+        if (status == null) {
+          this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8);
+        } else {
+          this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null);
+        }
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
-        this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan);
+        if (status == null) {
+          this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8);
+        } else {
+          this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null);
+        }
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan);
+        if (status == null) {
+          this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8);
+        } else {
+          this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null);
+        }
       },
       /**
        * 获取待放款订单列表
@@ -331,8 +358,10 @@
        * @param data10 申请结束时间
        * @param data11 放款开始时间
        * @param data12 放款结束时间
+       * @param data13 订单具体状态
+       * @param data14 放款状态
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/list",
@@ -353,7 +382,8 @@
             endDate: data10,
             startDateLoan: data11,
             endDateLoan: data12,
-            statusGeq:8,
+            status: data13,
+            statusGeq:data14,
             sortColumn: 'create_date',
             direction: 'desc',
           }
@@ -372,9 +402,16 @@
       detailProduct(row){
         let id=row.customerId;
         let orderId=row.orderId;
-        this.$router.push({
-          path: `/orderDetailLoanMade/${id}/${orderId}`,
-        });
+        let status=row.status;
+        if (status == 10 || status == 13) {
+          this.$router.push({
+            path: `/orderDetailPaymentHistory/${id}/${orderId}`,
+          });
+        } else {
+          this.$router.push({
+            path: `/orderDetailLoanMade/${id}/${orderId}`,
+          });
+        }
       },
       //过滤性别字段
       genderFormatter(row){
@@ -431,6 +468,13 @@
           return '---'
         }
       },
+      //应还金额字段
+      shouldFormatter(row){
+        let repaymentCapital = row.repaymentCapital;
+        let repaymentOverdueFee = row.repaymentOverdueFee;
+        let repaymentPenaltyInterest = row.repaymentPenaltyInterest;
+        return repaymentCapital + repaymentOverdueFee + repaymentPenaltyInterest;
+      },
       //申请时间筛选
       logTimeChange(){
         if(this.value4==''||this.value4==null){
@@ -461,13 +505,22 @@
       this.endDateLoan=this.dateFormat(new Date());
       this.value5=[this.startDateLoan,this.endDateLoan];
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan);
+      this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null,8);
     },
     data() {
       return {
         productList:[],
-        reBorrowList: [
+        electData1: [
           {classifyId:null,classifyName:"全部状态"},
+          {classifyId:8,classifyName:"放款成功，待还款"},
+          {classifyId:9,classifyName:"还款确认中"},
+          {classifyId:10,classifyName:"正常还款 "},
+          {classifyId:11,classifyName:"逾期未还"},
+          {classifyId:12,classifyName:"坏账"},
+          {classifyId:13,classifyName:"逾期已还"},
+        ],
+        reBorrowList: [
+          {classifyId:null,classifyName:"全部"},
           {classifyId:0,classifyName:"新户"},
           {classifyId:1,classifyName:"老户"},
         ],
@@ -510,6 +563,7 @@
           }]
         },
         productId:null,
+        status:null,
         reBorrow:null,
         parentChannelName:null,
         childrenChannelName:null,
