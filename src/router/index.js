@@ -211,6 +211,17 @@ import reminderMessage from '@/messageConfigurationComponents/reminderMessage'
 import smsMessage from '@/messageConfigurationComponents/smsMessage'
 import messageConfigurationList from '@/messageManagementComponents/messageConfigurationList'
 import messageRecord from '@/messageManagementComponents/messageRecord'
+import noticeMessage from '@/messageManagementComponents/noticeMessage'
+import changeSMS from '@/messageManagementComponents/changeSMS'
+import changePush from '@/messageManagementComponents/changePush'
+import changeMessage from '@/messageManagementComponents/changeMessage'
+import changePopUp from '@/messageManagementComponents/changePopUp'
+import marketingMessage from '@/messageManagementComponents/marketingMessage'
+import triggerMessage from '@/messageManagementComponents/triggerMessage'
+import messageDetail from '@/messageManagementComponents/messageDetail'
+import popUpDetail from '@/messageManagementComponents/popUpDetail'
+import pushDetail from '@/messageManagementComponents/pushDetail'
+import smsDetail from '@/messageManagementComponents/smsDetail'
 
 Vue.use(Router);
 // http request 拦截器
@@ -1499,6 +1510,94 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: messageRecord
+    },
+    {
+      path: '/noticeMessage',
+      name: 'noticeMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: noticeMessage
+    },
+    {
+      path: '/marketingMessage',
+      name: 'marketingMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: marketingMessage
+    },
+    {
+      path: '/triggerMessage',
+      name: 'triggerMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: triggerMessage
+    },
+    {
+      path: '/changeSMS',
+      name: 'changeSMS',
+      meta: {
+        requireAuth: true
+      },
+      component: changeSMS
+    },
+    {
+      path: '/changePush',
+      name: 'changePush',
+      meta: {
+        requireAuth: true
+      },
+      component: changePush
+    },
+    {
+      path: '/changeMessage',
+      name: 'changeMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: changeMessage
+    },
+    {
+      path: '/changePopUp',
+      name: 'changePopUp',
+      meta: {
+        requireAuth: true
+      },
+      component: changePopUp
+    },
+    {
+      path: '/messageDetail',
+      name: 'messageDetail',
+      meta: {
+        requireAuth: true
+      },
+      component: messageDetail
+    },
+    {
+      path: '/popUpDetail',
+      name: 'popUpDetail',
+      meta: {
+        requireAuth: true
+      },
+      component: popUpDetail
+    },
+    {
+      path: '/pushDetail',
+      name: 'pushDetail',
+      meta: {
+        requireAuth: true
+      },
+      component: pushDetail
+    },
+    {
+      path: '/smsDetail',
+      name: 'smsDetail',
+      meta: {
+        requireAuth: true
+      },
+      component: smsDetail
     },
 ]
 

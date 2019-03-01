@@ -122,27 +122,6 @@
   import axios from 'axios'
   export default {
     methods: {
-      //查询所有产品
-      getProduct() {
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.productList=res.data.body;
-            this.productList.unshift({productId: null, productName: '全部产品'});
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
-            this.$message.error(res);
-          }
-        })
-      },
       //条件查询列表
       searchContent(data){
         this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
@@ -160,22 +139,17 @@
           this.sex,this.mobile,this.startDate,this.endDate);
       },
       /**
-       * 获取待放款订单列表
+       * 获取分类列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 产品id
-       * @param data4 新老户
-       * @param data5 主渠道名称
-       * @param data6 子渠道名称
-       * @param data7 性别
-       * @param data8 手机号
-       * @param data9 开始时间
-       * @param data10 结束时间
+       * @param data3 开始时间
+       * @param data4 结束时间
+       * @param data5 名称和id
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
+      getProductList(data1,data2,data3,data4,data5){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/pending/list",
+          url:"http://"+this.baseUrl+"/message/admin/message_classify/find",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -183,14 +157,9 @@
           params:{
             pageNum:data1,
             pageSize:data2,
-            productId: data3,
-            reBorrow: data4,
-            parentChannelName: data5,
-            childrenChannelName: data6,
-            gender: data7,
-            mobile: data8,
-            startDate: data9,
-            endDate: data10,
+            startDate: data3,
+            endDate: data4,
+            condition: data5,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -213,39 +182,13 @@
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
-      //过滤性别字段
-      genderFormatter(row){
-        let gender = row.gender;
-        console.log(gender);
-        if(gender == false){
-          return '男'
-        } else if (gender == true){
-          return '女'
-        } else {
-          return '未知'
-        }
+      //编辑
+      editProduct(row){
+        console.log(row);
       },
-      //过滤状态字段
-      statusFormatter(row){
-        let status = row.status;
-        if(status === 0){
-          return '待机审 '
-        } else if (status === 1){
-          return '机器审核中'
-        } else if (status === 2){
-          return '人工审核'
-        }
-      },
-      //过滤用户标识字段
-      reBorrowFormatter(row){
-        let reBorrow = row.status;
-        if(reBorrow === 0){
-          return '新户'
-        } else if (reBorrow === 1){
-          return '老户'
-        } else{
-          return '---'
-        }
+      //批量审批
+      cancelContent(row){
+        console.log(row);
       },
       //时间筛选
       logTimeChange(){
@@ -362,11 +305,11 @@
       },
     },
     mounted:function () {
-      this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
-      this.endDate=this.dateFormat(new Date());
-      this.value5=[this.startDate,this.endDate];
-      this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+      // this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
+      // this.endDate=this.dateFormat(new Date());
+      // this.value5=[this.startDate,this.endDate];
+      // this.getProduct();
+      this.getProductList(1,30,null,null,null);
     },
     data() {
       return {

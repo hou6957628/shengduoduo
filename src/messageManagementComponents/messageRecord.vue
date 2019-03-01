@@ -1,14 +1,28 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/messageRecord' }">消息记录</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">消息配置</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建消息&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">分类列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-select v-model="ruleForm.productName" placeholder="请选择" @change="selectChange($event,electData)">
+      <el-select v-model="ruleForm.productName" placeholder="请选择产品" @change="selectChange($event,electData)">
         <el-option
           v-for="item in electData"
+          :key="item.productCode"
+          :label="item.productName"
+          :value="item.productCode">
+        </el-option>
+      </el-select>
+      <el-select v-model="ruleForm.productName" placeholder="请选择形式" @change="selectChange1($event,electData1)">
+        <el-option
+          v-for="item in electData1"
+          :key="item.productCode"
+          :label="item.productName"
+          :value="item.productCode">
+        </el-option>
+      </el-select>
+      <el-select v-model="ruleForm.productName" placeholder="请选择分类" @change="selectChange2($event,electData2)">
+        <el-option
+          v-for="item in electData2"
           :key="item.productCode"
           :label="item.productName"
           :value="item.productCode">
@@ -36,70 +50,53 @@
                 clearable>
         <el-button id="searchBtn" @click="searchContent(finProduct)" slot="append" icon="el-icon-search">查询</el-button>
       </el-input>
-      <el-button type="primary" id="cancelBtn" @click="cancelContent()" slot="append">批量审批</el-button>
     </div>
     <template>
       <el-table
-        ref="multipleTable"
         :data="tableData"
         @selection-change="handleSelectionChange"
         border
         style="width: 98%">
         <el-table-column
-          type="selection"
-          label="批量"
-          width="55">
-        </el-table-column>
-        <el-table-column
           fixed
           prop="id"
           label="ID"
-          width="110">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="name"
-          label="名称"
-          min-width="80">
+          label="所属APP"
+          width="150">
         </el-table-column>
         <el-table-column
           prop="name"
-          label="分类"
-          width="100">
+          label="消息名称"
+          width="200">
         </el-table-column>
         <el-table-column
           prop="desc"
-          label="文字内容"
+          label="消息名称"
+          width="200">
+        </el-table-column>
+        <el-table-column
+          prop="desc"
+          label="消息分类"
           width="200">
         </el-table-column>
         <el-table-column
           prop="desc"
           label="备注"
-          width="200">
+          width="300">
         </el-table-column>
         <el-table-column
-          prop="borrowingPeriod"
-          label="创建时间"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="borrowingCapital"
-          label="更新时间"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="status"
-          label="创建人"
+          prop="state"
+          label="状态"
           width="120">
         </el-table-column>
         <el-table-column
-          label="操作"
-          width="100">
-          <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
-            <el-button @click="copeProduct(scope.row)" type="text" size="small">复制</el-button>
-            <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
-          </template>
+          prop="time"
+          label="执行时间"
+          width="200">
         </el-table-column>
       </el-table>
     </template>
@@ -212,6 +209,24 @@
       },
       //下拉选择
       selectChange(vId,list) {
+        let obj = {};
+        obj = list.find((item) => {
+          console.log(item.productName === vId);
+          return item.productName === vId;
+        });
+        this.getProductList(1,30,null,null);
+      },
+      //下拉选择
+      selectChange1(vId,list) {
+        let obj = {};
+        obj = list.find((item) => {
+          console.log(item.productName === vId);
+          return item.productName === vId;
+        });
+        this.getProductList(1,30,null,null);
+      },
+      //下拉选择
+      selectChange2(vId,list) {
         let obj = {};
         obj = list.find((item) => {
           console.log(item.productName === vId);
@@ -395,6 +410,18 @@
         value5:'',
         startDate:null,
         endDate:null,
+        electData: [
+          {productCode:1,productName:"启用"},
+          {productCode:0,productName:"停用"},
+        ],
+        electData1: [
+          {productCode:1,productName:"启用1"},
+          {productCode:0,productName:"停用1"},
+        ],
+        electData2: [
+          {productCode:1,productName:"启用2"},
+          {productCode:0,productName:"停用2"},
+        ],
       }
     }
   }

@@ -5,7 +5,7 @@
     </el-breadcrumb>
     <div class="operationContent">
       <div style="margin-bottom: 15px">
-      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建消息&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button class="upLoadBtn" @celectDatalick="toAddProduct()" type="primary">创建消息&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">分类列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-button type="primary" id="cancelBtn" @click="cancelContent()" slot="append">批量删除</el-button>
       <el-button type="primary" id="cancelBtn1" @click="cancelContent()" slot="append">批量停用</el-button>
@@ -19,17 +19,17 @@
           :value="item.productCode">
         </el-option>
       </el-select>
-      <el-select v-model="ruleForm.productName" placeholder="请选择形式" @change="selectChange($event,electData)">
+      <el-select v-model="ruleForm.productName" placeholder="请选择形式" @change="selectChange1($event,electData1)">
         <el-option
-          v-for="item in electData"
+          v-for="item in electData1"
           :key="item.productCode"
           :label="item.productName"
           :value="item.productCode">
         </el-option>
       </el-select>
-      <el-select v-model="ruleForm.productName" placeholder="请选择分类" @change="selectChange($event,electData)">
+      <el-select v-model="ruleForm.productName" placeholder="请选择分类" @change="selectChange2($event,electData2)">
         <el-option
-          v-for="item in electData"
+          v-for="item in electData2"
           :key="item.productCode"
           :label="item.productName"
           :value="item.productCode">
@@ -116,7 +116,7 @@
           width="190">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
+            <el-button @click="deleteProduct(scope.row)" type="tdetailProductext" size="small">删除</el-button>
             <el-button @click="copeProduct(scope.row)" type="text" size="small">复制</el-button>
             <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
           </template>
@@ -225,6 +225,18 @@
         })
       },
       //审核订单
+      toAddProduct(){
+        this.$router.push({
+          path: `/noticeMessage`,
+        });
+      },
+      //审核订单
+      toMessageClassify(){
+        this.$router.push({
+          path: `/messageClassify`,
+        });
+      },
+      //审核订单
       detailProduct(){
         this.$router.push({
           path: `/editFinanceProduct`,
@@ -232,6 +244,24 @@
       },
       //下拉选择
       selectChange(vId,list) {
+        let obj = {};
+        obj = list.find((item) => {
+          console.log(item.productName === vId);
+          return item.productName === vId;
+        });
+        this.getProductList(1,30,null,null);
+      },
+      //下拉选择
+      selectChange1(vId,list) {
+        let obj = {};
+        obj = list.find((item) => {
+          console.log(item.productName === vId);
+          return item.productName === vId;
+        });
+        this.getProductList(1,30,null,null);
+      },
+      //下拉选择
+      selectChange2(vId,list) {
         let obj = {};
         obj = list.find((item) => {
           console.log(item.productName === vId);
@@ -415,6 +445,18 @@
         value5:'',
         startDate:null,
         endDate:null,
+        electData: [
+          {productCode:1,productName:"启用"},
+          {productCode:0,productName:"停用"},
+        ],
+        electData1: [
+          {productCode:1,productName:"启用1"},
+          {productCode:0,productName:"停用1"},
+        ],
+        electData2: [
+          {productCode:1,productName:"启用2"},
+          {productCode:0,productName:"停用2"},
+        ],
       }
     }
   }
