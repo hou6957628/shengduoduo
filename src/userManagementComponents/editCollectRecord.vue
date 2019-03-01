@@ -28,10 +28,10 @@
       <el-form-item label="备注:">
         <el-input type="textarea" v-model="ruleForm.memo"></el-input>
       </el-form-item>
-      <el-form-item v-for="(domain, index) in picList" label="图片:">
+      <el-form-item v-for="(domain, index) in picList" label="图片:" :key="index">
         <img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/credit/api/down?file='+domain.collectRecordImage"/>
       </el-form-item>
-      <el-form-item label="上传图片:" v-for="(domain, index) in fileList">
+      <el-form-item label="上传图片:" v-for="(domain, index) in fileList" :key="index">
         <a class="upload-file" href="javascript:;" v-model="domain.filename">{{domain.image}}<input type="file"
           accept="image/png,image/gif,image/jpeg" value="上传弹窗图片"  @change="tirggerFile($event,index)"></a>
         <input class="fileBox" type="hidden" v-model="domain.filename">

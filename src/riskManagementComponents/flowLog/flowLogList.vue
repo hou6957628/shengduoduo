@@ -40,22 +40,22 @@
           fixed
           prop="id"
           label="ID"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="cusName"
           label="姓名"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="mobile"
           label="手机号"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="flowName"
           label="子流程名称"
-          width="300">
+          width="250">
         </el-table-column>
         <el-table-column
           prop="itemName"
@@ -65,12 +65,12 @@
         <el-table-column
           prop="memo"
           label="触发内容"
-          width="300">
+          width="250">
         </el-table-column>
         <el-table-column
           prop="value"
           label="取值"
-          width="150">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="result"
@@ -85,12 +85,12 @@
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="updateDate"
           label="更新时间"
-          width="200">
+          width="170">
         </el-table-column>
         <!--<el-table-column-->
           <!--label="操作"-->

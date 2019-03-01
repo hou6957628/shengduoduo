@@ -21,32 +21,32 @@
           fixed
           prop="flowCode"
           label="流程编号"
-          width="150">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="flowName"
           label="流程名称"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="position"
           label="使用中的应用"
-          width="300">
+          width="260">
         </el-table-column>
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="updateDate"
           label="更新时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="creator"
           label="创建人员"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="enabled"

@@ -25,17 +25,17 @@
           fixed
           prop="id"
           label="ID"
-          width="100">
+          width="90">
         </el-table-column>
         <el-table-column
           prop="name"
           label="姓名"
-          width="100">
+          width="90">
         </el-table-column>
         <el-table-column
           prop="mobile"
           label="手机号"
-          width="130">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="flowName"
@@ -45,7 +45,7 @@
         <el-table-column
           prop="tagName"
           label="标签名称"
-          width="200">
+          width="240">
         </el-table-column>
         <el-table-column
           prop="memo"
@@ -61,17 +61,17 @@
         <el-table-column
           prop="actionValue"
           label="取值"
-          width="150">
+          width="90">
         </el-table-column>
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="updateDate"
           label="更新时间"
-          width="200">
+          width="170">
         </el-table-column>
         <!--<el-table-column-->
           <!--label="操作"-->

@@ -173,7 +173,7 @@
       getProductList(data1,data2,data3,data4,data5,data6,data7){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"message/admin/message/find",
+          url:"http://"+this.baseUrl+"/message/admin/message/find",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token

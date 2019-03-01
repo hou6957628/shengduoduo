@@ -72,7 +72,7 @@
         <el-table-column
           prop="name"
           label="姓名"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="mobile"
@@ -82,22 +82,22 @@
         <el-table-column
           prop="tranFlowId"
           label="交易流水号"
-          width="250">
+          width="255">
         </el-table-column>
         <el-table-column
           prop="borrowingCapital"
           label="合同金额"
-          width="100">
+          width="90">
         </el-table-column>
         <el-table-column
           prop="lagInterest"
           label="逾期费用"
-          width="100">
+          width="90">
         </el-table-column>
         <el-table-column
           prop="repaymentCapital"
           label="总费用"
-          width="100">
+          width="90">
         </el-table-column>
         <el-table-column
           prop="discountAmount"
@@ -152,12 +152,12 @@
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="updateDate"
           label="更新时间"
-          width="200">
+          width="170">
         </el-table-column>
         <el-table-column
           fixed="right"

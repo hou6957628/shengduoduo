@@ -189,7 +189,7 @@
       <el-form-item label="备注:">
         <el-input type="textarea" v-model="ruleForm2.memo"></el-input>
       </el-form-item>
-      <el-form-item label="上传图片:" v-for="(domain, index) in fileList">
+      <el-form-item label="上传图片:" v-for="(domain, index) in fileList" :key="index">
         <a class="upload-file" href="javascript:;" v-model="domain.filename">{{domain.image}}
           <input type="file" accept="image/png,image/gif,image/jpeg" value="上传弹窗图片" multiple="multiple" @change="tirggerFile($event,index)">
         </a>
