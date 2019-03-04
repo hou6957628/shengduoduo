@@ -348,8 +348,8 @@
       },
     },
     mounted:function () {
-      this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
-      this.endDate=this.dateFormat(new Date());
+      this.startDate=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
+      this.endDate=this.dateFormatCustom(new Date());
       this.value5=[this.startDate,this.endDate];
       this.getProduct();
       this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);

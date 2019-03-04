@@ -14,7 +14,7 @@
           <template slot="prepend">手机号</template>
         </el-input>
       </el-col>
-      <el-button id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search" type="primary">查询</el-button>
     </div>
     <template>
       <el-table

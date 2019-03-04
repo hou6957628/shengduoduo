@@ -10,7 +10,7 @@ Vue.config.productionTip = false;
 
 Vue.use(ElementUI);
 //格式化日期
-Vue.prototype.dateFormat = function (date){
+Vue.prototype.dateFormatCustom = function (date){
   var year=date.getFullYear();
   /* 在日期格式中，月份是从0开始的，因此要加0
    * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
@@ -22,7 +22,7 @@ Vue.prototype.dateFormat = function (date){
   var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
   // 拼接
   // return year+"-"+month+"-"+day+" "+"00:00:00";
-  return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;;
+  return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
 };
 //只能输入数字
 Vue.prototype.validatorNumber = (rule, value, callback) => {

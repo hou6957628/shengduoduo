@@ -426,7 +426,7 @@
       },
     },
     mounted:function () {
-      this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0));
+      this.startDate=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0));
       this.endDate=this.startDate;
       this.value7=[this.startDate,this.endDate];
       localStorage.num=0;

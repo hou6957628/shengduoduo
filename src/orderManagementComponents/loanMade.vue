@@ -501,8 +501,8 @@
       },
     },
     mounted:function () {
-      this.startDateLoan=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
-      this.endDateLoan=this.dateFormat(new Date());
+      this.startDateLoan=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
+      this.endDateLoan=this.dateFormatCustom(new Date());
       this.value5=[this.startDateLoan,this.endDateLoan];
       this.getProduct();
       this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null,8);
