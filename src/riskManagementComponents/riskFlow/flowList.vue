@@ -201,7 +201,7 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            if (res.data.body == "true") {
+            if (res.data.body > 0) {
               this.$alert('该风控子流程已被某总流程引用，不可删除', '提示', {
                 confirmButtonText: '确定',
                 center: true,
@@ -303,7 +303,7 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            if (res.data.body == "true") {
+            if (res.data.body > 0) {
               this.$alert('该风控子流程已被某总流程引用，不可停用', '提示', {
                 confirmButtonText: '确定',
                 center: true,

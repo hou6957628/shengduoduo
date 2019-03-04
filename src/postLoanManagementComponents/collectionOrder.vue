@@ -460,7 +460,6 @@
   .listContent{
     width: 100%;
     height: 80px;
-    margin-bottom: 30px;
   }
   .listBox{
     display: inline-block;
@@ -473,6 +472,7 @@
     border: 1px solid #b0b0b0;
     border-radius: 10px;
     cursor: pointer;
+    margin-bottom: 10px;
   }
   .addclass{
     background-color: #118efe;

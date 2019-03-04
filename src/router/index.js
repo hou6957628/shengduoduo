@@ -258,10 +258,10 @@ axios.interceptors.response.use(
     return Promise.reject(error.response)   // 返回接口返回的错误信息
   });
 
-Vue.prototype.baseUrl="39.105.217.251:31999";
+// Vue.prototype.baseUrl="39.105.217.251:31999";
 Vue.prototype.baseIp="http://39.105.217.251";
 //风控
-// Vue.prototype.baseUrl="localhost:9998";
+Vue.prototype.baseUrl="localhost:9998";
 //额度
 // Vue.prototype.baseUrl="localhost:9991";
 //订单
