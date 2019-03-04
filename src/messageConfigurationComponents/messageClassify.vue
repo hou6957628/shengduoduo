@@ -49,27 +49,27 @@
         </el-table-column>
         <el-table-column
           fixed
-          prop="name"
+          prop="classifyName"
           label="分类名称"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="desc"
+          prop="description"
           label="备注"
           width="400">
         </el-table-column>
         <el-table-column
-          prop="borrowingPeriod"
+          prop="createDate"
           label="创建时间"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="borrowingCapital"
+          prop="updateDate"
           label="更新时间"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="status"
+          prop="creator"
           label="创建人"
           width="150">
         </el-table-column>
@@ -102,14 +102,15 @@
       width="40%"
       center>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="名称:" prop="productName">
-          <el-input v-model="ruleForm.productName"></el-input>
+        <el-form-item label="名称:" prop="classifyName">
+          <el-input v-model="ruleForm.classifyName"></el-input>
         </el-form-item>
         <el-form-item label="请输入备注:" prop="description">
           <el-input type="textarea":rows="3" v-model="ruleForm.description"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="saveMessage('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="primary" v-if="ruleForm.id" @click="saveMessage('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="primary" v-if="!ruleForm.id" @click="insertMessage('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
           <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
         </el-form-item>
       </el-form>
@@ -124,19 +125,16 @@
     methods: {
       //条件查询列表
       searchContent(data){
-        this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,this.nowPageSizes,this.startTime,this.endTime,data);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
-        this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,val,this.startTime,this.endTime,this.finProduct);
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+        this.getProductList(val,this.nowPageSizes,this.startTime,this.endTime,this.finProduct);
       },
       /**
        * 获取分类列表
@@ -184,7 +182,27 @@
       },
       //编辑
       editProduct(row){
-        console.log(row);
+        this.centerDialogVisible=true;
+        this.ruleForm.id=row.id;
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/message/admin/message_classify/get",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id:row.id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            console.log(res.data.body);
+            this.ruleForm.classifyName=res.data.body.classifyName;
+            this.ruleForm.description=res.data.body.description;
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        });
       },
       //批量审批
       cancelContent(row){
@@ -206,13 +224,13 @@
       deleteProduct(row){
         axios({
           method:"get",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/getRuleByClassId",
+          url:"http://"+this.baseUrl+"/message/admin/message_classify/delete",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            id: row.id,
+            ids: row.id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -229,7 +247,10 @@
                 type: 'warning',
                 center: true
               }).then(() => {
-                this.deleteClassification(row);
+                this.$message({
+                  message: '删除成功',
+                  type: 'success'
+                });
               }).catch(() => {
                 this.$message({
                   type: 'info',
@@ -276,11 +297,12 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var param = new FormData();  // 创建form对象
-            param.append('id', this.copyId)  // 通过append向form对象添加数据
-            param.append('productName', this.ruleForm.productName)  // 通过append向form对象添加数据
+            param.append('classifyName', this.ruleForm.classifyName);
+            param.append('description', this.ruleForm.description);
+            param.append('id', this.ruleForm.id);
               axios({
                 method:"POST",
-                url:"http://"+this.baseUrl+"/operate/admin/productManage/saveProduct",
+                url:"http://"+this.baseUrl+"/message/admin/message_classify/update",
                 headers:{
                   'Content-Type':'application/x-www-form-urlencoded',
                   'Authorization': localStorage.token
@@ -292,7 +314,8 @@
                     message: '保存成功',
                     type: 'success'
                   });
-                  this.centerDialogVisible=true;
+                  this.centerDialogVisible=false;
+                  this.getProductList(1,30,null,null,null);
                 } else {
                   this.$message.error(res);
                 }
@@ -303,10 +326,47 @@
           }
         });
       },
+      //保存分类
+      insertMessage(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            var param = new FormData();  // 创建form对象
+            param.append('classifyName', this.ruleForm.classifyName);
+            param.append('description', this.ruleForm.description);
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/message/admin/message_classify/insert",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              data:param,
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.$message({
+                  message: '保存成功',
+                  type: 'success'
+                });
+                this.centerDialogVisible=false;
+                this.getProductList(1,30,null,null,null);
+              } else {
+                this.$message.error(res);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      //检验分类创建校验名称是否重复
+      repeatName(){
+
+      }
     },
     mounted:function () {
-      // this.startDate=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
-      // this.endDate=this.dateFormatCustom(new Date());
+      // this.startDate=this.dateFormat(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
+      // this.endDate=this.dateFormat(new Date());
       // this.value5=[this.startDate,this.endDate];
       // this.getProduct();
       this.getProductList(1,30,null,null,null);
@@ -315,11 +375,11 @@
       return {
         productList:[],
         ruleForm: {
-          productName: '',
+          classifyName: '',
           description: '',
           merchantId: null,
         },
-        finProduct:null,
+        finProduct:'',
         tableData:[],
         pageNum: null,
         proTotal:null,
@@ -356,16 +416,15 @@
         productId:null,
         reBorrow:null,
         rules: {
-          productName: [
-            { required: true, message: '请输入名称', trigger: 'blur' }
+          classifyName: [
+            { required: true, message: '请输入分类名称', trigger: 'blur' }
           ],
           description: [
             { required: true, message: '请输入备注', trigger: 'change' }
           ]
         },
-        sex:null,
-        mobile:null,
-        value5:'',
+        id:null,
+        value5:null,
         startDate:null,
         endDate:null,
         centerDialogVisible:false,
@@ -401,7 +460,7 @@
     margin-right: 15px;
   }
   .operationContent .searchContent{
-    margin-left:0px;
+    margin-left:0;
     width: 200px;
     margin-right: 30px;
   }

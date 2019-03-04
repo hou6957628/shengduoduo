@@ -1,42 +1,52 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">消息配置</el-breadcrumb-item>
+      <el-breadcrumb-item>消息配置</el-breadcrumb-item>
+      <el-breadcrumb-item>任务列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <div style="margin-bottom: 15px">
       <el-button class="upLoadBtn" @celectDatalick="toAddProduct()" type="primary">创建消息&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">分类列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">日志列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-button type="primary" id="cancelBtn" @click="cancelContent()" slot="append">批量删除</el-button>
       <el-button type="primary" id="cancelBtn1" @click="cancelContent()" slot="append">批量停用</el-button>
       <el-button type="primary" id="cancelBtn2" @click="cancelContent()" slot="append">批量执行</el-button>
       </div>
-      <el-select v-model="ruleForm.productName" placeholder="请选择产品" @change="selectChange($event,electData)">
-        <el-option
-          v-for="item in electData"
-          :key="item.productCode"
-          :label="item.productName"
-          :value="item.productCode">
-        </el-option>
-      </el-select>
-      <el-select v-model="ruleForm.productName" placeholder="请选择形式" @change="selectChange1($event,electData1)">
-        <el-option
-          v-for="item in electData1"
-          :key="item.productCode"
-          :label="item.productName"
-          :value="item.productCode">
-        </el-option>
-      </el-select>
-      <el-select v-model="ruleForm.productName" placeholder="请选择分类" @change="selectChange2($event,electData2)">
-        <el-option
-          v-for="item in electData2"
-          :key="item.productCode"
-          :label="item.productName"
-          :value="item.productCode">
-        </el-option>
-      </el-select>
+      <el-col :span="6" style="height: 55px;">
+        产品：
+        <el-select v-model="productId" placeholder="请选择">
+          <el-option
+            v-for="item in productList"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        形式：
+        <el-select v-model="modeId" placeholder="请选择">
+          <el-option
+            v-for="item in modeIdList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="12" style="height: 55px;">
+        分类：
+        <el-select v-model="classifyId" placeholder="请选择">
+          <el-option
+            v-for="item in messageClassifyList"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-col>
       <template>
-        申请时间：
+        时间：
         <el-date-picker style="margin-left: 0px;margin-right: 15px;"
                         v-model="value5"
                         type="datetimerange"
@@ -52,11 +62,11 @@
         </el-date-picker>
       </template>
       <el-input style="width: 350px;" class="searchContent"
-                placeholder="输入名称或ID"
+                placeholder="请输入消息名称，bean名称，ID"
                 v-model="finProduct"
                 clearable>
-        <el-button id="searchBtn" @click="searchContent(finProduct)" slot="append" icon="el-icon-search">查询</el-button>
       </el-input>
+      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
@@ -67,7 +77,6 @@
         style="width: 98%">
         <el-table-column
           type="selection"
-          label="批量"
           width="55">
         </el-table-column>
         <el-table-column
@@ -78,17 +87,22 @@
         </el-table-column>
         <el-table-column
           prop="name"
-          label="名称"
+          label="所属产品"
           width="200">
         </el-table-column>
         <el-table-column
           prop="name"
-          label="分类"
+          label="消息名称"
           width="100">
         </el-table-column>
         <el-table-column
           prop="desc"
-          label="文字内容"
+          label="消息形式"
+          width="300">
+        </el-table-column>
+        <el-table-column
+          prop="desc"
+          label="消息分类"
           width="300">
         </el-table-column>
         <el-table-column
@@ -107,18 +121,30 @@
           width="150">
         </el-table-column>
         <el-table-column
+          prop="borrowingCapital"
+          label="发送时间"
+          width="150">
+        </el-table-column>
+        <el-table-column
           prop="status"
-          label="创建人"
+          label="状态"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="borrowingCapital"
+          label="创建方式"
           width="120">
         </el-table-column>
         <el-table-column
           label="操作"
-          width="190">
+          width="280">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="tdetailProductext" size="small">删除</el-button>
-            <el-button @click="copeProduct(scope.row)" type="text" size="small">复制</el-button>
-            <el-button @click="detailProduct(scope.row)" type="text" size="small">详情</el-button>
+            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>
+            <el-button @click="copeProduct(scope.row)" type="text" size="medium">复制</el-button>
+            <el-button @click="copeProduct(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button @click="copeProduct(scope.row)" type="text" size="medium">执行</el-button>
+            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -156,6 +182,31 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
             this.productList.unshift({productId: null, productName: '全部产品'});
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //查询所有分类
+      getMessageClassifyList(data1,data2) {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/message/admin/message_classify/find",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum:data1,
+            pageSize:data2,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.messageClassifyList=res.data.body.list;
+            this.messageClassifyList.unshift({id: null, classifyName: '全部分类'});
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -383,15 +434,25 @@
       },
     },
     mounted:function () {
-      this.startDate=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
-      this.endDate=this.dateFormatCustom(new Date());
-      this.value5=[this.startDate,this.endDate];
       this.getProduct();
+      this.getMessageClassifyList(1,100);
       this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
     },
     data() {
       return {
         productList:[],
+        modeIdList: [
+          {id:null,name:"全部形式"},
+          {id:1,name:"短信消息"},
+          {id:2,name:"提醒消息"},
+          {id:3,name:"弹窗消息"},
+          {id:4,name:"推送消息"},
+        ],
+        messageClassifyList:[],
+
+        productId:'',
+        modeId:null,
+        classifyId:null,
         ruleForm: {
           id: '',
           parentChannelName: '',
@@ -445,10 +506,6 @@
         value5:'',
         startDate:null,
         endDate:null,
-        electData: [
-          {productCode:1,productName:"启用"},
-          {productCode:0,productName:"停用"},
-        ],
         electData1: [
           {productCode:1,productName:"启用1"},
           {productCode:0,productName:"停用1"},

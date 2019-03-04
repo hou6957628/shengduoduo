@@ -6,12 +6,12 @@
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建产品&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">分类列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-select v-model="ruleForm.productName" placeholder="请选择" @change="selectChange($event,electData)">
+      <el-select v-model="ruleForm.productName" placeholder="请选择" @change="selectChange($event,productList)">
         <el-option
-          v-for="item in electData"
-          :key="item.productCode"
+          v-for="item in productList"
+          :key="item.productId"
           :label="item.productName"
-          :value="item.productCode">
+          :value="item.productId">
         </el-option>
       </el-select>
       <template>
@@ -66,41 +66,41 @@
           fixed
           prop="name"
           label="名称"
-          min-width="80">
+          width="160">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="modeId"
           label="模板ID"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="desc"
+          prop="content"
           label="内容"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="desc"
+          prop="description"
           label="备注"
           width="200">
         </el-table-column>
         <el-table-column
-          prop="borrowingPeriod"
+          prop="createDate"
           label="创建时间"
-          width="100">
+          width="170">
         </el-table-column>
         <el-table-column
-          prop="borrowingCapital"
+          prop="updateDate"
           label="更新时间"
-          width="100">
+          width="170">
         </el-table-column>
         <el-table-column
-          prop="status"
+          prop="creator"
           label="创建人"
           width="120">
         </el-table-column>
         <el-table-column
           label="操作"
-          width="100">
+          width="210">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
@@ -252,13 +252,13 @@
       deleteProduct(row){
         axios({
           method:"get",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/getRuleByClassId",
+          url:"http://"+this.baseUrl+"/message/admin/message/delete",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            id: row.id,
+            ids: row.id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -292,14 +292,13 @@
       deleteClassification(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/delete",
+          url:"http://"+this.baseUrl+"/message/admin/message/delete",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            id: row.id,
-            status: 1,
+            ids: row.id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -340,6 +339,7 @@
       },
     },
     mounted:function () {
+      this.getProduct();
       this.getProductList(1,30,null,null,null,null,null);
     },
     data() {

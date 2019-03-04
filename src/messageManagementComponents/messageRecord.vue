@@ -4,52 +4,45 @@
       <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">消息配置</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-select v-model="ruleForm.productName" placeholder="请选择产品" @change="selectChange($event,electData)">
-        <el-option
-          v-for="item in electData"
-          :key="item.productCode"
-          :label="item.productName"
-          :value="item.productCode">
-        </el-option>
-      </el-select>
-      <el-select v-model="ruleForm.productName" placeholder="请选择形式" @change="selectChange1($event,electData1)">
-        <el-option
-          v-for="item in electData1"
-          :key="item.productCode"
-          :label="item.productName"
-          :value="item.productCode">
-        </el-option>
-      </el-select>
-      <el-select v-model="ruleForm.productName" placeholder="请选择分类" @change="selectChange2($event,electData2)">
-        <el-option
-          v-for="item in electData2"
-          :key="item.productCode"
-          :label="item.productName"
-          :value="item.productCode">
-        </el-option>
-      </el-select>
-      <template>
-        申请时间：
-        <el-date-picker style="margin-left: 0px;margin-right: 15px;"
-                        v-model="value5"
-                        type="datetimerange"
-                        align="right"
-                        unlink-panels
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        :picker-options="pickerOptions2"
-                        format="yyyy-MM-dd HH:mm:ss"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        @change="logTimeChange()">
-        </el-date-picker>
-      </template>
+      <el-col :span="6" style="height: 55px;">
+        产品：
+        <el-select v-model="productId" placeholder="请选择">
+          <el-option
+            v-for="item in productList"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        形式：
+        <el-select v-model="status" placeholder="请选择">
+          <el-option
+            v-for="item in electData1"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        分类：
+        <el-select v-model="reBorrow" placeholder="请选择">
+          <el-option
+            v-for="item in reBorrowList"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
       <el-input style="width: 350px;" class="searchContent"
                 placeholder="输入名称或ID"
                 v-model="finProduct"
                 clearable>
-        <el-button id="searchBtn" @click="searchContent(finProduct)" slot="append" icon="el-icon-search">查询</el-button>
       </el-input>
+      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
@@ -75,7 +68,7 @@
         </el-table-column>
         <el-table-column
           prop="desc"
-          label="消息名称"
+          label="消息形式"
           width="200">
         </el-table-column>
         <el-table-column

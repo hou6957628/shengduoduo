@@ -199,7 +199,6 @@ import orderFlowLogList from '@/orderExtension/orderFlowLogList'
 import axios from 'axios'
 
 //消息
-import createClassify from '@/messageConfigurationComponents/createClassify'
 import createPopUpMessage from '@/messageConfigurationComponents/createPopUpMessage'
 import createPushMessage from '@/messageConfigurationComponents/createPushMessage'
 import createReminderMessage from '@/messageConfigurationComponents/createReminderMessage'
@@ -1415,14 +1414,6 @@ const vueRouter = new Router({
     },
 
     //消息
-    {
-      path: '/createClassify',
-      name: 'createClassify',
-      meta: {
-        requireAuth: true
-      },
-      component: createClassify
-    },
     {
       path: '/createPopUpMessage',
       name: 'createPopUpMessage',
