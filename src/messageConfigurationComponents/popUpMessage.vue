@@ -59,12 +59,12 @@
         <el-table-column
           prop="name"
           label="名称"
-          min-width="80">
+          width="160">
         </el-table-column>
         <el-table-column
           prop="name"
           label="分类"
-          width="100">
+          width="160">
         </el-table-column>
         <el-table-column
           prop="desc"
@@ -79,12 +79,12 @@
         <el-table-column
           prop="borrowingPeriod"
           label="创建时间"
-          width="100">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="borrowingCapital"
           label="更新时间"
-          width="100">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="status"
@@ -93,7 +93,7 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="100">
+          width="210">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
             <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
