@@ -26,10 +26,10 @@
         <tr>
           <td>是否逾期：{{this.borrowingForm.repaymentOverdueDay==null?'否':'是'}}</td>
           <td>逾期天数：{{this.borrowingForm.repaymentOverdueDay}}</td>
-          <td>应还利息（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
+          <td>应还利息（元）：{{this.borrowingForm.borrowingInterest}}</td>
           <td>罚息（元）：{{this.borrowingForm.repaymentPenaltyInterest}}</td>
-          <td>滞纳金（元）：没有此字段</td>
-          <td>应还总还金额（元）：{{this.borrowingForm.repaymentCapital + this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
+          <td>滞纳金（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
+          <td>应还总金额（元）：{{this.borrowingForm.repaymentCapital + this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
         </tr>
         <tr>
           <td>是否可展期：{{this.borrowingForm.enableDefer | enableDeferFalse}}</td>
@@ -38,6 +38,9 @@
           <td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>
           <td>展期次数：没有此字段</td>
           <td>还款方式：没有此字段</td>
+        </tr>
+        <tr>
+          <td>催收员：{{this.borrowingForm.collectorName}}</td>
         </tr>
       </table>
     </div>

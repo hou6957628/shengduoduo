@@ -18,6 +18,20 @@
       <el-col :span="6" style="height: 55px;">
       手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
       </el-col>
+      <el-col :span="6" style="height: 55px;">
+        用户姓名：<el-input class="searchContent" placeholder="用户姓名" v-model="cusName" clearable></el-input>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        还款方式：
+        <el-select v-model="method" placeholder="请选择">
+          <el-option
+            v-for="item in methodList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-col>
       <el-col :span="10" style="height: 55px;">
         <template>
           还款时间：
@@ -36,7 +50,10 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <!--<el-col :span="6" style="height: 55px;">-->
+        <!--催收员：<el-input class="searchContent" placeholder="催收员姓名" v-model="cusName" clearable></el-input>-->
+      <!--</el-col>-->
+      <el-button style="margin-right: 250px" type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
@@ -54,8 +71,8 @@
           fixed
           prop="memo"
           label="还款方式"
+          :formatter="methodFormatter"
           min-width="120">
-        <!--:formatter="methodFormatter"-->
         </el-table-column>
         <el-table-column
           prop="gender"
@@ -115,13 +132,14 @@
           width="100">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.partial == 1 ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.partial == 1 ? '是' : '否'}}</el-tag>
+              :type="scope.row.method == 4 || scope.row.method == 7 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.method == 4 || scope.row.method == 7 ? '是' : '否'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           prop="partialRepayment"
           label="部分还款应还金额"
+          :formatter="amountFormatter"
           width="100">
         </el-table-column>
         <el-table-column
@@ -130,13 +148,14 @@
           width="100">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.defer == 1 ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.defer == 1 ? '是' : '否'}}</el-tag>
+              :type="scope.row.method == 2 || scope.row.method == 3 || scope.row.method == 6 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.method == 2 || scope.row.method == 3 || scope.row.method == 6 ? '是' : '否'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           prop="repaymentDefer"
           label="展期还款金额"
+          :formatter="amountFormatter2"
           width="110">
         </el-table-column>
         <el-table-column
@@ -158,6 +177,11 @@
           prop="updateDate"
           label="更新时间"
           width="170">
+        </el-table-column>
+        <el-table-column
+          prop="collectorName"
+          label="催收员"
+          width="120">
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -211,16 +235,16 @@
       },
       //条件查询列表
       searchContent(data){
-        this.getProductList(this.pageNum,this.pageSize,this.productId,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,this.pageSize,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
-        this.getProductList(this.pageNum,val,this.productId,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,val,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method);
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.productId,this.mobile,this.startDate,this.endDate);
+        this.getProductList(val,this.nowPageSizes,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method);
       },
       /**
        * 获取还款记录列表
@@ -230,8 +254,10 @@
        * @param data4 手机号
        * @param data5 开始时间
        * @param data6 结束时间
+       * @param data7 用户姓名
+       * @param data8 还款方式
        */
-      getProductList(data1,data2,data3,data4,data5,data6){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/repayment/list",
@@ -246,6 +272,8 @@
             mobile: data4,
             startDate: data5,
             endDate: data6,
+            name: data7,
+            method: data8,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -308,6 +336,20 @@
           return '失败'
         }
       },
+      //过滤部分还款应还金额
+      amountFormatter(row){
+        let method = row.method;
+        if(method == 4 || method == 7) {
+          return row.amount;
+        }
+      },
+      //过滤展期应还金额
+      amountFormatter2(row){
+        let method = row.method;
+        if (method == 2 || method == 3|| method == 6) {
+          return row.amount;
+        }
+      },
       //还款时间筛选
       logTimeChange(){
         if(this.value5==''||this.value5==null){
@@ -326,11 +368,23 @@
       this.endDate=this.dateFormatCustom(new Date());
       this.value5=[this.startDate,this.endDate];
       this.getProduct();
-      this.getProductList(1,30,null,null,this.startDate,this.endDate);
+      this.getProductList(1,30,null,null,this.startDate,this.endDate,null);
     },
     data() {
       return {
         productList:[],
+        methodList:[
+          {id:null,name:"全部"},
+          {id:0,name:"线下平账"},
+          {id:1,name:"单独扣款"},
+          {id:2,name:"线下展期平账"},
+          {id:3,name:"线上展期扣款"},
+          {id:4,name:"线下部分还款"},
+          {id:5,name:"主动还款"},
+          {id:6,name:"APP线上展期"},
+          {id:7,name:"APP线上部分还款"},
+          {id:8,name:"批扣"},
+        ],
         tableData:[],
         pageNum: null,
         proTotal:null,
@@ -366,9 +420,11 @@
         },
         productId:null,
         mobile:null,
+        cusName:'',
         value5:'',
         startDate:null,
         endDate:null,
+        method:null,
       }
     }
   }

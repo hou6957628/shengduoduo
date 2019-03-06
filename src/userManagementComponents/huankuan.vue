@@ -16,8 +16,8 @@
           fixed
           prop="memo"
           label="还款方式"
-          min-width="120">
-          <!--:formatter="methodFormatter"-->
+          :formatter="methodFormatter"
+          min-width="150">
         </el-table-column>
         <el-table-column
           prop="gender"
@@ -44,7 +44,7 @@
         <el-table-column
           prop="tranFlowId"
           label="交易流水号"
-          width="250">
+          width="300">
         </el-table-column>
         <el-table-column
           prop="borrowingCapital"
@@ -57,7 +57,7 @@
           width="100">
         </el-table-column>
         <el-table-column
-          prop="repaymentCapital"
+          prop="amount"
           label="总费用"
           width="100">
         </el-table-column>
@@ -77,13 +77,14 @@
           width="100">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.partial == 1 ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.partial == 1 ? '是' : '否'}}</el-tag>
+              :type="scope.row.method == 4 || scope.row.method == 7 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.method == 4 || scope.row.method == 7 ? '是' : '否'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           prop="partialRepayment"
           label="部分还款应还金额"
+          :formatter="amountFormatter"
           width="100">
         </el-table-column>
         <el-table-column
@@ -92,13 +93,14 @@
           width="100">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.defer == 1 ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.defer == 1 ? '是' : '否'}}</el-tag>
+              :type="scope.row.method == 2 || scope.row.method == 3 || scope.row.method == 6 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.method == 2 || scope.row.method == 3 || scope.row.method == 6 ? '是' : '否'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           prop="repaymentDefer"
           label="展期还款金额"
+          :formatter="amountFormatter2"
           width="110">
         </el-table-column>
         <el-table-column
@@ -159,9 +161,46 @@
           }
         })
       },
+      //过滤还款方式字段
+      methodFormatter(row){
+        let method = row.method;
+        if(method == 0){
+          return '线下平账'
+        } else if (method == 1){
+          return '单独扣款'
+        } else if (method == 2){
+          return '线下展期平账'
+        } else if (method == 3){
+          return '线上展期扣款'
+        } else if (method == 4){
+          return '线下部分还款'
+        } else if (method == 5){
+          return '主动还款'
+        } else if (method == 6){
+          return 'APP线上展期'
+        } else if (method == 7){
+          return 'APP线上部分还款'
+        } else if (method == 8){
+          return '批扣'
+        }
+      },
       //过滤还款通道字段
       genderFormatter(row){
         return '合利宝'
+      },
+      //过滤部分还款应还金额
+      amountFormatter(row){
+        let method = row.method;
+        if(method == 4 || method == 7) {
+          return row.amount;
+        }
+      },
+      //过滤展期应还金额
+      amountFormatter2(row){
+        let method = row.method;
+        if (method == 2 || method == 3|| method == 6) {
+          return row.amount;
+        }
       },
       //过滤状态字段
       statusFormatter(row){

@@ -15,12 +15,14 @@
           <tr><td>订单号：{{key.orderId}}</td><td>手机号：{{key.mobile}}</td><td>渠道：{{key.parentChannelName}}</td><td>订单状态：{{key.status | statusFalse}}</td>
             <td>新户老户：{{key.reBorrow | reborrowFalse}}</td><td>所属平台：{{key.productName}}</td><td>申请时间：{{key.createDate}}</td></tr>
           <tr><td>放款时间：{{key.borrowingPaymentDate}}</td><td>预计还款时间：{{key.repaymentEndDate}}</td><td>实际还款时间：{{key.repaymentPaymentDate}}</td>
-            <td>借款金额(元)：{{key.borrowingCapital}}</td><td>期限：{{key.borrowingPeriod}}</td><td>是否逾期：{{key.repaymentOverdueDay | yuqi}}</td><td>逾期天数：{{key.repaymentOverdueDay}}</td></tr>
+            <td>借款金额(元)：{{key.borrowingCapital}}</td><td>期限：{{key.borrowingPeriod}}</td><td>是否逾期：{{key.repaymentOverdueDay | yuqi}}</td>
+            <td>逾期天数：{{key.repaymentOverdueDay}}</td></tr>
           <tr><td>应还利息（元）：{{key.borrowingInterest}}</td><td> 罚息（元）：{{key.repaymentPenaltyInterest}}</td><td>滞纳金（元）：{{key.repaymentOverdueFee}}</td>
-            <td>应还总还金额（元）：{{key.repaymentCapital}}</td><td>是否可展期：{{key.enableDefer}}</td><td>展期应还金额：{{key.repaymentDefer}}</td>
+            <td>应还总还金额（元）：{{key.repaymentCapital + key.repaymentOverdueFee + key.repaymentPenaltyInterest}}</td>
+            <td>是否可展期：{{key.enableDefer | enableDeferFalse}}</td><td>展期应还金额：{{key.repaymentDefer}}</td>
             <td>还款时间：{{key.repaymentPaymentDate}}</td></tr>
-          <tr><td>实际还款金额（元）：{{key.repaymentPaymentAmount}}</td><td>减免金额：{{key.repaymentDiscountAmount}}</td><td>是否展期：{{key.defer}}</td>
-            <td>展期次数：{{key.collectionNum}}</td><td>展期实际还款金额：{{key.repaymentDeferPayment}}</td><td>还款方式：{{key.isBlackList}}</td></tr>
+          <tr><td>实际还款金额（元）：{{key.repaymentPaymentAmount}}</td><td>减免金额：{{key.repaymentDiscountAmount}}</td><td>是否展期：{{key.defer==1?'是':'否'}}</td>
+            <td>展期次数：{{key.collectionNum}}</td><td>展期实际还款金额：{{key.repaymentDeferPayment}}</td><td>还款方式：{{key.isBlackList}}</td><td>催收员：{{key.collectorName}}</td></tr>
           </table>
         </div>
       </div>
@@ -69,6 +71,15 @@
       this.getCollection(this.id);
     },
     filters:{
+      enableDeferFalse:function(arg1){
+        if(arg1==null){
+          return "未跑展期流程";
+        }else if(arg1==false){
+          return "否";
+        }else if(arg1==true){
+          return "是";
+        }
+      },
       typeFalse:function(arg1){
         if(arg1==true){
           var result = "是";
@@ -81,7 +92,7 @@
       reborrowFalse:function(arg1){
         if(arg1==true){
           return "老户";
-        }else if(arg1==false){
+        }else {
           return "新户";
         }
       },

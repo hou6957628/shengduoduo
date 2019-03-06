@@ -50,7 +50,12 @@
       <table >
         <template v-for="(item,index) in this.linkMan">
           <tr>
-            <td>联系人{{index}}：{{item.name}}</td><td>联系人借款关系：{{item.relation}}</td><td>手机号：{{item.phoneNum}}</td>
+            <td>联系人{{index}}：{{item.name}}</td><td>联系人借款关系：{{item.relation}}</td>
+            <td>
+              手机号：{{item.phoneNum}}&nbsp;&nbsp;&nbsp;&nbsp;
+              <el-button type="primary" size="mini" icon="el-icon-phone-outline" plain @click="toPhone()"></el-button>
+              <el-button type="primary" size="mini" icon="el-icon-edit" plain @click="addRecord()"></el-button>
+            </td>
             <td rowspan="2" v-if="index==0"><el-button @click="addressList">手机通讯录</el-button></td>
           </tr>
         </template>
@@ -105,11 +110,23 @@
       };
     },
     methods: {
+      //打电话
+      toPhone(){
+
+      },
+      //添加催收记录
+      addRecord(){
+        let orderId=this.orderId2;
+        this.$router.push({
+          path: `/addCollectRecord2/${orderId}`,
+        });
+      },
       //通讯录
       addressList(){
         let id=this.id;
+        let orderId=this.orderId2;
         this.$router.push({
-          path: `/addressList/${id}`,
+          path: `/addressList/${id}/${orderId}`,
         });
       },
       //取消按钮

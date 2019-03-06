@@ -83,27 +83,27 @@
           fixed
           prop="id"
           label="ID"
-          width="110">
+          width="80">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="productName"
           label="所属产品"
-          width="200">
+          width="120">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="messageName"
           label="消息名称"
-          width="100">
+          width="150">
         </el-table-column>
         <el-table-column
-          prop="desc"
+          prop="modeName"
           label="消息形式"
-          width="300">
+          width="150">
         </el-table-column>
         <el-table-column
-          prop="desc"
+          prop="classifyName"
           label="消息分类"
-          width="300">
+          width="150">
         </el-table-column>
         <el-table-column
           prop="desc"
@@ -111,28 +111,34 @@
           width="300">
         </el-table-column>
         <el-table-column
-          prop="borrowingPeriod"
+          prop="createDate"
           label="创建时间"
-          width="150">
+          width="180">
         </el-table-column>
         <el-table-column
-          prop="borrowingCapital"
+          prop="updateDate"
           label="更新时间"
-          width="150">
+          width="180">
         </el-table-column>
         <el-table-column
-          prop="borrowingCapital"
+          prop="updateDate"
           label="发送时间"
-          width="150">
+          width="180">
         </el-table-column>
         <el-table-column
-          prop="status"
+          prop="enabled"
           label="状态"
-          width="120">
+          width="80">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.enabled == true ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.enabled == true ? '使用中' : '已停用'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="borrowingCapital"
+          prop="type"
           label="创建方式"
+          :formatter="typeFormatter"
           width="120">
         </el-table-column>
         <el-table-column
@@ -236,18 +242,16 @@
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
        * @param data3 产品id
-       * @param data4 新老户
-       * @param data5 主渠道名称
-       * @param data6 子渠道名称
-       * @param data7 性别
-       * @param data8 手机号
-       * @param data9 开始时间
-       * @param data10 结束时间
+       * @param data4 消息形式id
+       * @param data5 分类id
+       * @param data6 开始时间
+       * @param data7 结束时间
+       * @param data8 消息名称、bean名称、ID
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/pending/list",
+          url:"http://"+this.baseUrl+"/message/admin/task/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -256,13 +260,11 @@
             pageNum:data1,
             pageSize:data2,
             productId: data3,
-            reBorrow: data4,
-            parentChannelName: data5,
-            childrenChannelName: data6,
-            gender: data7,
-            mobile: data8,
-            startDate: data9,
-            endDate: data10,
+            modeId: data4,
+            classifyId: data5,
+            startTime: data6,
+            endTime: data7,
+            conditionName: data8,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -432,11 +434,24 @@
           }
         })
       },
+      //过滤创建方式字段
+      typeFormatter(row){
+        let type = row.type;
+        if (type == 0) {
+          return '通知类';
+        } else if (type == 1) {
+          return '触发类';
+        } else if (type == 2) {
+          return '营销类';
+        } else if (type == 3) {
+          return '技术人员';
+        }
+      }
     },
     mounted:function () {
       this.getProduct();
       this.getMessageClassifyList(1,100);
-      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+      this.getProductList(1,30,null,null,null,null,null,null);
     },
     data() {
       return {
@@ -453,6 +468,10 @@
         productId:'',
         modeId:null,
         classifyId:null,
+
+
+
+
         ruleForm: {
           id: '',
           parentChannelName: '',

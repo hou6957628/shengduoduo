@@ -191,8 +191,33 @@
     </el-form>
     </div>
     <div v-if="bg" id="bg">
-      <div v-for="(item,index) in tableData" style="display: inline-block;padding: 2px 5px;" :key="index">
-        <el-radio class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      <p style="text-align: center;margin: 5px 0">----基本字段----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='基本字段'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      </div>
+      <p style="text-align: center;margin: 5px 0">----运营商字段----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='运营商字段'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      </div>
+      <p style="text-align: center;margin: 5px 0">----白骑士字段----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='白骑士字段'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      </div>
+      <p style="text-align: center;margin: 5px 0">----天机命中字段----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='天机命中字段'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      </div>
+      <p style="text-align: center;margin: 5px 0">----天机多头报告----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='天机多头报告'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      </div>
+      <p style="text-align: center;margin: 5px 0">----通库黑名单----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='通库黑名单'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      </div>
+      <p style="text-align: center;margin: 5px 0">----通讯录字段----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='通讯录字段'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
       </div>
     </div>
     <!--添加规则分类结构-->
@@ -642,7 +667,9 @@
     top: 0;
     right: 0;
     bottom: 0;
+    height: 100%;
     z-index: 1001;
+    overflow-y: scroll;
   }
   .labelList{
     padding: 5px 0 10px 0;

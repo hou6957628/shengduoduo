@@ -26,6 +26,7 @@
               <el-table
                 :data="tableDataFrom"
                 border
+                @sort-change="changeTableSortFrom"
                 style="width: 100%;margin-top: 20px;">
                 <el-table-column
                   fixed
@@ -54,11 +55,13 @@
                   width="150">
                 </el-table-column>
                 <el-table-column
+                  sortable="custom"
                   prop="calledTime"
                   label="联系时间(分)"
                   width="150">
                 </el-table-column>
                 <el-table-column
+                  sortable="custom"
                   prop="calledNumber"
                   label="被叫次数"
                   width="150">
@@ -86,6 +89,7 @@
               <el-table
                 :data="tableDataTo"
                 border
+                @sort-change="changeTableSortTo"
                 style="width: 100%;margin-top: 20px;">
                 <el-table-column
                   fixed
@@ -114,11 +118,13 @@
                   width="150">
                 </el-table-column>
                 <el-table-column
+                  sortable="custom"
                   prop="callTime"
                   label="联系时间(分)"
                   width="150">
                 </el-table-column>
                 <el-table-column
+                  sortable="custom"
                   prop="callNumber"
                   label="主叫次数"
                   width="150">
@@ -151,7 +157,6 @@
       return {
         tableDataFrom: [],
         tableDataTo: [],
-        finProduct: '',
         pageNum: 1,
         proTotal:null,
         pageSize:null,
@@ -165,29 +170,87 @@
         value7:'',
         linkManList:[],
         cusCustomer:{},
+        timeFlagFrom:null,
+        countFlagFrom:null,
+        timeFlagTo:null,
+        countFlagTo:null,
       }
     },
     methods: {
+      //呼入排序
+      changeTableSortFrom(val) {
+        if (val.order=='ascending' && val.prop=='calledTime') {
+          this.timeFlagFrom=0;
+          this.countFlagFrom=null;
+          this.getAddressFrom(1,30,this.id,0,this.timeFlagFrom,null);
+        }
+        if (val.order=='descending' && val.prop=='calledTime') {
+          this.timeFlagFrom=1;
+          this.countFlagFrom=null;
+          this.getAddressFrom(1,30,this.id,0,this.timeFlagFrom,null);
+        }
+        if (val.order=='ascending' && val.prop=='calledNumber') {
+          this.countFlagFrom=0;
+          this.timeFlagFrom=null;
+          this.getAddressFrom(1,30,this.id,0,null,this.countFlagFrom);
+        }
+        if (val.order=='descending' && val.prop=='calledNumber') {
+          this.countFlagFrom=1;
+          this.timeFlagFrom=null;
+          this.getAddressFrom(1,30,this.id,0,null,this.countFlagFrom);
+        }
+      },
+      //呼出排序
+      changeTableSortTo(val) {
+        if (val.order=='ascending' && val.prop=='callTime') {
+          this.timeFlagTo=0;
+          this.countFlagTo=null;
+          this.getAddressTo(1,30,this.id,1,this.timeFlagTo,null);
+        }
+        if (val.order=='descending' && val.prop=='callTime') {
+          this.timeFlagTo=1;
+          this.countFlagTo=null;
+          this.getAddressTo(1,30,this.id,1,this.timeFlagTo,null);
+        }
+        if (val.order=='ascending' && val.prop=='callNumber') {
+          this.countFlagTo=0;
+          this.timeFlagTo=null;
+          this.getAddressTo(1,30,this.id,1,null,this.countFlagTo);
+        }
+        if (val.order=='descending' && val.prop=='callNumber') {
+          this.countFlagTo=1;
+          this.timeFlagTo=null;
+          this.getAddressTo(1,30,this.id,1,null,this.countFlagTo);
+        }
+      },
       //每页显示多少条
       handleSizeChangeFrom(val) {
         this.nowPageSizes=val;
-        this.getAddressFrom(this.pageNum,val,this.id,0);
+        this.getAddressFrom(this.pageNum,val,this.id,0,this.timeFlagFrom,this.countFlagFrom);
       },
       //翻页
       handleCurrentChangeFrom(val) {
-        this.getAddressFrom(val,this.nowPageSizes,this.id,0);
+        this.getAddressFrom(val,this.nowPageSizes,this.id,0,this.timeFlagFrom,this.countFlagFrom);
       },
       //每页显示多少条
       handleSizeChangeTo(val) {
         this.nowPageSizes1=val;
-        this.getAddressTo(this.pageNum1,val,this.id,1);
+        this.getAddressTo(this.pageNum1,val,this.id,1,this.timeFlagTo,this.countFlagTo);
       },
       //翻页
       handleCurrentChangeTo(val) {
-        this.getAddressTo(val,this.nowPageSizes1,this.id,1);
+        this.getAddressTo(val,this.nowPageSizes1,this.id,1,this.timeFlagTo,this.countFlagTo);
       },
-      //运营商通讯录比对---呼入
-      getAddressFrom(data1,data2,data3,data4){
+      /**
+       * 运营商通讯录比对---呼入
+       * @param data1 查询第几页
+       * @param data2 每页显示多少条数据
+       * @param data3 用户id
+       * @param data4 类型：0呼入，1呼出
+       * @param data5 排序方式：timeFlag：0升序，1降序
+       * @param data6 排序方式：countFlag：0升序，1降序
+       */
+      getAddressFrom(data1,data2,data3,data4,data5,data6){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/user_center/admin/address/get",
@@ -199,7 +262,9 @@
             pageNum:data1,
             pageSize:data2,
             id:data3,
-            type:data4
+            type:data4,
+            timeFlag:data5,
+            countFlag:data6,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -214,8 +279,16 @@
           }
         })
       },
-      //运营商通讯录比对--呼出
-      getAddressTo(data1,data2,data3,data4){
+      /**
+       * 运营商通讯录比对--呼出
+       * @param data1 查询第几页
+       * @param data2 每页显示多少条数据
+       * @param data3 用户id
+       * @param data4 类型：0呼入，1呼出
+       * @param data5 排序方式：timeFlag：0升序，1降序
+       * @param data6 排序方式：countFlag：0升序，1降序
+       */
+      getAddressTo(data1,data2,data3,data4,data5,data6){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/user_center/admin/address/get",
@@ -227,7 +300,9 @@
             pageNum:data1,
             pageSize:data2,
             id:data3,
-            type:data4
+            type:data4,
+            timeFlag:data5,
+            countFlag:data6,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -243,8 +318,8 @@
     },
     mounted: function () {
       this.id=this.$route.params.id;
-      this.getAddressFrom(1,30,this.id,0);
-      this.getAddressTo(1,30,this.id,1);
+      this.getAddressFrom(1,30,this.id,0,null,null);
+      this.getAddressTo(1,30,this.id,1,null,null);
     },
     //过滤器的本质 就是一个有参数有返回值的方法
     filters:{

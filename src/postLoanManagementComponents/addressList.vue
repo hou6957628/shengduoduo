@@ -11,16 +11,23 @@
         border
         style="width: 50%">
         <el-table-column
-          fixed
           prop="name"
           label="姓名"
           width="250">
         </el-table-column>
         <el-table-column
-          fixed
           prop="mobile"
           label="手机号"
           min-width="80">
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          min-width="80">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" icon="el-icon-phone-outline" plain @click="toPhone()"></el-button>
+            <el-button type="primary" size="mini" icon="el-icon-edit" plain @click="addRecord()"></el-button>
+            <el-button type="primary" size="mini" icon="el-icon-document" plain @click="recordList()"></el-button>
+          </template>
         </el-table-column>
       </el-table>
     </template>
@@ -32,6 +39,24 @@
   import axios from 'axios'
   export default {
     methods: {
+      //打电话
+      toPhone(){
+
+      },
+      //添加催收记录
+      addRecord(){
+        let orderId=this.orderId2;
+        this.$router.push({
+          path: `/addCollectRecord2/${orderId}`,
+        });
+      },
+      //催收记录列表
+      recordList(){
+        let id=this.id;
+        this.$router.push({
+          path: `/collectRecordList/${id}`,
+        });
+      },
       /**
        * 通讯录列表
        */
@@ -60,6 +85,7 @@
     },
     mounted:function () {
       this.id=this.$route.params.id;
+      this.orderId2=this.$route.params.orderId;
       this.getProductList(this.id);
     },
     data() {

@@ -26,10 +26,10 @@
       <tr>
         <td>是否逾期：{{this.borrowingForm.repaymentOverdueDay==null?'否':'是'}}</td>
         <td>逾期天数：{{this.borrowingForm.repaymentOverdueDay}}</td>
-        <td>应还利息（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
+        <td>应还利息（元）：{{this.borrowingForm.borrowingInterest}}</td>
         <td>罚息（元）：{{this.borrowingForm.repaymentPenaltyInterest}}</td>
-        <td>滞纳金（元）：没有此字段</td>
-        <td>应还总还金额（元）：{{this.borrowingForm.repaymentCapital + this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
+        <td>滞纳金（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
+        <td>应还总金额（元）：{{this.borrowingForm.repaymentCapital + this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
       </tr>
       <tr>
         <td>是否可展期：{{this.borrowingForm.enableDefer | enableDeferFalse}}</td>
@@ -38,6 +38,9 @@
         <td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>
         <td>展期次数：没有此字段</td>
         <td>还款方式：没有此字段</td>
+      </tr>
+      <tr>
+        <td>催收员：{{this.borrowingForm.collectorName}}</td>
       </tr>
     </table>
     </div>
@@ -54,7 +57,8 @@
         <el-button class="la" type="danger" @click="offlineRepaymentTip()">线下还款</el-button>
         <el-button class="la" type="danger" @click="onlineReliefTip()">线上减免</el-button>
         <el-button class="la" type="danger" @click="separateDeductionTip()">单独扣款</el-button>
-        <el-button v-if="this.borrowingForm.enableDefer" class="la" type="danger" @click="lineDefferTip()">展期</el-button>
+        <el-button v-if="this.borrowingForm.enableDefer" class="la" type="danger" @click="lineDefferTip()">展期还款</el-button>
+        <el-button v-if="!this.borrowingForm.enableDefer" class="la" type="danger" @click="lineDefferTip()">特例展期</el-button>
         <el-button class="la" type="danger" @click="partialTip()">部分还款</el-button>
         <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
       </el-button-group>
@@ -234,7 +238,12 @@
           if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
             callback(new Error("请填写正整数"));
           }else{
-            this.ruleForm.partialUnpaidAmount=this.ruleForm.shouldRepayment - value;
+            if (this.borrowingForm.partial) {
+              this.ruleForm.partialUnpaidAmount=this.ruleForm.partialUnpaidAmount - value;
+            } else {
+              this.ruleForm.partialUnpaidAmount=this.ruleForm.shouldRepayment - value;
+            }
+            this.ruleForm.partialRepaymentPayment=value - this.ruleForm.partialDiscountAmount;
             callback();
           }
         }
@@ -634,16 +643,20 @@
         });
       },
       //部分还款弹窗
-      partialTip(row){
+      partialTip(){
         this.centerDialogVisible5=true;
         //计算逾期费用 + 罚息
         this.ruleForm.interest=this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest;
         //计算应还金额：还款本金 + 逾期费用 + 罚息
         this.ruleForm.shouldRepayment=this.borrowingForm.repaymentCapital + this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest;
-        //获取减免金额
-        this.ruleForm.partialDiscountAmount=this.borrowingForm.partialDiscountAmount;
-        //计算实际还款金额
-        this.ruleForm.partialRepaymentPayment=this.borrowingForm.partialRepaymentPayment;
+        //剩余应还金额
+        if (this.borrowingForm.partial) {
+          this.ruleForm.partialUnpaidAmount=this.borrowingForm.partialUnpaidAmount;
+        } else {
+          this.ruleForm.partialUnpaidAmount=0;
+        }
+        //计算部分还款减免金额
+        this.ruleForm.partialDiscountAmount=0;
       },
       //部分还款
       partial(formName) {

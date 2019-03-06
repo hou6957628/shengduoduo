@@ -93,7 +93,7 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="createDate"
+          prop="isBlackList"
           label="注册时间"
           width="200">
         </el-table-column>
@@ -113,7 +113,7 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="updateDate"
+          prop="isBlackList"
           label="最近登录应用时间"
           width="200">
         </el-table-column>
@@ -123,8 +123,8 @@
           width="110">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.isBlackList == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.isBlackList == true ? '是' : '否'}}</el-tag>
+              :type="'danger'"
+              disable-transitions>是</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -135,12 +135,8 @@
         <el-table-column
           prop="reBorrow"
           label="用户标识"
+          :formatter="reBorrowFormatter"
           width="80">
-          <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.reBorrow == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.reBorrow == true ? '老户' : '新户'}}</el-tag>
-          </template>
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -164,6 +160,23 @@
         :total="proTotal">
       </el-pagination>
     </div>
+    <!--展期还款结构-->
+    <el-dialog
+      title="添加黑名单"
+      :visible.sync="centerDialogVisible"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="手机号：" prop="mobile">
+          <el-input v-model="ruleForm.mobile"></el-input>
+        </el-form-item>
+        <el-form-item label="备注：">
+          <el-input v-model="ruleForm.description"></el-input>
+        </el-form-item>
+        <el-button style="margin-left: 200px" type="primary" @click="addBlack('ruleForm')">拉黑</el-button>
+        <el-button type="info"  @click="centerDialogVisible = false">取消</el-button>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -174,11 +187,11 @@
     methods: {
       //根据产品查询
       selectChange() {
-        this.getProductList(1,20,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
+        this.getProductList(1,30,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
       },
       //查询金融产品
       searchContent(data){
-        this.getProductList(1,20,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
+        this.getProductList(1,30,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
       },
       //每页显示多少条
       handleSizeChange(val) {
@@ -189,11 +202,35 @@
       handleCurrentChange(val) {
         this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.cardNumber,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
       },
-      //创建金融产品
-      toAddProduct(){
-        this.$router.push({
-          path: `/editFinanceProduct`,
-        });
+      //拉黑弹窗
+      blackBtn(){
+        this.centerDialogVisible=true;
+      },
+      //拉黑
+      addBlack() {
+        axios({
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/black/add",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            mobile: this.ruleForm.mobile,
+            description: this.ruleForm.description,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.centerDialogVisible=false;
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.getProductList(1,20,null,null,null,null,null,null,null,null);
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
       },
       /**
        * 获取黑名单列表
@@ -253,17 +290,24 @@
       //详情接口
       detailProduct(row){
         let id=row.customerId;
-        this.$router.push({
-          path: `/userDetail/${id}`,
-        });
-      },
-      //过滤类型字段
-      typeFormatter(row){
-        let status = row.type;
-        if(status === 0){
-          return '信贷产品'
+        console.log(id);
+        if (id == null) {
+          this.$message.warning('没有详情');
         } else {
-          return '分期产品'
+          this.$router.push({
+            path: `/userDetail/${id}`,
+          });
+        }
+      },
+      //过滤用户标识字段
+      reBorrowFormatter(row){
+        let reBorrow = row.reBorrow;
+        if(reBorrow == false){
+          return '新户'
+        } else if (reBorrow == true){
+          return '老户'
+        } else{
+          return '---'
         }
       },
       //时间筛选
@@ -298,7 +342,10 @@
       },
     },
     mounted:function () {
-      this.getProductList(1,20,null,null,null,null,null,null,null,null);
+      this.startTime=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
+      this.endTime=this.dateFormatCustom(new Date());
+      this.value7=[this.startTime,this.endTime];
+      this.getProductList(1,30,null,null,null,null,null,this.startTime,this.endTime,null);
       this.getProducts();
     },
     data() {
@@ -346,6 +393,16 @@
         value7:'',
         startTime:'',
         endTime:'',
+        centerDialogVisible:false,
+        ruleForm: {
+          mobile:null,
+          description:null,
+        },
+        rules: {
+          mobile: [
+            { required: true, message: '请填写手机号', trigger: 'blur' }
+          ],
+        }
       }
     }
   }

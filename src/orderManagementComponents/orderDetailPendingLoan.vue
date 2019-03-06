@@ -26,13 +26,13 @@
         <tr>
           <td>是否逾期：{{this.borrowingForm.repaymentOverdueDay==null?'否':'是'}}</td>
           <td>逾期天数：{{this.borrowingForm.repaymentOverdueDay}}</td>
-          <td>应还利息（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
+          <td>应还利息（元）：{{this.borrowingForm.borrowingInterest}}</td>
           <td>罚息（元）：{{this.borrowingForm.repaymentPenaltyInterest}}</td>
-          <td>滞纳金（元）：没有此字段</td>
-          <td>应还总还金额（元）：{{this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
+          <td>滞纳金（元）：{{this.borrowingForm.repaymentOverdueFee}}</td>
+          <td>应还总金额（元）：{{this.borrowingForm.repaymentCapital + this.borrowingForm.repaymentOverdueFee + this.borrowingForm.repaymentPenaltyInterest}}</td>
         </tr>
         <tr>
-          <td>是否可展期：{{this.borrowingForm.defer==1?'是':'否'}}</td>
+          <td>是否可展期：{{this.borrowingForm.enableDefer | enableDeferFalse}}</td>
           <td>展期应还金额：{{this.borrowingForm.repaymentDefer}}</td>
           <td>展期实际还款金额（元）：{{this.borrowingForm.repaymentDeferPayment}}</td>
           <td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>
@@ -256,7 +256,16 @@
       htmlFalse:function(arg1){
         var result = arg1.substring(13);
         return 'http://39.105.217.251' + result;
-      }
+      },
+      enableDeferFalse:function(arg1){
+        if(arg1==null){
+          return "未跑展期流程";
+        }else if(arg1==false){
+          return "否";
+        }else if(arg1==true){
+          return "是";
+        }
+      },
     }
   }
 </script>

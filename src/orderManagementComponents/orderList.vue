@@ -42,8 +42,11 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-col :span="8" style="height: 55px;">
+      <el-col :span="6" style="height: 55px;">
       手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
+      </el-col>
+      <el-col :span="8" style="height: 55px;">
+        用户姓名：<el-input class="searchContent" placeholder="用户姓名" v-model="cusName" clearable></el-input>
       </el-col>
       <el-col :span="10" style="height: 55px;">
         <template>
@@ -77,11 +80,11 @@
                           :picker-options="pickerOptions2"
                           format="yyyy-MM-dd HH:mm:ss"
                           value-format="yyyy-MM-dd HH:mm:ss"
-                          @change="logTimeChange()">
+                          @change="logTimeChange2()">
           </el-date-picker>
         </template>
       </el-col>
-      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button style="margin-top: 55px" type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
@@ -250,6 +253,11 @@
           width="120">
         </el-table-column>
         <el-table-column
+          prop="collectorName"
+          label="催收员"
+          width="120">
+        </el-table-column>
+        <el-table-column
           fixed="right"
           label="操作"
           width="450">
@@ -264,6 +272,7 @@
                 <el-button @click="onlineReliefTip(scope.row)" type="text" size="medium">线上减免</el-button>
                 <el-button @click="separateDeductionTip(scope.row)" type="text" size="medium">单独扣款</el-button>
                 <el-button v-if="scope.row.enableDefer" @click="lineDefferTip(scope.row)" type="text" size="medium">展期还款</el-button>
+                <el-button v-if="!scope.row.enableDefer" @click="lineDefferTip(scope.row)" type="text" size="medium">特例展期</el-button>
                 <el-button @click="partialTip(scope.row)" type="text" size="medium">部分还款</el-button>
                 <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
               </div>
@@ -453,18 +462,18 @@
       //条件查询列表
       searchContent(data){
         this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan);
+          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
         this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan);
+          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName);
       },
       //翻页
       handleCurrentChange(val) {
         this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan);
+          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName);
       },
       /**
        * 获取待放款订单列表
@@ -476,10 +485,13 @@
        * @param data6 子渠道名称
        * @param data7 性别
        * @param data8 手机号
-       * @param data9 开始时间
-       * @param data10 结束时间
+       * @param data9 申请开始时间
+       * @param data10 申请结束时间
+       * @param data11 放款开始时间
+       * @param data12 放款结束时间
+       * @param data13 用户姓名
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/list",
@@ -496,8 +508,11 @@
             childrenChannelName: data6,
             gender: data7,
             mobile: data8,
+            name: data13,
             startDate: data9,
             endDate: data10,
+            startDateLoan: data11,
+            endDateLoan: data12,
             sortColumn: 'create_date',
             direction: 'desc',
           }
@@ -554,7 +569,7 @@
                     message: '操作成功',
                     type: 'success'
                   });
-                  this.$router.go(-1);
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -611,7 +626,7 @@
                     message: '操作成功',
                     type: 'success'
                   });
-                  this.$router.go(-1);
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -668,7 +683,7 @@
                     message: '操作成功',
                     type: 'success'
                   });
-                  this.$router.go(-1);
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -727,7 +742,7 @@
                     message: '操作成功',
                     type: 'success'
                   });
-                  this.$router.go(-1);
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -771,7 +786,7 @@
                     message: '操作成功',
                     type: 'success'
                   });
-                  this.$router.go(-1);
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -815,7 +830,7 @@
                     message: '操作成功',
                     type: 'success'
                   });
-                  this.$router.go(-1);
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -834,14 +849,19 @@
       partialTip(row){
         this.centerDialogVisible5=true;
         this.orderId=row.orderId;
+        this.partialFlag=row.partial;
         //计算逾期费用 + 罚息
         this.ruleForm.interest=row.repaymentOverdueFee + row.repaymentPenaltyInterest;
         //计算应还金额：还款本金 + 逾期费用 + 罚息
         this.ruleForm.shouldRepayment=row.repaymentCapital + row.repaymentOverdueFee + row.repaymentPenaltyInterest;
-        //获取减免金额
-        this.ruleForm.partialDiscountAmount=row.partialDiscountAmount;
-        //计算实际还款金额
-        this.ruleForm.partialRepaymentPayment=row.partialRepaymentPayment;
+        //剩余应还金额
+        if (row.partial) {
+          this.ruleForm.partialUnpaidAmount=row.partialUnpaidAmount;
+        } else {
+          this.ruleForm.partialUnpaidAmount=0;
+        }
+        //计算部分还款减免金额
+        this.ruleForm.partialDiscountAmount=0;
       },
       //部分还款
       partial(formName) {
@@ -872,7 +892,7 @@
                     message: '操作成功',
                     type: 'success'
                   });
-                  this.$router.go(-1);
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
                 }else if(res.data.msgCd=='ZYCASH-1009'){
                   this.$message.error(res.data.msgInfo);
                 }
@@ -991,11 +1011,11 @@
       },
     },
     mounted:function () {
-      this.startDate=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
-      this.endDate=this.dateFormatCustom(new Date());
-      this.value5=[this.startDate,this.endDate];
+      this.startDateLoan=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
+      this.endDateLoan=this.dateFormatCustom(new Date());
+      this.value5=[this.startDateLoan,this.endDateLoan];
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+      this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
     },
     data() {
       //正常减免金额
@@ -1019,7 +1039,12 @@
           if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
             callback(new Error("请填写正整数"));
           }else{
-            this.ruleForm.partialUnpaidAmount=this.ruleForm.shouldRepayment - value;
+            if (this.partialFlag) {
+              this.ruleForm.partialUnpaidAmount=this.ruleForm.partialUnpaidAmount - value;
+            } else {
+              this.ruleForm.partialUnpaidAmount=this.ruleForm.shouldRepayment - value;
+            }
+            this.ruleForm.partialRepaymentPayment=value - this.ruleForm.partialDiscountAmount;
             callback();
           }
         }
@@ -1051,6 +1076,7 @@
         }
       };
       return {
+        partialFlag:null,//这笔订单是否已经是部分还款
         productList:[],
         reBorrowList: [
           {classifyId:null,classifyName:"全部状态"},
@@ -1101,6 +1127,7 @@
         childrenChannelName:null,
         sex:null,
         mobile:null,
+        cusName:null,
         value4:'',
         value5:'',
         startDate:null,

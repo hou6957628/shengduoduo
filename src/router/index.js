@@ -109,7 +109,11 @@ import collectionOrder from '@/postLoanManagementComponents/collectionOrder'
 import collectionOrderList from '@/postLoanManagementComponents/collectionOrderList'
 import collectionTaskList from '@/postLoanManagementComponents/collectionTaskList'
 import collectionTaskFinishList from '@/postLoanManagementComponents/collectionTaskFinishList'
+//通讯录、紧急联系人
 import addressList from '@/postLoanManagementComponents/addressList'
+import addCollectRecord2 from '@/orderManagementComponents/addCollectRecord2'
+import collectRecordList from '@/orderManagementComponents/collectRecordList'
+import collectRecordDetail from '@/orderManagementComponents/collectRecordDetail'
 import addressListEmergency from '@/postLoanManagementComponents/addressListEmergency'
 //角色渠道
 import addRole from '@/privilegeManagementComponents/addRole'
@@ -829,12 +833,36 @@ const vueRouter = new Router({
       component: collectionTaskFinishList
     },
     {
-      path: '/addressList/:id',
+      path: '/addressList/:id/:orderId',
       name: 'addressList',
       meta: {
         requireAuth: true
       },
       component: addressList
+    },
+    {
+      path: '/addCollectRecord2/:orderId',
+      name: 'addCollectRecord2',
+      meta: {
+        requireAuth: true
+      },
+      component: addCollectRecord2
+    },
+    {
+      path: '/collectRecordList/:id',
+      name: 'collectRecordList',
+      meta: {
+        requireAuth: true
+      },
+      component: collectRecordList
+    },
+    {
+      path: '/collectRecordDetail/:id',
+      name: 'collectRecordDetail',
+      meta: {
+        requireAuth: true
+      },
+      component: collectRecordDetail
     },
     {
       path: '/addressListEmergency/:id',
@@ -960,14 +988,6 @@ const vueRouter = new Router({
       },
       component: modifyUserInformation
     },
-    // {
-    //   path: '/editCollectRecord/:id',
-    //   name: 'editCollectRecord',
-    //   meta: {
-    //     requireAuth: true
-    //   },
-    //   component: editCollectRecord
-    // },
     {
       path: '/blackList',
       name: 'blackList',
@@ -1157,7 +1177,7 @@ const vueRouter = new Router({
         {
           path:"/huankuanOrder/:id",
           component:huankuanOrder
-        }
+        },
       ],
       //重定向
       redirect: '/jibenOrder/:id/:orderId',

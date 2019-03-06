@@ -53,8 +53,11 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-col :span="8" style="height: 55px;">
+      <el-col :span="6" style="height: 55px;">
       手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        用户姓名：<el-input class="searchContent" placeholder="用户姓名" v-model="cusName" clearable></el-input>
       </el-col>
       <el-col :span="10" style="height: 55px;">
         <template>
@@ -197,7 +200,7 @@
           width="110">
         </el-table-column>
         <el-table-column
-          prop="repaymentDefer"
+          prop="repaymentDeferPayment"
           label="实际展期还款金额"
           width="110">
         </el-table-column>
@@ -263,6 +266,11 @@
           width="120">
         </el-table-column>
         <el-table-column
+          prop="collectorName"
+          label="催收员"
+          width="120">
+        </el-table-column>
+        <el-table-column
           fixed="right"
           label="操作"
           width="100">
@@ -317,10 +325,10 @@
       searchContent(data){
         if (status == null) {
           this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
         } else {
           this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName);
         }
       },
       //每页显示多少条
@@ -328,20 +336,20 @@
         this.nowPageSizes=val;
         if (status == null) {
           this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
         } else {
           this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName);
         }
       },
       //翻页
       handleCurrentChange(val) {
         if (status == null) {
           this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
         } else {
           this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName);
         }
       },
       /**
@@ -360,8 +368,9 @@
        * @param data12 放款结束时间
        * @param data13 订单具体状态
        * @param data14 放款状态
+       * @param data15 用户姓名
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14,data15){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/list",
@@ -378,6 +387,7 @@
             childrenChannelName: data6,
             gender: data7,
             mobile: data8,
+            name: data15,
             startDate: data9,
             endDate: data10,
             startDateLoan: data11,
@@ -505,7 +515,7 @@
       this.endDateLoan=this.dateFormatCustom(new Date());
       this.value5=[this.startDateLoan,this.endDateLoan];
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null,8);
+      this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null,8,null);
     },
     data() {
       return {
@@ -569,6 +579,7 @@
         childrenChannelName:null,
         sex:null,
         mobile:null,
+        cusName:null,
         value4:'',
         value5:'',
         startDate:null,
