@@ -67,12 +67,12 @@
         <el-table-column
           prop="realName"
           label="姓名"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="mobile"
           label="手机号"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="productName"
@@ -82,7 +82,7 @@
         <el-table-column
           prop="createDate"
           label="注册时间"
-          width="200">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="channelName"
@@ -97,7 +97,7 @@
         <el-table-column
           prop="updateDate"
           label="最近登录应用时间"
-          width="200">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="isActiveApp"

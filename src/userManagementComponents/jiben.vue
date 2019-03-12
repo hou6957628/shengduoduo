@@ -4,11 +4,11 @@
     <el-row style="text-align: center;margin: 0 auto">
       <el-col style="width: 200px;margin-left: 5px" :span="4"><img class="ID1"  style="height: auto;width: 200px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.front"/></el-col>
       <el-col style="width: 200px;margin-left: 50px" :span="4"><img class="ID2" style="height: auto;width: 200px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.back"/></el-col>
-      <el-col style="width: 200px;margin-left: 50px" :span="4"><img class="Face" style="height: auto;width: 200px" :src="this.idFace.image"/></el-col>
+      <el-col style="width: 200px;margin-left: 50px" :span="4"><img class="Face" style="height: auto;width: 200px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idFace.image"/></el-col>
     </el-row>
     <el-row style="text-align: center;margin: 0 auto">
     <el-col :span="4" style="width: 200px;text-align: center;margin-left: 5px;z-index: 1">身份证正面</el-col>
-    <el-col :span="4" style="width: 200px;text-align: center;margin-left: 50px;z-index: 1">身份证正面</el-col>
+    <el-col :span="4" style="width: 200px;text-align: center;margin-left: 50px;z-index: 1">身份证背面</el-col>
     <el-col :span="4" style="width: 200px;text-align: center;margin-left: 50px;z-index: 1">人脸识别照片</el-col>
     </el-row>
     </div>
@@ -224,7 +224,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.$router.push('/userProductList');
+            this.$router.go(-1);
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -261,7 +261,7 @@
     },
     mounted: function () {
       this.id=this.$route.params.id;
-      this.orderId2=this.$route.params.orderId;
+      console.log(this.id + '表示');
       this.getUserDetail(this.id);
     }
   }

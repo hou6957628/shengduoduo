@@ -2,11 +2,11 @@
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/smsMessage' }">短信消息</el-breadcrumb-item>
-      <el-breadcrumb-item>创建短信</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" class="demo-ruleForm">
-      <el-form-item style="margin-top: 20px;width: 480px" label="选择所属APP:" prop="App">
-        <el-select style="width: 320px" v-model="ruleForm.App" value-key="id" placeholder="请选择" @change="selectChange1($event,productList)">
+      <el-form-item style="margin-top: 20px;width: 480px" label="选择所属APP:" prop="productId">
+        <el-select style="width: 320px" v-model="ruleForm.productId" value-key="id" placeholder="请选择" @change="selectChange1($event,productList)">
           <el-option
             v-for="item in productList"
             :key="item.productId"
@@ -15,21 +15,21 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="名称:" prop="classifyName">
-        <el-input v-model="ruleForm.classifyName"></el-input>
+      <el-form-item label="名称:" prop="name">
+        <el-input v-model="ruleForm.name"></el-input>
       </el-form-item>
       <el-form-item style="margin-top: 20px" label="请选择分类:" prop="classifyId">
-        <el-select v-model="ruleForm.classifyId" value-key="id" placeholder="请选择" @change="selectChange1($event,fenList)">
+        <el-select v-model="ruleForm.classifyId" value-key="id" placeholder="请选择" @change="selectChange2($event,messageClassifyList)">
           <el-option
-            v-for="item in fenList"
+            v-for="item in messageClassifyList"
             :key="item.id"
             :label="item.classifyName"
             :value="item.id">
           </el-option>
         </el-select>
-        <el-button @click="toAddProduct()" type="primary" plain>添加分类</el-button>
+        <el-button style="position: absolute;right:-50px;top:1px;" @click="toAddProduct()" type="primary" plain>添加分类</el-button>
       </el-form-item>
-      <el-form-item label="请输入备注:" prop="description">
+      <el-form-item label="请输入备注:">
         <el-input type="textarea" :rows="4" v-model="ruleForm.description"></el-input>
       </el-form-item>
       <el-form-item label="请输入短信内容:" prop="content">
@@ -42,26 +42,26 @@
         <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
         <el-button type="" @click="resetForm('ruleForm')">取消</el-button>
       </el-form-item>
-      <!--创建分类-->
-      <el-dialog
-        title="复制产品"
-        :visible.sync="centerDialogVisible"
-        width="40%"
-        center>
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="名称:" prop="productName">
-            <el-input v-model="ruleForm.productName"></el-input>
-          </el-form-item>
-          <el-form-item label="请输入备注:" prop="description">
-            <el-input type="textarea":rows="3" v-model="ruleForm.description"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="saveMessage('ruleForm')">保存<i class="el-icon-check el-icon--right"></i></el-button>
-            <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
     </el-form>
+    <!--创建分类-->
+    <el-dialog
+      title="添加分类"
+      :visible.sync="centerDialogVisible"
+      width="40%"
+      center>
+      <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="80px" class="demo-ruleForm">
+        <el-form-item label="名称:" prop="classifyName">
+          <el-input v-model="ruleForm2.classifyName" placeholder="请填写名称"></el-input>
+        </el-form-item>
+        <el-form-item label="备注:" prop="description">
+          <el-input type="textarea":rows="3" v-model="ruleForm2.description" placeholder="请填写备注"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="insertMessage('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -70,54 +70,58 @@
 
   export default {
     data() {
-      var validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入确认密码'));
-        } else if (value !== this.ruleForm.password) {
-          callback(new Error('两次输入密码不一致!'));
-        } else {
-          callback();
-        }
-      };
-      //手机号验证
-      var checkPhone = (rule, value, callback) => {
+      //分类名称不可重复
+      var validateName = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('手机号不能为空'));
+          callback(new Error('请填写名称'));
         } else {
-          const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
-          console.log(reg.test(value));
-          if (reg.test(value)) {
-            callback();
-          } else {
-            return callback(new Error('请输入正确的手机号'));
-          }
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/message/admin/message_classify/check",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              name: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body != 0) {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
         }
       };
       return {
         ruleForm: {
-          classifyName: '',
+          id:'',
+          productId:null,
+          productName:'',
+          productCode:'',
+          name:'',
           classifyId: '',
-          App:'',
+          classifyName: '',
           description:'',
           content:'',
           noteId:'',
+          modeName:'',
           modeCode:'',
-          popupCount:'',
-          id:'',
-          position:'',
         },
         rules: {
-          App: [
-            {required: true, message: '选择所属App', trigger: 'change'}
+          productId: [
+            {required: true, message: '请选择所属App', trigger: 'change'}
           ],
-          classifyName: [
+          name: [
             {required: true, message: '请填写名称', trigger: 'blur'}
           ],
           classifyId: [
-            {required: true, message: '请选择分类', trigger: 'blur' }
-          ],
-          description: [
-            {required: true, message: '请输入备注', trigger: 'blur'}
+            {required: true, message: '请选择分类', trigger: 'change' }
           ],
           content: [
             {required: true, message: '请输入短信内容', trigger: 'change'}
@@ -126,26 +130,18 @@
             { required: true, message: '请输入短信ID', trigger: 'blur' }
           ]
         },
-        electData: [
-          {key:true,Id:"启用"},
-          {key:false,Id:"停用"},
-        ],
-        electData1: [],
-        electData2: [],
-        tableData:[],
-        electValue:0,
-        electValue1:0,
-        products:[],
-        products1:[],
         centerDialogVisible:false,
-        productList:{
-          productId: '',
-          productName: '',
+        ruleForm2: {
+          classifyName: '',
+          description: '',
         },
-        fenList:{
-          productId: '',
-          productName: '',
+        rules2: {
+          classifyName: [
+            { required: true, validator: validateName, trigger: 'blur' }
+          ],
         },
+        productList:[],
+        messageClassifyList:[],
       };
     },
     methods: {
@@ -163,7 +159,49 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
-            this.productList.unshift({productId: null, productName: '全部产品'});
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //查询所有分类
+      getProductList1() {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/message/admin/message_classify/findList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.messageClassifyList=res.data.body;
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //查询消息详情
+      getMessageById(id) {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/message/admin/message/get",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            id: id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.ruleForm=res.data.body;
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -178,23 +216,20 @@
           if (valid) {
             var param = new FormData();
             param.append('id', this.ruleForm.id);
-            param.append('classifyId', this.ruleForm.classifyId);
-            param.append('classifyName', this.ruleForm.classifyName);
-            param.append('name', this.ruleForm.name);
-            param.append('description', this.ruleForm.description);
-            param.append('modeId', this.ruleForm.modeId);
-            param.append('modeName', this.ruleForm.modeName);
-            param.append('modeCode', this.ruleForm.modeCode);
-            param.append('position', this.ruleForm.position);
-            param.append('noteId', this.ruleForm.noteId);
             param.append('productId', this.ruleForm.productId);
             param.append('productName', this.ruleForm.productName);
             param.append('productCode', this.ruleForm.productCode);
-            param.append('popupCount', this.ruleForm.popupCount);
+            param.append('name', this.ruleForm.name);
+            param.append('classifyId', this.ruleForm.classifyId);
+            param.append('classifyName', this.ruleForm.classifyName);
+            param.append('description', this.ruleForm.description);
+            param.append('modeName', this.ruleForm.modeName);
+            param.append('modeCode', this.ruleForm.modeCode);
             param.append('content', this.ruleForm.content);
+            param.append('noteId', this.ruleForm.noteId);
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/message/admin/message/insert",
+              url: "http://"+this.baseUrl+"/message/admin/message/update",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -203,7 +238,7 @@
             }).then((res) => {
               if (res.data.msgCd == 'ZYCASH-200') {
                 this.$message({
-                  message: '添加成功',
+                  message: '操作成功',
                   type: 'success'
                 });
                 this.$router.push('/smsMessage');
@@ -220,66 +255,41 @@
           }
         });
       },
-      //下拉选择
-      selectChange(row){
-        console.log(this.ruleForm.enabled);
-      },
-      //下拉选择
+      //封装产品名称
       selectChange1(vId,list){
-        console.log(this.ruleForm.roleName);
+        let obj = {};
+        obj = list.find((item)=>{
+          return item.productId === vId;
+        });
+        this.ruleForm.productName=obj.productName;
+        this.ruleForm.productCode=obj.productCode;
       },
-      //下拉选择
-      selectChange2(){
-        this.$forceUpdate();
-        console.log(this.ruleForm.productName1);
+      //封装分类名称
+      selectChange2(vId,list){
+        let obj = {};
+        obj = list.find((item)=>{
+          return item.id === vId;
+        });
+        this.ruleForm.classifyName=obj.classifyName;
       },
       //取消按钮
       resetForm(formName) {
-        this.$refs[formName].resetFields();
-      },
-      //获取请选择分类
-      getProductList1(){
-        axios({
-          method: "POST",
-          url: "http://"+this.baseUrl+"/message/admin/message_classify/find",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params: {
-            pageNum: 1,
-            pageSize: 30,
-          }
-        }).then((res) => {
-          if (res.data.msgCd == 'ZYCASH-200') {
-            this.fenList = res.data.body.list;
-            // for(var i=0;i<this.electData2.length;i++){
-            //   this.products.push({
-            //     id:this.electData2[i].id,
-            //     productName:this.electData2[i].productName
-            //   });
-            //   this.$forceUpdate();
-            //   console.log(this.products);
-            // }
-          } else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        this.$router.go(-1);
       },
       //创建分类
       toAddProduct(){
         this.centerDialogVisible=true;
       },
       //保存分类
-      saveMessage(formName){
+      insertMessage(formName){
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var param = new FormData();  // 创建form对象
-            param.append('id', this.copyId)  // 通过append向form对象添加数据
-            param.append('productName', this.ruleForm.productName)  // 通过append向form对象添加数据
+            param.append('classifyName', this.ruleForm2.classifyName);
+            param.append('description', this.ruleForm2.description);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/operate/admin/productManage/saveProduct",
+              url:"http://"+this.baseUrl+"/message/admin/message_classify/insert",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -291,7 +301,8 @@
                   message: '保存成功',
                   type: 'success'
                 });
-                this.centerDialogVisible=true;
+                this.centerDialogVisible=false;
+                this.getProductList1();
               } else {
                 this.$message.error(res);
               }
@@ -304,8 +315,10 @@
       },
     },
     mounted: function () {
+      this.id=this.$route.params.id;
       this.getFenList();
       this.getProductList1();
+      this.getMessageById(this.id);
     },
   }
 </script>

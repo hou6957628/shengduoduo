@@ -78,61 +78,12 @@
           }
         })
       },
-      //提交按钮
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            var param = new FormData();  // 创建form对象
-            param.append('classifyCode', null);  // 这个字段没有
-            param.append('classifyName', this.ruleForm.classifyName); // 通过append向form对象添加数据
-            param.append('classifyType', 1); // 添加0：用户标签 1：规则标签 2:规则集标签
-            param.append('description', this.ruleForm.description);
-            axios({
-              method: "POST",
-              // url:"http://"+this.baseUrl+"/operate/admin/productManage/createProduct",
-              url: "http://39.105.217.251:9998/risk/admin/classification/add",
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': localStorage.token
-              },
-              data: param,
-            }).then((res) => {
-              if (res.data.msgCd == 'ZYCASH-200') {
-                this.$message({
-                  message: '添加成功',
-                  type: 'success'
-                });
-                this.$router.push('/productProductList');
-              } else if (res.data.msgCd == 'ZYCASH-1009') {
-                this.$message.error(res.data.msgInfo);
-              }
-              else {
-                this.$message.error(res);
-              }
-            })
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      //下拉选择
-      selectChange(row){
-        console.log(this.electValue);
-      },
-      //取消按钮
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
-      },
-      //跳转到主渠道
-      addChannel(){
-        this.$router.push({
-          path: `/addAccount`,
-        });
-      },
-      //
+      //切换产品
       fen(item,index){
         this.isactive = index;
+        this.id=item.id;
+        let id=this.id;
+        this.getUserDetail(this.id);
       },
     },
     mounted: function () {

@@ -221,6 +221,10 @@
       <div v-for="(item,index) in tableData" v-if="item.fieldType=='通讯录字段'" style="display: inline-block;padding: 2px 3px;width: 17%;">
         <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
       </div>
+      <p style="text-align: center;margin: 5px 0">----face++----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='face++'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      </div>
     </div>
     <!--添加规则分类结构-->
     <el-dialog
@@ -639,7 +643,7 @@
       //只能输入数字
       numberCheck1(index) {
         var data = this.electDataList.domains[index].fieldValue1;
-        let boo = new RegExp("^[1-9][0-9]*$").test(data);
+        let boo = new RegExp("^[0-9][0-9]*$").test(data);
         if (!boo) {
           this.$message.error("请输入正整数");
           this.electDataList.domains[index].fieldValue1=data.replace(/[^\d]/g,'');
@@ -647,7 +651,7 @@
       },
       numberCheck2(index) {
         var data = this.electDataList.domains[index].fieldValue2;
-        let boo = new RegExp("^[1-9][0-9]*$").test(data);
+        let boo = new RegExp("^[0-9][0-9]*$").test(data);
         if (!boo) {
           this.$message.error("请输入正整数");
           this.electDataList.domains[index].fieldValue2=data.replace(/[^\d]/g,'');

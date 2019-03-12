@@ -1,7 +1,8 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">消息配置</el-breadcrumb-item>
+      <el-breadcrumb-item>消息配置</el-breadcrumb-item>
+      <el-breadcrumb-item>日志列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
@@ -17,29 +18,29 @@
       </el-col>
       <el-col :span="6" style="height: 55px;">
         形式：
-        <el-select v-model="status" placeholder="请选择">
+        <el-select v-model="modeId" placeholder="请选择">
           <el-option
-            v-for="item in electData1"
+            v-for="item in modeList"
             :key="item.id"
-            :label="item.classifyName"
-            :value="item.classifyId">
+            :label="item.modeName"
+            :value="item.id">
           </el-option>
         </el-select>
       </el-col>
       <el-col :span="6" style="height: 55px;">
         分类：
-        <el-select v-model="reBorrow" placeholder="请选择">
+        <el-select v-model="classifyId" placeholder="请选择">
           <el-option
-            v-for="item in reBorrowList"
+            v-for="item in messageClassifyList"
             :key="item.id"
             :label="item.classifyName"
-            :value="item.classifyId">
+            :value="item.id">
           </el-option>
         </el-select>
       </el-col>
       <el-input style="width: 350px;" class="searchContent"
                 placeholder="输入名称或ID"
-                v-model="finProduct"
+                v-model="conditionName"
                 clearable>
       </el-input>
       <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
@@ -47,19 +48,18 @@
     <template>
       <el-table
         :data="tableData"
-        @selection-change="handleSelectionChange"
         border
         style="width: 98%">
         <el-table-column
           fixed
           prop="id"
           label="ID"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="productName"
           label="所属APP"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="name"
@@ -67,27 +67,32 @@
           width="200">
         </el-table-column>
         <el-table-column
-          prop="desc"
+          prop="modeName"
           label="消息形式"
-          width="200">
+          width="100">
         </el-table-column>
         <el-table-column
-          prop="desc"
+          prop="classifyName"
           label="消息分类"
-          width="200">
+          width="180">
         </el-table-column>
         <el-table-column
-          prop="desc"
+          prop="description"
           label="备注"
           width="300">
         </el-table-column>
         <el-table-column
-          prop="state"
+          prop="status"
           label="状态"
-          width="120">
+          width="100">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.status == true ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.status == true ? '成功' : '失败'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="time"
+          prop="createDate"
           label="执行时间"
           width="200">
         </el-table-column>
@@ -134,39 +139,74 @@
           }
         })
       },
+      //查询所有分类
+      getMessageClassifyList() {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/message/admin/message_classify/findList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.messageClassifyList=res.data.body;
+            this.messageClassifyList.unshift({id: null, classifyName: '全部分类'});
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //查询所有形式
+      getModeList() {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/message/admin/message_mode/findList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.modeList=res.data.body;
+            this.modeList.unshift({id: null, modeName: '全部形式'});
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
       //条件查询列表
       searchContent(data){
-        this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,this.pageSize,this.productId,this.modeId,this.classifyId,this.conditionName);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
-        this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,val,this.productId,this.modeId,this.classifyId,this.conditionName);
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+        this.getProductList(val,this.pageSize,this.productId,this.modeId,this.classifyId,this.conditionName);
       },
       /**
-       * 获取待放款订单列表
+       * 获取日志列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
        * @param data3 产品id
-       * @param data4 新老户
-       * @param data5 主渠道名称
-       * @param data6 子渠道名称
-       * @param data7 性别
-       * @param data8 手机号
-       * @param data9 开始时间
-       * @param data10 结束时间
+       * @param data4 形式id
+       * @param data5 分类id
+       * @param data6 名称或id
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
+      getProductList(data1,data2,data3,data4,data5,data6){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/pending/list",
+          url:"http://"+this.baseUrl+"/message/admin/messagelog/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -175,13 +215,9 @@
             pageNum:data1,
             pageSize:data2,
             productId: data3,
-            reBorrow: data4,
-            parentChannelName: data5,
-            childrenChannelName: data6,
-            gender: data7,
-            mobile: data8,
-            startDate: data9,
-            endDate: data10,
+            modeId: data4,
+            classifyId: data5,
+            conditionName: data6,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -194,227 +230,28 @@
           }
         })
       },
-      //审核订单
-      detailProduct(){
-        this.$router.push({
-          path: `/editFinanceProduct`,
-        });
-      },
-      //下拉选择
-      selectChange(vId,list) {
-        let obj = {};
-        obj = list.find((item) => {
-          console.log(item.productName === vId);
-          return item.productName === vId;
-        });
-        this.getProductList(1,30,null,null);
-      },
-      //下拉选择
-      selectChange1(vId,list) {
-        let obj = {};
-        obj = list.find((item) => {
-          console.log(item.productName === vId);
-          return item.productName === vId;
-        });
-        this.getProductList(1,30,null,null);
-      },
-      //下拉选择
-      selectChange2(vId,list) {
-        let obj = {};
-        obj = list.find((item) => {
-          console.log(item.productName === vId);
-          return item.productName === vId;
-        });
-        this.getProductList(1,30,null,null);
-      },
-      //分类列表
-      toMessageClassify(){
-        this.$router.push({
-          path: `/messageClassify`,
-        });
-      },
-      //全选
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      //时间筛选
-      logTimeChange(){
-        if(this.value5==''||this.value5==null){
-          this.startDate=null;
-          this.endDate=null;
-        }else {
-          var startTime=this.value5[0];
-          var endTime=this.value5[1];
-          this.startTime=startTime;
-          this.endTime=endTime;
-        }
-      },
-      //提示删除分类接口
-      deleteProduct(row){
-        axios({
-          method:"get",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/getRuleByClassId",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: row.id,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            if (res.data.body != 0) {
-              this.$alert('该规则分类已被规则引用，不可删除', '提示', {
-                confirmButtonText: '确定',
-                center: true,
-                type: 'warning'
-              });
-            } else {
-              this.$confirm('是否确认删除此规则分类?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-              }).then(() => {
-                this.deleteClassification(row);
-              }).catch(() => {
-                this.$message({
-                  type: 'info',
-                  message: '已取消删除'
-                });
-              });
-            }
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
-      //确认删除分类接口
-      deleteClassification(row){
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/delete",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: row.id,
-            status: 1,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            });
-            this.getProductList(1,10,1,null);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
-      //复制接口
-      copeProduct(row){
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/risk/admin/classification/delete",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: row.id,
-            status: 1,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            });
-            this.getProductList(1,10,1,null);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
     },
     mounted:function () {
-      this.startDate=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
-      this.endDate=this.dateFormatCustom(new Date());
-      this.value5=[this.startDate,this.endDate];
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+      this.getModeList();
+      this.getMessageClassifyList();
+      this.getProductList(1,20,null,null,null,null);
     },
     data() {
       return {
         productList:[],
-        ruleForm: {
-          id: '',
-          parentChannelName: '',
-          subChannelName: '',
-          longUrl: '',
-          cpaPrice: '',
-          cpsPrice: '',
-          productName: '',
-          productCode: '',
-        },
-        finProduct:null,
+        modeList:[],
+        messageClassifyList:[],
+        productId:null,
+        modeId:null,
+        classifyId:null,
+        conditionName:null,
         tableData:[],
         pageNum: null,
         proTotal:null,
         pageSize:null,
         pageSizes:[20,30,50],
         nowPageSizes:20,
-        pickerOptions2: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
-        productId:null,
-        reBorrow:null,
-        parentChannelName:null,
-        childrenChannelName:null,
-        sex:null,
-        mobile:null,
-        value5:'',
-        startDate:null,
-        endDate:null,
-        electData: [
-          {productCode:1,productName:"启用"},
-          {productCode:0,productName:"停用"},
-        ],
-        electData1: [
-          {productCode:1,productName:"启用1"},
-          {productCode:0,productName:"停用1"},
-        ],
-        electData2: [
-          {productCode:1,productName:"启用2"},
-          {productCode:0,productName:"停用2"},
-        ],
       }
     }
   }

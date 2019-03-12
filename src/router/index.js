@@ -202,29 +202,38 @@ import orderFlowLogList from '@/orderExtension/orderFlowLogList'
 
 import axios from 'axios'
 
-//消息
-import createPopUpMessage from '@/messageConfigurationComponents/createPopUpMessage'
-import createPushMessage from '@/messageConfigurationComponents/createPushMessage'
-import createReminderMessage from '@/messageConfigurationComponents/createReminderMessage'
-import createSMS from '@/messageConfigurationComponents/createSMS'
+//消息管理-分类列表
 import messageClassify from '@/messageConfigurationComponents/messageClassify'
-import popUpMessage from '@/messageConfigurationComponents/popUpMessage'
-import pushMessage from '@/messageConfigurationComponents/pushMessage'
-import reminderMessage from '@/messageConfigurationComponents/reminderMessage'
-import smsMessage from '@/messageConfigurationComponents/smsMessage'
+//消息管理-短信消息
+import smsMessage from '@/messageConfigurationComponents/SMS/smsMessage'
+import createSMS from '@/messageConfigurationComponents/SMS/createSMS'
+import editSMS from '@/messageConfigurationComponents/SMS/editSMS'
+import detailSMS from '@/messageConfigurationComponents/SMS/detailSMS'
+//消息管理-提醒消息
+import reminderMessage from '@/messageConfigurationComponents/reminder/reminderMessage'
+import createReminderMessage from '@/messageConfigurationComponents/reminder/createReminderMessage'
+import editReminderMessage from '@/messageConfigurationComponents/reminder/editReminderMessage'
+import detailReminderMessage from '@/messageConfigurationComponents/reminder/detailReminderMessage'
+//消息管理-弹窗消息
+import popUpMessage from '@/messageConfigurationComponents/popUp/popUpMessage'
+import createPopUpMessage from '@/messageConfigurationComponents/popUp/createPopUpMessage'
+import editPopUpMessage from '@/messageConfigurationComponents/popUp/editPopUpMessage'
+import detailPopUpMessage from '@/messageConfigurationComponents/popUp/detailPopUpMessage'
+//消息管理-推送消息
+import pushMessage from '@/messageConfigurationComponents/push/pushMessage'
+import createPushMessage from '@/messageConfigurationComponents/push/createPushMessage'
+import editPushMessage from '@/messageConfigurationComponents/push/editPushMessage'
+import detailPushMessage from '@/messageConfigurationComponents/push/detailPushMessage'
+//消息配置
 import messageConfigurationList from '@/messageManagementComponents/messageConfigurationList'
 import messageRecord from '@/messageManagementComponents/messageRecord'
 import noticeMessage from '@/messageManagementComponents/noticeMessage'
-import changeSMS from '@/messageManagementComponents/changeSMS'
-import changePush from '@/messageManagementComponents/changePush'
-import changeMessage from '@/messageManagementComponents/changeMessage'
-import changePopUp from '@/messageManagementComponents/changePopUp'
 import marketingMessage from '@/messageManagementComponents/marketingMessage'
 import triggerMessage from '@/messageManagementComponents/triggerMessage'
-import messageDetail from '@/messageManagementComponents/messageDetail'
-import popUpDetail from '@/messageManagementComponents/popUpDetail'
-import pushDetail from '@/messageManagementComponents/pushDetail'
-import smsDetail from '@/messageManagementComponents/smsDetail'
+import editTriggerMessage from '@/messageManagementComponents/editTriggerMessage'
+import editNoticeMessage from '@/messageManagementComponents/editNoticeMessage'
+import editMarketingMessage from '@/messageManagementComponents/editMarketingMessage'
+
 
 Vue.use(Router);
 // http request 拦截器
@@ -263,6 +272,8 @@ axios.interceptors.response.use(
 
 Vue.prototype.baseUrl="39.105.217.251:31999";
 Vue.prototype.baseIp="http://39.105.217.251";
+//消息配置
+// Vue.prototype.baseUrl="localhost:9990";
 //风控
 // Vue.prototype.baseUrl="localhost:9998";
 //额度
@@ -1443,12 +1454,44 @@ const vueRouter = new Router({
       component: createPopUpMessage
     },
     {
+      path: '/editPopUpMessage/:id',
+      name: 'editPopUpMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: editPopUpMessage
+    },
+    {
+      path: '/detailPopUpMessage/:id',
+      name: 'detailPopUpMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: detailPopUpMessage
+    },
+    {
       path: '/createPushMessage',
       name: 'createPushMessage',
       meta: {
         requireAuth: true
       },
       component: createPushMessage
+    },
+    {
+      path: '/editPushMessage/:id',
+      name: 'editPushMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: editPushMessage
+    },
+    {
+      path: '/detailPushMessage/:id',
+      name: 'detailPushMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: detailPushMessage
     },
     {
       path: '/createReminderMessage',
@@ -1459,12 +1502,44 @@ const vueRouter = new Router({
       component: createReminderMessage
     },
     {
+      path: '/editReminderMessage/:id',
+      name: 'editReminderMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: editReminderMessage
+    },
+    {
+      path: '/detailReminderMessage/:id',
+      name: 'detailReminderMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: detailReminderMessage
+    },
+    {
       path: '/createSMS',
       name: 'createSMS',
       meta: {
         requireAuth: true
       },
       component: createSMS
+    },
+    {
+      path: '/editSMS/:id',
+      name: 'editSMS',
+      meta: {
+        requireAuth: true
+      },
+      component: editSMS
+    },
+    {
+      path: '/detailSMS/:id',
+      name: 'detailSMS',
+      meta: {
+        requireAuth: true
+      },
+      component: detailSMS
     },
     {
       path: '/messageClassify',
@@ -1547,68 +1622,28 @@ const vueRouter = new Router({
       component: triggerMessage
     },
     {
-      path: '/changeSMS',
-      name: 'changeSMS',
+      path: '/editTriggerMessage/:id',
+      name: 'editTriggerMessage',
       meta: {
         requireAuth: true
       },
-      component: changeSMS
+      component: editTriggerMessage
     },
     {
-      path: '/changePush',
-      name: 'changePush',
+      path: '/editNoticeMessage/:id',
+      name: 'editNoticeMessage',
       meta: {
         requireAuth: true
       },
-      component: changePush
+      component: editNoticeMessage
     },
     {
-      path: '/changeMessage',
-      name: 'changeMessage',
+      path: '/editMarketingMessage/:id',
+      name: 'editMarketingMessage',
       meta: {
         requireAuth: true
       },
-      component: changeMessage
-    },
-    {
-      path: '/changePopUp',
-      name: 'changePopUp',
-      meta: {
-        requireAuth: true
-      },
-      component: changePopUp
-    },
-    {
-      path: '/messageDetail',
-      name: 'messageDetail',
-      meta: {
-        requireAuth: true
-      },
-      component: messageDetail
-    },
-    {
-      path: '/popUpDetail',
-      name: 'popUpDetail',
-      meta: {
-        requireAuth: true
-      },
-      component: popUpDetail
-    },
-    {
-      path: '/pushDetail',
-      name: 'pushDetail',
-      meta: {
-        requireAuth: true
-      },
-      component: pushDetail
-    },
-    {
-      path: '/smsDetail',
-      name: 'smsDetail',
-      meta: {
-        requireAuth: true
-      },
-      component: smsDetail
+      component: editMarketingMessage
     },
 ]
 

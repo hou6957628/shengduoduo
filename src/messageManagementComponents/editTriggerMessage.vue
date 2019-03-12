@@ -2,7 +2,7 @@
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">任务列表</el-breadcrumb-item>
-      <el-breadcrumb-item>创建任务</el-breadcrumb-item><el-breadcrumb-item>触发类</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" class="demo-ruleForm">
       <el-form-item style="margin-top: 20px;width: 480px" label="选择产品：" prop="productId">
@@ -56,6 +56,7 @@
             <el-table-column
               prop="classifyName"
               label="分类"
+              :formatter="classifyNameFprmatter"
               width="120">
             </el-table-column>
             <el-table-column
@@ -461,6 +462,7 @@
         multipleSelection3:[],
         multipleSelection4:[],
         ruleForm: {
+          id:'',
           productId:'',
           productName:'',
           productCode:'',
@@ -774,6 +776,10 @@
           return '推送'
         }
       },
+      //过滤消息分类字段
+      classifyNameFprmatter(row){
+        return this.ruleForm.classifyName;
+      },
       //移除
       deleteRow(index, rows) {
         rows.splice(index, 1);
@@ -788,6 +794,7 @@
               this.ruleForm.messageName=null;
             }
             var param = new FormData();
+            param.append('id', this.ruleForm.id);
             param.append('productId', this.ruleForm.productId);
             param.append('productName', this.ruleForm.productName);
             param.append('productCode', this.ruleForm.productCode);
@@ -857,8 +864,31 @@
           }
         })
       },
+      //查询任务详情
+      getTaskById(data){
+        axios({
+          method: "POST",
+          url: "http://"+this.baseUrl+"/message/admin/edit/task",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            taskId: data,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.ruleForm=res.data.body;
+            this.taskList=res.data.body.list;
+          } else {
+            this.$message.error(res);
+          }
+        })
+      },
     },
     mounted: function () {
+      this.id=this.$route.params.id;
+      this.getTaskById(this.id);
       this.getProduct();
       this.getMessageClassifyList();
     },

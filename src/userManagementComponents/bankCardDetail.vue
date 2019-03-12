@@ -62,11 +62,6 @@
           center: true
         }).then(() => {
           this.deleteBankCard(row);
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消解绑'
-          });
         });
       },
       //确认删除银行卡接口
@@ -106,7 +101,6 @@
     },
     data() {
       return {
-        finProduct: '',
         bankCard: '',
       }
     }

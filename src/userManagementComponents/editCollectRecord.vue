@@ -10,7 +10,7 @@
           <el-option
             v-for="item in labelList"
             :key="item.id"
-            :label="item.labelName"
+            :label="item.labelContent"
             :value="item.id">
           </el-option>
         </el-select>
@@ -20,7 +20,7 @@
           <el-option
             v-for="item in callTypeList"
             :key="item.id"
-            :label="item.callName"
+            :label="item.callContent"
             :value="item.id">
           </el-option>
         </el-select>

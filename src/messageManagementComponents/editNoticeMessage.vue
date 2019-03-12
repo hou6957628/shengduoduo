@@ -2,7 +2,7 @@
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/messageConfigurationList' }">任务列表</el-breadcrumb-item>
-      <el-breadcrumb-item>创建任务</el-breadcrumb-item><el-breadcrumb-item>触发类</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" class="demo-ruleForm">
       <el-form-item style="margin-top: 20px;width: 480px" label="选择产品：" prop="productId">
@@ -73,6 +73,48 @@
             </el-table-column>
           </el-table>
         </template>
+      </el-form-item>
+      <el-form-item label="设定日期：" prop="setTime" style="text-align: left" >
+        <el-radio-group v-model="ruleForm.setTime" @change="radioChange">
+          <el-radio :label="0">每一天</el-radio>
+          <el-radio :label="1">时间段</el-radio>
+          <el-radio :label="2">某天</el-radio>
+          <el-radio :label="3">每隔多少天</el-radio>
+          <el-radio :label="4">立即执行</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="时间段：" v-if="this.ruleForm.setTime==1" style="margin-top: 20px;width: 480px" prop="timeQuantum">
+        <el-date-picker
+          v-model="value6"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          format="yyyy 年 MM 月 dd 日"
+          value-format="yyyy.MM.dd"
+          @change="logTimeChange()">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="日期：" v-if="this.ruleForm.setTime==2" style="margin-top: 20px;width: 480px" prop="date">
+        <el-date-picker
+          style="margin-left: -100px"
+          v-model="ruleForm.date"
+          type="date"
+          placeholder="选择日期"
+          format="yyyy 年 MM 月 dd 日"
+          value-format="yyyy.MM.dd">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="相隔天数：" v-if="this.ruleForm.setTime==3" style="margin-top: 20px;width: 480px" prop="days">
+        <el-input v-model="ruleForm.days"></el-input>
+      </el-form-item>
+      <el-form-item label="输入具体时间：" v-if="this.ruleForm.setTime!=4" style="margin-top: 20px;width: 480px" prop="specificTime">
+        <el-time-picker
+          style="margin-left: -100px"
+          v-model="ruleForm.specificTime"
+          placeholder="请选择具体时间"
+          value-format="HH:mm:ss">
+        </el-time-picker>
       </el-form-item>
       <el-form-item label="备注：">
         <el-input type="textarea" :rows="4" placeholder="请输入备注" v-model="ruleForm.description"></el-input>
@@ -447,7 +489,6 @@
   export default {
     data() {
       return {
-        modeCode:'short_message',
         productList:[],
         messageClassifyList:[],
         conditionList:[],
@@ -460,7 +501,10 @@
         multipleSelection2:[],
         multipleSelection3:[],
         multipleSelection4:[],
+        value6:'',
         ruleForm: {
+          id:'',
+          messageName:'',
           productId:'',
           productName:'',
           productCode:'',
@@ -468,7 +512,11 @@
           conditionName:'',
           classifyId:'',
           classifyName:'',
-          messageName:'',
+          setTime:'',
+          specificTime:'',
+          timeQuantum:'',
+          date:'',
+          days:'',
         },
         rules: {
           productId: [
@@ -479,6 +527,21 @@
           ],
           classifyId: [
             {required: true, message: '请选择分类', trigger: 'change'}
+          ],
+          setTime: [
+            {required: true, message: '请选择设定日期', trigger: 'change'}
+          ],
+          specificTime: [
+            {required: true, message: '请选择具体时间', trigger: 'change'}
+          ],
+          timeQuantum: [
+            {required: true, message: '请选择时间段', trigger: 'change'}
+          ],
+          date: [
+            {required: true, message: '请选择日期', trigger: 'change'}
+          ],
+          days: [
+            {required: true, message: '请输入相隔天数', trigger: 'blur'}
           ],
         },
         tableData:[],
@@ -788,6 +851,7 @@
               this.ruleForm.messageName=null;
             }
             var param = new FormData();
+            param.append('id', this.ruleForm.id);
             param.append('productId', this.ruleForm.productId);
             param.append('productName', this.ruleForm.productName);
             param.append('productCode', this.ruleForm.productCode);
@@ -798,7 +862,12 @@
             param.append('taskList', JSON.stringify(this.taskList));
             param.append('messageName', this.ruleForm.messageName);
             param.append('description', this.ruleForm.description);
-            param.append('type', 1);
+            param.append('setTime', this.ruleForm.setTime);
+            param.append('timeQuantum', this.ruleForm.timeQuantum);
+            param.append('date', this.ruleForm.date);
+            param.append('days', this.ruleForm.days);
+            param.append('specificTime', this.ruleForm.specificTime);
+            param.append('type', 0);
             axios({
               method: "POST",
               url: "http://"+this.baseUrl+"/message/admin/save/task",
@@ -806,7 +875,7 @@
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
               },
-              data:param,
+              data: param,
             }).then((res) => {
               if (res.data.msgCd == 'ZYCASH-200') {
                 this.$message({
@@ -827,6 +896,14 @@
       //取消按钮
       resetForm(formName) {
         this.$router.go(-1);
+      },
+      //时间筛选
+      logTimeChange(){
+        if(this.value6==''||this.value6==null){
+          this.ruleForm.timeQuantum=null;
+        }else {
+          this.ruleForm.timeQuantum=this.value6.join('-');
+        }
       },
       //详情
       detailProduct(row){
@@ -857,8 +934,41 @@
           }
         })
       },
+      //查询任务详情
+      getTaskById(data){
+        axios({
+          method: "POST",
+          url: "http://"+this.baseUrl+"/message/admin/edit/task",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            taskId: data,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.ruleForm=res.data.body;
+            this.taskList=res.data.body.list;
+            if (res.data.body.timeQuantum != null && res.data.body.timeQuantum != '') {
+              this.value6=res.data.body.timeQuantum.split('-');
+            }
+            console.log(this.value6);
+          } else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //设定日期变化
+      radioChange(val){
+        this.value6='';
+        this.ruleForm.date='';
+        this.ruleForm.days='';
+      }
     },
     mounted: function () {
+      this.id=this.$route.params.id;
+      this.getTaskById(this.id);
       this.getProduct();
       this.getMessageClassifyList();
     },

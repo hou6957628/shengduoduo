@@ -1011,11 +1011,8 @@
       },
     },
     mounted:function () {
-      this.startDateLoan=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
-      this.endDateLoan=this.dateFormatCustom(new Date());
-      this.value5=[this.startDateLoan,this.endDateLoan];
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
+      this.getProductList(1,30,null,null,null,null,null,null,null,null,null,null,null);
     },
     data() {
       //正常减免金额

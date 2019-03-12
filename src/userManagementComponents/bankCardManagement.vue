@@ -67,17 +67,17 @@
         <el-table-column
           prop="name"
           label="姓名"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="registerMobile"
           label="手机号"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="type==0?'储蓄卡':'信用卡'"
           label="类型"
-          width="110">
+          width="100">
           <template slot-scope="scope">
             <el-tag disable-transitions>{{scope.row.type == 0 ? '储蓄卡' : '信用卡'}}</el-tag>
           </template>
@@ -95,12 +95,12 @@
         <el-table-column
           prop="bankName"
           label="开户行"
-          width="200">
+          width="150">
         </el-table-column>
         <el-table-column
           prop="mobile"
           label="预留手机号"
-          width="150">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="purpose"
@@ -125,7 +125,7 @@
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="number"
@@ -232,11 +232,6 @@
           center: true
         }).then(() => {
           this.deleteBankCard(row);
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
         });
       },
       //确认删除银行卡接口
@@ -244,7 +239,6 @@
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/credit/admin/bank/deleteBankCardInfo",
-          // url:"http://localhost:9996/credit/admin/bank/deleteBankCardInfo",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token

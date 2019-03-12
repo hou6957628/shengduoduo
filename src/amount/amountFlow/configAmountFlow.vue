@@ -213,7 +213,7 @@
       //只能输入数字
       numberCheck1(index) {
         var data = this.electDataList.domains[index].actionValue;
-        let boo = new RegExp("^[1-9][0-9]*$").test(data);
+        let boo = new RegExp("^[0-9][0-9]*$").test(data);
         if (!boo) {
           this.$message.error("请输入正整数");
           this.electDataList.domains[index].actionValue='';
