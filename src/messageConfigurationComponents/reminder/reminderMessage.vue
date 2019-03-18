@@ -45,6 +45,7 @@
         :data="tableData"
         @selection-change="handleSelectionChange"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           type="selection"

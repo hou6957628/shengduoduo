@@ -17,8 +17,8 @@
       <el-form-item label="确认密码:" prop="rePassword">
         <el-input v-model="ruleForm.rePassword"></el-input>
       </el-form-item>
-      <el-form-item style="margin-top: 20px" label="角色:" prop="roleName">
-        <el-select v-model="ruleForm.roleName" value-key="id" placeholder="请选择" @change="selectChange1($event,electData1)">
+      <el-form-item style="margin-top: 20px" label="角色:" prop="roleId">
+        <el-select v-model="ruleForm.roleId" value-key="id" placeholder="请选择" @change="selectChange1($event,electData1)">
           <el-option
             v-for="item in electData1"
             :key="item.roleId"
@@ -27,8 +27,8 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item style="margin-top: 20px" label="管理产品:" prop="productName1">
-        <el-select v-model="ruleForm.productName1" value-key="id" multiple placeholder="请选择" @change="selectChange2">
+      <el-form-item style="margin-top: 20px" label="管理产品:" prop="productIds">
+        <el-select v-model="ruleForm.productIds" value-key="id" multiple placeholder="请选择">
           <el-option
             v-for="item in products"
             :key="item.index"
@@ -38,7 +38,7 @@
         </el-select>
       </el-form-item>
       <el-form-item style="margin-top: 20px" label="状态:" prop="enabled">
-        <el-select v-model="ruleForm.enabled" value-key="key" placeholder="请选择" @change="selectChange">
+        <el-select v-model="ruleForm.enabled" value-key="key" placeholder="请选择">
           <el-option
             v-for="item in electData"
             :key="item.key"
@@ -75,7 +75,6 @@
           return callback(new Error('手机号不能为空'));
         } else {
           const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
-          console.log(reg.test(value));
           if (reg.test(value)) {
             callback();
           } else {
@@ -89,28 +88,29 @@
           mobile: '',
           password: '',
           rePassword: '',
+          roleId: '',
           roleName: '',
-          productName1: '',
+          productIds: '',
           enabled: true,
         },
         rules: {
           name: [
-            {required: true, message: '请输入产品说明', trigger: 'change'}
+            {required: true, message: '请输入角色名称', trigger: 'blur'}
           ],
           mobile: [
-            {required: true, message: '请选择是否启用', trigger: 'change'}
+            {required: true, message: '请输入手机号', trigger: 'blur'}
           ],
           password: [
-            {required: true, message: '请选择是否启用', trigger: 'blur' }
+            {required: true, message: '请输入密码', trigger: 'blur' }
           ],
           rePassword: [
             {  required: true, validator: validatePass2, trigger: 'blur' }
           ],
-          roleName: [
-            {required: true, message: '请选择是否启用', trigger: 'blur'}
+          roleId: [
+            {required: true, message: '请选择角色', trigger: 'change'}
           ],
-          productName1: [
-            {required: true, message: '请选择是否启用', trigger: 'blur'}
+          productIds: [
+            {required: true, message: '请选择产品', trigger: 'blur'}
           ],
           enabled: [
             {required: true, message: '请选择是否启用', trigger: 'change'}
@@ -136,17 +136,16 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var param = new FormData();
-            param.append('id', this.id);
             param.append('name', this.ruleForm.name);
             param.append('mobile', this.ruleForm.mobile);
             param.append('password', this.ruleForm.password);
-            param.append('roleId', this.ruleForm.roleName);
+            param.append('roleId', this.ruleForm.roleId);
             param.append('roleName', this.ruleForm.roleName);
+            param.append('productIds', this.ruleForm.productIds);
             param.append('enabled', this.ruleForm.enabled);
-            param.append('products', this.ruleForm.productName1);
             axios({
               method: "POST",
-              url: "http://39.105.217.251:9998/operate/admin/account/save",
+              url: "http://"+this.baseUrl+"/operate/admin/account/save",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -158,7 +157,7 @@
                   message: '添加成功',
                   type: 'success'
                 });
-                this.$router.push('/productProductList');
+                this.$router.push('/accountManagement');
               } else if (res.data.msgCd == 'ZYCASH-1009') {
                 this.$message.error(res.data.msgInfo);
               }
@@ -172,46 +171,17 @@
           }
         });
       },
-      //下拉选择
-      selectChange(row){
-        console.log(this.ruleForm.enabled);
-      },
-      //下拉选择
+      //角色下拉选择
       selectChange1(vId,list){
-        console.log(this.ruleForm.roleName);
-      },
-      //下拉选择
-      selectChange2(){
-        this.$forceUpdate();
-        console.log(this.ruleForm.productName1);
-      },
-      getProductList() {
-        axios({
-          method: "POST",
-          // url:"http://"+this.baseUrl+"/operate/admin/merchant/list",
-          url: "http://39.107.228.38:31999/operate/admin/account/get",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params: {
-            id: this.id,
-          }
-        }).then((res) => {
-          if (res.data.msgCd == 'ZYCASH-200') {
-            this.ruleForm = res.data.body;
-            this.products.push({
-              id:res.data.body.products[0].id,
-              productName:res.data.body.products[0].productName,
-            });
-          } else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        let obj = {};
+        obj = list.find((item)=>{
+          return item.roleId === vId;
+        });
+        this.ruleForm.roleName=obj.roleName;
       },
       //取消按钮
       resetForm(formName) {
-        this.$refs[formName].resetFields();
+        this.$router.go(-1);
       },
       //获取管理产品列表
       getProductList1(){
@@ -224,7 +194,7 @@
           },
           params: {
             pageNum: 1,
-            pageSize: 30,
+            pageSize: 100,
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
@@ -235,14 +205,12 @@
                 productName:this.electData2[i].productName
               });
               this.$forceUpdate();
-              console.log(this.products);
             }
           } else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-
       //获取角色列表
       getRoleList(){
         axios({
@@ -254,12 +222,11 @@
           },
           params: {
             pageNum: 1,
-            pageSize: 30,
+            pageSize: 100,
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
             this.electData1 = res.data.body.list;
-            console.log(this.electData1);
           } else {
             this.$message.error(res.data.msgInfo);
           }

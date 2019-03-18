@@ -3,15 +3,27 @@
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
+    <el-button type="primary" @click="batchUnlock()" slot="append">批量解锁</el-button>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
-        产品名称：
+        产品：
         <el-select v-model="productId" placeholder="请选择" @change="selectChange">
           <el-option
             v-for="item in productListData"
             :key="item.productId"
             :label="item.productName"
             :value="item.productId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        锁定状态：
+        <el-select v-model="locked" placeholder="请选择">
+          <el-option
+            v-for="item in lockedList"
+            :key="item.key"
+            :label="item.Id"
+            :value="item.key">
           </el-option>
         </el-select>
       </el-col>
@@ -50,14 +62,20 @@
                         value-format="yyyy-MM-dd HH:mm:ss"
                         @change="logTimeChange()">
         </el-date-picker>
-      </template>
+      </template>&nbsp;&nbsp;
       <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
         :data="tableData"
+        @selection-change="handleSelectionChange"
         border
+        highlight-current-row
         style="width:98%">
+        <el-table-column
+          type="selection"
+          width="55">
+        </el-table-column>
         <el-table-column
           fixed
           prop="id"
@@ -98,6 +116,16 @@
           prop="updateDate"
           label="最近登录应用时间"
           width="180">
+        </el-table-column>
+        <el-table-column
+          prop="locked"
+          label="是否锁定"
+          width="80">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.locked == true ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.locked == true ? '是' : '否'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
           prop="isActiveApp"
@@ -177,20 +205,20 @@
     methods: {
       //根据产品查询
       selectChange() {
-        this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
+        this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId,this.locked);
       },
       //条件查询
       searchContent(){
-        this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
+        this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId,this.locked);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
+        this.getProductList(this.pageNum,val,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId,this.locked);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
+        this.getProductList(val,this.nowPageSizes,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId,this.locked);
       },
       /**
        * 获取金融产品列表
@@ -203,8 +231,9 @@
        * @param data7 开始时间
        * @param data8 结束时间
        * @param data9 产品id
+       * @param data10 锁定状态
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
         axios({
           method:"GET",
           url:"http://"+this.baseUrl+"/user_center/admin/customer/list",
@@ -222,6 +251,7 @@
             startDate: data7,
             endDate: data8,
             productId: data9,
+            locked: data10,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -278,9 +308,40 @@
           }
         })
       },
+      //全选
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+        let ids = []
+        this.multipleSelection.map((item)=> {
+          ids.push(item.id);
+        })
+        this.ids = ids;
+      },
+      //批量解锁用户
+      batchUnlock(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/customer/batchUnlock",
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization': localStorage.token
+          },
+          data:JSON.stringify(this.ids),
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.getProductList(1,20,null,null,null,null,null,null,null,null);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted:function () {
-      this.getProductList(1,20,null,null,null,null,null,null,null);
+      this.getProductList(1,20,null,null,null,null,null,null,null,null);
       this.getProducts();
     },
     data() {
@@ -327,6 +388,14 @@
         value7:'',
         startTime:'',
         endTime:'',
+        locked:null,
+        lockedList:[
+          {key:null,Id:'所有状态'},
+          {key:1,Id:'已锁定'},
+          {key:0,Id:'未锁定'},
+        ],
+        ids:[],
+        multipleSelection:[]
       }
     }
   }

@@ -50,14 +50,23 @@
                         value-format="yyyy-MM-dd HH:mm:ss"
                         @change="logTimeChange()">
         </el-date-picker>
-      </template>
+      </template>&nbsp;&nbsp;&nbsp;
       <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button type="primary" @click="batchDelTip()" slot="append" icon="el-icon-delete">批量删除</el-button>
     </div>
     <template>
       <el-table
+        ref="multipleTable"
         :data="tableData"
+        @selection-change="handleSelectionChange"
         border
+        highlight-current-row
         style="width: 98%">
+        <el-table-column
+          type="selection"
+          label="批量"
+          width="55">
+        </el-table-column>
         <el-table-column
           fixed
           prop="id"
@@ -108,8 +117,8 @@
           width="110">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.purpose == 1 ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.purpose == 1 ? '是' : '否'}}</el-tag>
+              :type="scope.row.purpose == 1 || scope.row.purpose == 3 || scope.row.purpose == 7? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.purpose == 1 || scope.row.purpose == 3 || scope.row.purpose == 7? '是' : '否'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -196,7 +205,6 @@
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/credit/admin/bank/getBankCardInfoByParams",
-          // url:"http://localhost:9996/credit/admin/bank/getBankCardInfoByParams",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -223,19 +231,43 @@
           }
         })
       },
-      //提示删除银行卡
+      //单独删除银行卡提示
       editProduct(row){
-        this.$confirm('是否确认删除此银行卡?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          center: true
-        }).then(() => {
-          this.deleteBankCard(row);
-        });
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/isHaveUnPaymentList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            customerId:row.customerId,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            if (res.data.body.isHaveUnPaymentList) {
+              this.$alert('此用户有未还完订单，不能进行删卡操作', '提示', {
+                confirmButtonText: '确定',
+                type: 'warning',
+                center: true
+              })
+            } else {
+              this.$confirm('是否确认删除选择的银行卡?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+              }).then(() => {
+                this.deleteBankCard(row.id);
+              });
+            }
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
       },
-      //确认删除银行卡接口
-      deleteBankCard(row){
+      //确认单独删除银行卡接口
+      deleteBankCard(id){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/credit/admin/bank/deleteBankCardInfo",
@@ -244,8 +276,65 @@
             'Authorization': localStorage.token
           },
           params:{
-            id:row.id,
+            id:id,
           }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            this.getProductList(1,30,null,null,null,null,null,null);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //批量删除银行卡提示
+      batchDelTip(row){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/borrowing/isHaveUnPaymentList",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            customerId:this.customerId,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            if (res.data.body.isHaveUnPaymentList) {
+              this.$alert('此用户有未还完订单，不能进行删卡操作', '提示', {
+                confirmButtonText: '确定',
+                type: 'warning',
+                center: true
+              })
+            } else {
+              this.$confirm('是否确认删除选择的银行卡?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+              }).then(() => {
+                this.batchDel();
+              });
+            }
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //确认批量删除银行卡接口
+      batchDel(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/credit/admin/bank/batchDeleteBankCard",
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization': localStorage.token
+          },
+          data:JSON.stringify(this.ids),
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.$message({
@@ -294,6 +383,16 @@
             this.$message.error(res.data.msgInfo);
           }
         })
+      },
+      //全选
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+        let ids = []
+        this.multipleSelection.map((item)=> {
+          ids.push(item.id);
+        })
+        this.ids = ids;
+        this.customerId = this.multipleSelection[0].customerId;
       },
     },
     mounted:function () {
@@ -344,6 +443,8 @@
         value7:'',
         startTime:'',
         endTime:'',
+        ids:[],
+        customerId:'',
       }
     }
   }

@@ -16,6 +16,7 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed

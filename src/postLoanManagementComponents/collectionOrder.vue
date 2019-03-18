@@ -7,7 +7,7 @@
       <div class="listBox" v-for="(item,index) in productList" :class="isactive == index ? 'addclass' : ''" @click="xuan(item,index)" :key="index">{{item.productName}}</div>
     </div>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-col :span="11" style="height: 55px;">
+      <el-col :span="12" style="height: 55px;">
         <template>
           到期时间：
           <el-date-picker style="margin-left: 0"
@@ -36,13 +36,13 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-col :span="10" style="height: 55px;">
+      <el-col :span="7" style="height: 55px;">
         期数：
         <el-select v-model="period" placeholder="请选择">
           <el-option
             v-for="(item ,index) in periodList"
             :key="index"
-            :label="item.value"
+            :label="item.period"
             :value="item.id">
           </el-option>
         </el-select>
@@ -64,23 +64,32 @@
       </el-col>
       <el-col :span="24">
         <h3 style="color: #606266;font-weight: 400;height: 40px">导入催收员</h3>
-        <el-form-item style="margin-left: 0" class="labelList" v-for="(domain, index) in adminIds" :key="index">
+        <template>
+          <el-alert style="padding-left: 0"
+            title="不可重复添加催收员"
+            type="warning">
+          </el-alert>
+        </template>
+        <el-form-item style="margin-left: -20px;margin-top: 20px" class="labelList" v-for="(domain, index) in adminIds" :key="index" prop="" :label="'催收员' + index + '：'">
             <div style="margin-left: -100px">
-            催收员{{index}}： 姓名：
-              <el-select v-model="domain.adminId" @change="changeSelect($event,collectionList,index)">
+             姓名：
+              <el-select v-model="domain.adminId" @change="changeSelect($event,index)">
                 <el-option
-                  v-for="(item,index) in collectionList"
-                  :key="index"
+                  v-for="(item,index2) in collectionList"
+                  :key="index2"
                   :label="item.userName"
-                  :value="item.id">
+                  :value="item.id"
+                  :disabled="item.disabled">
                 </el-option>
-              </el-select>
+              </el-select>&nbsp;&nbsp;&nbsp;
+              <el-button type="info"  @click="removeDomain(index,adminIds)" size="medium">删除</el-button>
             </div>
         </el-form-item>
           <el-button type="primary"  @click="addDomain" size="medium">添加催收员</el-button>
       </el-col>
       <el-col :span="24" style="margin-top: 30px;text-align: center">
-        <el-button type="primary" class="btntn" @click="fendan()">分单</el-button><el-button class="btntn" @click="resetForm('ruleForm')">取消</el-button>
+        <el-button type="primary" class="btntn" @click="fendan('ruleForm')">分单</el-button>
+        <!--<el-button class="btntn" @click="resetForm('ruleForm')">取消</el-button>-->
       </el-col>
     </el-form>
     <el-dialog
@@ -106,6 +115,7 @@
   export default {
     data() {
       return {
+        dis:false,
         productId:null,
         productList:[],
         adminIdsList:[],
@@ -130,41 +140,14 @@
         ids_reminder:[],
         ids_form:'',
         ids_reminder_name:[],
-        periodList:[
-          {id:null,value:'全部期数'},
-          {id:7,value:'7'},
-          {id:14,value:'14'},
-        ],
+        periodList:[],
         reBorrowList:[
           {id:null,value:'全部用户'},
           {id:0,value:'新户'},
           {id:1,value:'老户'},
         ],
-        ruleForm: {
-          merchantName: '',
-          companyAddress: '',
-          companyDetail: null,
-          enabled: null,
-          enabled1: [],
-          enabled2: [],
-          enabled3: [],
-        },
-        rules: {
-          merchantName: [
-            { required: true, message: '请输入商户名称', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-          ],
-          companyAddress: [
-            { required: true, message: '请输入公司地址', trigger: 'blur' },
-            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-          ],
-          companyDetail: [
-            {  required: true, message: '请输入公司描述', trigger: 'change' }
-          ],
-          enabled: [
-            { required: true, message: '请选择商户名称', trigger: 'change' }
-          ]
-        },
+        ruleForm: {},
+        rules: {},
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -193,6 +176,7 @@
           }]
         },
         isactive:0,
+        isCollec:false,//是否有没选择的催收员框
       };
     },
     methods: {
@@ -200,8 +184,13 @@
       xuan(item,index){
         this.isactive = index;
         this.productId = item.productId;
+        this.periodList=[];
+        this.adminIds=[{adminId: null}];
+        this.adminIdsList=[];
+        this.adminNamesList=[];
         this.getCaseNumber(null,null,null,this.startDate,this.startDate,this.productId);
         this.getCollectionList(this.productId);
+        this.getBorrowingProductByProductCode(item.productCode);
       },
       //查询所有产品
       getProductList() {
@@ -218,6 +207,7 @@
             this.productId=this.productList[0].productId;
             this.getCaseNumber(null,null,null,this.startDate,this.startDate,this.productId);
             this.getCollectionList(this.productId);
+            this.getBorrowingProductByProductCode(this.productList[0].productCode);
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -262,6 +252,36 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.$forceUpdate();
             this.collectionList=res.data.body;
+            this.collectionList.forEach(function (item,index) {
+              item.disabled=false;
+            });
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //查询金融产品下的期数
+      getBorrowingProductByProductCode(code) {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/product/getBorrowingProductBymMerchantProductCode",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            productCode: code,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$forceUpdate();
+            if (res.data.body != null) {
+              this.periodList=res.data.body.list;
+            }
+            this.periodList.unshift({id: null, period: '全部期数'});
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -312,28 +332,53 @@
         })
       },
       //封装姓名
-      changeSelect(vId,list,index){
+      changeSelect(vId,index){
+        let index2 = '';
+        this.collectionList.forEach(function (item,index3) {
+          if (item.id==vId) {
+            index2=index3;
+          }
+        });
         this.$forceUpdate();
         let obj = {};
-        obj = list.find((item)=>{
+        obj = this.collectionList.find((item)=>{
           return item.id === vId;
         });
         this.adminIdsList[index]=obj.id;
         this.adminNamesList[index]=obj.userName;
+        this.collectionList[index2].disabled=!this.collectionList[index2].disabled;//最新选择的催收员状态取反
       },
-      //添加数据
+      //添加催收员
       addDomain() {
-        localStorage.num++;
         this.adminIds.push({
           adminId: null,
         });
       },
+      //删除催收员
+      removeDomain(index,list) {
+        let adminId = this.adminIds[index].adminId;
+        let index2 = '';
+        this.collectionList.forEach(function (item,index3) {
+          if (item.id==adminId) {
+            index2=index3;
+          }
+        });
+        list.splice(index, 1);
+        this.isCollec = false;
+        this.collectionList[index2].disabled=false;
+      },
       //分单提醒
       fendan(){
-        if (this.adminIds[0].adminId==null) {
+        let _this = this;
+        this.adminIds.forEach(function (item,index) {
+          if (item.adminId == null) {
+            _this.isCollec = true;
+          }
+        });
+        if (this.isCollec == true) {
           this.$message({
             showClose: true,
-            message: '请选择至少一个催收员',
+            message: '请选择催收员',
             type: 'warning'
           });
         } else if (this.casesNumber==0) {
@@ -343,6 +388,8 @@
             type: 'warning'
           });
         } else {
+          console.log(this.adminIdsList);
+          console.log(this.adminNamesList);
           this.centerDialogVisible=true;
           var data = {
             'channelNames':this.channelNames,
@@ -429,7 +476,6 @@
       this.startDate=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0));
       this.endDate=this.startDate;
       this.value7=[this.startDate,this.endDate];
-      localStorage.num=0;
       this.getProductList();
       this.getChannelList();
     }

@@ -65,6 +65,7 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -93,11 +94,6 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="isBlackList"
-          label="注册时间"
-          width="180">
-        </el-table-column>
-        <el-table-column
           prop="channelName"
           label="主渠道"
           width="120">
@@ -114,11 +110,6 @@
         </el-table-column>
         <el-table-column
           prop="isBlackList"
-          label="最近登录应用时间"
-          width="180">
-        </el-table-column>
-        <el-table-column
-          prop="isBlackList"
           label="是否是黑名单"
           width="110">
           <template slot-scope="scope">
@@ -126,11 +117,6 @@
               :type="'danger'"
               disable-transitions>是</el-tag>
           </template>
-        </el-table-column>
-        <el-table-column
-          prop="overdueNumber"
-          label="逾期次数"
-          width="100">
         </el-table-column>
         <el-table-column
           prop="reBorrow"

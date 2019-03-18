@@ -193,14 +193,14 @@
         <el-form-item label="剩余应还金额:">
           <el-input v-model="ruleForm.partialUnpaidAmount" disabled></el-input>
         </el-form-item>
-        <el-form-item label="部分已还金额:" prop="partialRepayment">
-          <el-input v-model="ruleForm.partialRepayment"></el-input>
+        <el-form-item label="本次部分还款金额:">
+          <el-input v-model="ruleForm.partialRepayment" disabled></el-input>
         </el-form-item>
-        <el-form-item label="减免金额:" prop="partialDiscountAmount">
+        <el-form-item label="本次部分实还金额:" prop="partialRepaymentPayment">
+          <el-input v-model="ruleForm.partialRepaymentPayment"></el-input>
+        </el-form-item>
+        <el-form-item label="本次部分减免金额:" prop="partialDiscountAmount">
           <el-input v-model="ruleForm.partialDiscountAmount"></el-input>
-        </el-form-item>
-        <el-form-item label="实际部分还款:">
-          <el-input v-model="ruleForm.partialRepaymentPayment" disabled></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="partial('ruleForm')">线下部分还款<i class="el-icon-check el-icon--right"></i></el-button>
@@ -230,7 +230,7 @@
           }
         }
       };
-      //部分已还金额
+      //本次部分实还金额
       var validatorNumber2 = (rule, value, callback) => {
         if (value==null) {
           callback(new Error('输入不能为空'));
@@ -238,12 +238,7 @@
           if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
             callback(new Error("请填写正整数"));
           }else{
-            if (this.borrowingForm.partial) {
-              this.ruleForm.partialUnpaidAmount=this.ruleForm.partialUnpaidAmount - value;
-            } else {
-              this.ruleForm.partialUnpaidAmount=this.ruleForm.shouldRepayment - value;
-            }
-            this.ruleForm.partialRepaymentPayment=value - this.ruleForm.partialDiscountAmount;
+            this.ruleForm.partialRepayment=Number(this.ruleForm.partialDiscountAmount) + Number(value);
             callback();
           }
         }
@@ -256,7 +251,7 @@
           if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
             callback(new Error("请填写正整数"));
           }else{
-            this.ruleForm.partialRepaymentPayment=this.ruleForm.partialRepayment - value;
+            this.ruleForm.partialRepayment=Number(this.ruleForm.partialRepaymentPayment) + Number(value);
             callback();
           }
         }
@@ -315,7 +310,7 @@
           repaymentDiscountAmount: [
             { required: true, validator: validatorNumber, trigger: 'blur' }
           ],
-          partialRepayment: [
+          partialRepaymentPayment: [
             { required: true, validator: validatorNumber2, trigger: 'blur' }
           ],
           partialDiscountAmount: [
@@ -655,7 +650,11 @@
         } else {
           this.ruleForm.partialUnpaidAmount=0;
         }
-        //计算部分还款减免金额
+        //本次部分还款金额
+        this.ruleForm.partialRepayment=0;
+        //本次部分实还金额
+        this.ruleForm.partialRepaymentPayment=0;
+        //本次部分减免金额
         this.ruleForm.partialDiscountAmount=0;
       },
       //部分还款

@@ -25,6 +25,7 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -35,12 +36,12 @@
         <el-table-column
           prop="ruleName"
           label="规则名称"
-          width="200">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="classifyName"
           label="规则分类"
-          width="120">
+          width="140">
         </el-table-column>
         <el-table-column
           prop="createDate"

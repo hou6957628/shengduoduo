@@ -35,7 +35,7 @@
       <el-form-item label="请输入内容：" prop="content">
         <el-input type="textarea" :rows="4" v-model="ruleForm.content"></el-input>
       </el-form-item>
-      <el-form-item label="弹窗图：" prop="fileName">
+      <el-form-item label="弹窗图：">
         <a class="upload-file" href="javascript:;">{{ruleForm.fileName}}
           <input type="file" accept="image/png,image/gif,image/jpeg" value="上传弹窗图片" @change="tirggerFile($event)">
         </a>
@@ -135,9 +135,6 @@
         rules: {
           productId: [
             {required: true, message: '请选择产品', trigger: 'change'}
-          ],
-          fileName: [
-            {required: true, message: '请上传弹窗图', trigger: 'change'}
           ],
           name: [
             {required: true, message: '请填写名称', trigger: 'blur'}

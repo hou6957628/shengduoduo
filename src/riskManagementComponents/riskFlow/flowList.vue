@@ -16,12 +16,13 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
           prop="flowCode"
           label="子流程编号"
-          width="200">
+          width="260">
         </el-table-column>
         <el-table-column
           prop="flowName"

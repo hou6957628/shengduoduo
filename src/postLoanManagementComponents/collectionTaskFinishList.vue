@@ -77,7 +77,7 @@
           <el-option
             v-for="item in collectionList"
             :key="item.id"
-            :label="item.roleName"
+            :label="item.userName"
             :value="item.id">
           </el-option>
         </el-select>
@@ -88,6 +88,7 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -292,7 +293,7 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.collectionList=res.data.body;
-            this.collectionList.unshift({id:null,roleName:"全部"});
+            this.collectionList.unshift({id:null,userName:"全部"});
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -330,9 +331,8 @@
        * @param data9 逾期天数
        * @param data10 所属平台
        * @param data11 催收员
-       * @param data12 1-逾期，坏账，逾期已还
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/findCollectionOrder",
@@ -394,7 +394,7 @@
         } else if (status === 12){
           return '坏账'
         } else if (status === 13){
-          return '逾期还款'
+          return '逾期已还'
         }
       },
       //应还金额字段
@@ -458,7 +458,7 @@
     },
     mounted:function () {
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,null,null,null,null,1);
+      this.getProductList(1,30,this.status,null,null,null,null,null,null,null,null);
     },
     data() {
       return {

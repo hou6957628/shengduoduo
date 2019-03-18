@@ -102,12 +102,13 @@
         ref="multipleTable"
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
           prop="orderId"
           label="订单ID"
-          width="250">
+          width="260">
         </el-table-column>
         <el-table-column
           fixed
@@ -273,9 +274,26 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="100">
+          width="450">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            <div v-if="scope.row.status==8 || scope.row.status==9 || scope.row.status==11 || scope.row.status==12">
+              <div v-if="scope.row.partial">
+                <el-button @click="partialTip(scope.row)" type="text" size="medium">部分还款</el-button>
+                <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+              </div>
+              <div v-if="!scope.row.partial">
+                <el-button @click="offlineRepaymentTip(scope.row)" type="text" size="medium">线下还款</el-button>
+                <el-button @click="onlineReliefTip(scope.row)" type="text" size="medium">线上减免</el-button>
+                <el-button @click="separateDeductionTip(scope.row)" type="text" size="medium">单独扣款</el-button>
+                <el-button v-if="scope.row.enableDefer" @click="lineDefferTip(scope.row)" type="text" size="medium">展期还款</el-button>
+                <el-button v-if="!scope.row.enableDefer" @click="lineDefferTip(scope.row)" type="text" size="medium">特例展期</el-button>
+                <el-button @click="partialTip(scope.row)" type="text" size="medium">部分还款</el-button>
+                <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+              </div>
+            </div>
+            <div v-else>
+              <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -292,6 +310,140 @@
         :total="proTotal">
       </el-pagination>
     </div>
+    <!--线下还款结构-->
+    <el-dialog
+      title="线下还款"
+      :visible.sync="centerDialogVisible1"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px" class="demo-ruleForm">
+        <el-form-item label="当前应还总金额:">
+          <el-input v-model="ruleForm.shouldRepayment" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="滞纳金+罚息:">
+          <el-input v-model="ruleForm.interest" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="减免金额:" prop="repaymentDiscountAmount">
+          <el-input v-model="ruleForm.repaymentDiscountAmount"></el-input>
+        </el-form-item>
+        <el-form-item label="实际还款金额:">
+          <el-input v-model="ruleForm.repaymentPaymentAmount" disabled></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="offlineRepayment('ruleForm')">确认平账<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible1 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!--线上减免结构-->
+    <el-dialog
+      title="线上减免"
+      :visible.sync="centerDialogVisible2"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px" class="demo-ruleForm">
+        <el-form-item label="当前应还总金额:" prop="shouldRepayment">
+          <el-input v-model="ruleForm.shouldRepayment" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="滞纳金+罚息:">
+          <el-input v-model="ruleForm.interest" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="减免金额:" prop="repaymentDiscountAmount">
+          <el-input v-model="ruleForm.repaymentDiscountAmount"></el-input>
+        </el-form-item>
+        <el-form-item label="实际还款金额:">
+          <el-input v-model="ruleForm.repaymentPaymentAmount" disabled></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onlineRelief('ruleForm')">确认减免<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible2 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!--单独扣款结构-->
+    <el-dialog
+      title="单独扣款"
+      :visible.sync="centerDialogVisible3"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px" class="demo-ruleForm">
+        <el-form-item label="当前应还总金额:" prop="shouldRepayment">
+          <el-input v-model="ruleForm.shouldRepayment" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="滞纳金+罚息:">
+          <el-input v-model="ruleForm.interest" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="减免金额:" prop="repaymentDiscountAmount">
+          <el-input v-model="ruleForm.repaymentDiscountAmount"></el-input>
+        </el-form-item>
+        <el-form-item label="实际还款金额:">
+          <el-input v-model="ruleForm.repaymentPaymentAmount" disabled></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="separateDeduction('ruleForm')">扣款<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible3 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!--展期还款结构-->
+    <el-dialog
+      title="展期还款"
+      :visible.sync="centerDialogVisible4"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" class="demo-ruleForm">
+        <el-form-item label="当前应还总金额:" prop="shouldRepayment">
+          <el-input v-model="ruleForm.shouldRepayment" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="展期应还金额:">
+          <el-input v-model="ruleForm.repaymentDefer" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="滞纳金+罚息:">
+          <el-input v-model="ruleForm.interest" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="展期减免金额:" prop="repaymentDeferDiscountAmount">
+          <el-input v-model="ruleForm.repaymentDeferDiscountAmount"></el-input>
+        </el-form-item>
+        <el-form-item label="展期实际还款金额:" prop="repaymentDeferPayment">
+          <el-input v-model="ruleForm.repaymentDeferPayment" disabled></el-input>
+        </el-form-item>
+        <el-button style="margin-left: 80px" type="primary" @click="lineDefferDisAmount('ruleForm')">线上展期减免</el-button>
+        <el-button type="primary" @click="offLineDEFER('ruleForm')">线下展期</el-button>
+        <el-button type="primary" @click="lineDeffer('ruleForm')">展期单独扣款</el-button>
+        <el-button type="info"  @click="centerDialogVisible4 = false">取消</el-button>
+      </el-form>
+    </el-dialog>
+    <!--部分还款结构-->
+    <el-dialog
+      title="部分还款"
+      :visible.sync="centerDialogVisible5"
+      width="40%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" class="demo-ruleForm">
+        <el-form-item label="当前应还总金额:">
+          <el-input v-model="ruleForm.shouldRepayment" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="逾期+罚息:">
+          <el-input v-model="ruleForm.interest" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="剩余应还金额:">
+          <el-input v-model="ruleForm.partialUnpaidAmount" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="本次部分还款金额:">
+          <el-input v-model="ruleForm.partialRepayment" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="本次部分实还金额:" prop="partialRepaymentPayment">
+          <el-input v-model="ruleForm.partialRepaymentPayment"></el-input>
+        </el-form-item>
+        <el-form-item label="本次部分减免金额:" prop="partialDiscountAmount">
+          <el-input v-model="ruleForm.partialDiscountAmount"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="partial('ruleForm')">线下部分还款<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible5 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -509,6 +661,390 @@
           this.endDateLoan=endTime;
         }
       },
+      //线下还款弹窗
+      offlineRepaymentTip(row){
+        this.centerDialogVisible1=true;
+        this.orderId=row.orderId;
+        //计算逾期费用 + 罚息
+        this.ruleForm.interest=row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //计算应还金额：还款本金 + 逾期费用 + 罚息
+        this.ruleForm.shouldRepayment=row.repaymentCapital + row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //获取减免金额
+        this.ruleForm.repaymentDiscountAmount=row.repaymentDiscountAmount;
+        //计算实际还款金额
+        this.ruleForm.repaymentPaymentAmount=this.ruleForm.shouldRepayment - this.ruleForm.repaymentDiscountAmount;
+      },
+      //线下还款
+      offlineRepayment(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$confirm('是否确定平账?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              center: true
+            }).then(() => {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/order/admin/borrowing/offlineRepayment",
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization': localStorage.token
+                },
+                params:{
+                  orderId:this.orderId,
+                  discountAmount:this.ruleForm.repaymentDiscountAmount,
+                  paymentAmount: this.ruleForm.repaymentPaymentAmount,
+                }
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.centerDialogVisible1=false;
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                  });
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      //线上减免弹窗
+      onlineReliefTip(row){
+        this.centerDialogVisible2=true;
+        this.orderId=row.orderId;
+        //计算逾期费用 + 罚息
+        this.ruleForm.interest=row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //计算应还金额：还款本金 + 逾期费用 + 罚息
+        this.ruleForm.shouldRepayment=row.repaymentCapital + row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //获取减免金额
+        this.ruleForm.repaymentDiscountAmount=row.repaymentDiscountAmount;
+        //计算实际还款金额
+        this.ruleForm.repaymentPaymentAmount=this.ruleForm.shouldRepayment - this.ruleForm.repaymentDiscountAmount;
+      },
+      //线上减免
+      onlineRelief(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$confirm('是否确定减免?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              center: true
+            }).then(() => {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/order/admin/borrowing/onlineRelief",
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization': localStorage.token
+                },
+                params:{
+                  orderId:this.orderId,
+                  discountAmount:this.ruleForm.repaymentDiscountAmount,
+                  paymentAmount: this.ruleForm.repaymentPaymentAmount,
+                }
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.centerDialogVisible2=false;
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                  });
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      //单独扣款弹窗
+      separateDeductionTip(row){
+        this.centerDialogVisible3=true;
+        this.orderId=row.orderId;
+        //计算逾期费用 + 罚息
+        this.ruleForm.interest=row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //计算应还金额：还款本金 + 逾期费用 + 罚息
+        this.ruleForm.shouldRepayment=row.repaymentCapital + row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //获取减免金额
+        this.ruleForm.repaymentDiscountAmount=row.repaymentDiscountAmount;
+        //计算实际还款金额
+        this.ruleForm.repaymentPaymentAmount=this.ruleForm.shouldRepayment - this.ruleForm.repaymentDiscountAmount;
+      },
+      //单独扣款
+      separateDeduction(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$confirm('是否确定单独扣款?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              center: true
+            }).then(() => {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/order/admin/borrowing/separateDeduction",
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization': localStorage.token
+                },
+                params:{
+                  orderId:this.orderId,
+                  discountAmount:this.ruleForm.repaymentDiscountAmount,
+                  paymentAmount: this.ruleForm.repaymentPaymentAmount,
+                }
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.centerDialogVisible3=false;
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                  });
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      //展期还款弹窗
+      lineDefferTip(row){
+        this.centerDialogVisible4=true;
+        this.orderId=row.orderId;
+        //计算逾期费用 + 罚息
+        this.ruleForm.interest=row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //计算展期应还金额
+        this.ruleForm.repaymentDefer=row.borrowingInterest + row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //计算应还金额：还款本金 + 逾期费用 + 罚息
+        this.ruleForm.shouldRepayment=row.repaymentCapital + row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //获取减免金额
+        this.ruleForm.repaymentDeferDiscountAmount=row.repaymentDeferDiscountAmount;
+        //计算实际还款金额
+        this.ruleForm.repaymentDeferPayment=this.ruleForm.repaymentDefer - this.ruleForm.repaymentDeferDiscountAmount;
+      },
+      //线上展期减免
+      lineDefferDisAmount(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$confirm('是否确定线上展期减免?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              center: true
+            }).then(() => {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/order/admin/borrowing/lineDefferDisAmount",
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization': localStorage.token
+                },
+                params:{
+                  orderId:this.orderId,
+                  discountAmount:this.ruleForm.repaymentDeferDiscountAmount,
+                  paymentAmount: this.ruleForm.repaymentDeferPayment,
+                }
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.centerDialogVisible4=false;
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                  });
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      //线下展期
+      offLineDEFER(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$confirm('是否确定线下展期?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              center: true
+            }).then(() => {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/order/admin/borrowing/offLineDEFER",
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization': localStorage.token
+                },
+                params:{
+                  orderId:this.orderId,
+                  discountAmount:this.ruleForm.repaymentDeferDiscountAmount,
+                  paymentAmount: this.ruleForm.repaymentDeferPayment,
+                }
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.centerDialogVisible4=false;
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                  });
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      //展期单独扣款
+      lineDeffer(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$confirm('是否确定展期单独扣款?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              center: true
+            }).then(() => {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/order/admin/borrowing/lineDeffer",
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization': localStorage.token
+                },
+                params:{
+                  orderId:this.orderId,
+                  discountAmount:this.ruleForm.repaymentDeferDiscountAmount,
+                  paymentAmount: this.ruleForm.repaymentDeferPayment,
+                }
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.centerDialogVisible4=false;
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                  });
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      //部分还款弹窗
+      partialTip(row){
+        this.centerDialogVisible5=true;
+        this.orderId=row.orderId;
+        this.partialFlag=row.partial;
+        //计算逾期费用 + 罚息
+        this.ruleForm.interest=row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //计算应还金额：还款本金 + 逾期费用 + 罚息
+        this.ruleForm.shouldRepayment=row.repaymentCapital + row.repaymentOverdueFee + row.repaymentPenaltyInterest;
+        //剩余应还金额
+        if (row.partial) {
+          this.ruleForm.partialUnpaidAmount=row.partialUnpaidAmount;
+        } else {
+          this.ruleForm.partialUnpaidAmount=0;
+        }
+        //本次部分还款金额
+        this.ruleForm.partialRepayment=0;
+        //本次部分实还金额
+        this.ruleForm.partialRepaymentPayment=0;
+        //本次部分减免金额
+        this.ruleForm.partialDiscountAmount=0;
+      },
+      //部分还款
+      partial(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$confirm('是否确定线下部分还款?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              center: true
+            }).then(() => {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/order/admin/borrowing/partial",
+                headers:{
+                  'Content-Type':'application/json',
+                  'Authorization': localStorage.token
+                },
+                params:{
+                  orderId:this.orderId,
+                  discountAmount:this.ruleForm.partialDiscountAmount,
+                  paymentAmount: this.ruleForm.partialRepaymentPayment,
+                }
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.centerDialogVisible5=false;
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                  });
+                  this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null);
+                }else if(res.data.msgCd=='ZYCASH-1009'){
+                  this.$message.error(res.data.msgInfo);
+                }
+                else {
+                  this.$message.error(res);
+                }
+              })
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
     },
     mounted:function () {
       this.startDateLoan=this.dateFormatCustom(new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0));
@@ -518,6 +1054,58 @@
       this.getProductList(1,30,null,null,null,null,null,null,null,null,this.startDateLoan,this.endDateLoan,null,8,null);
     },
     data() {
+      //正常减免金额
+      var validatorNumber = (rule, value, callback) => {
+        if (value==null) {
+          callback(new Error('输入不能为空'));
+        } else {
+          if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
+            callback(new Error("请填写正整数"));
+          }else{
+            this.ruleForm.repaymentPaymentAmount=this.ruleForm.shouldRepayment - value;
+            callback();
+          }
+        }
+      };
+      //本次部分实还金额
+      var validatorNumber2 = (rule, value, callback) => {
+        if (value==null) {
+          callback(new Error('输入不能为空'));
+        } else {
+          if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
+            callback(new Error("请填写正整数"));
+          }else{
+            this.ruleForm.partialRepayment=Number(this.ruleForm.partialDiscountAmount) + Number(value);
+            callback();
+          }
+        }
+      };
+      //部分减免金额
+      var validatorNumber3 = (rule, value, callback) => {
+        if (value==null) {
+          callback(new Error('输入不能为空'));
+        } else {
+          if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
+            callback(new Error("请填写正整数"));
+          }else{
+            this.ruleForm.partialRepayment=Number(this.ruleForm.partialRepaymentPayment) + Number(value);
+            callback();
+          }
+        }
+      };
+      //展期减免金额
+      var validatorNumber4 = (rule, value, callback) => {
+        if (value==null) {
+          callback(new Error('输入不能为空'));
+        } else {
+          if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
+            callback(new Error("请填写正整数"));
+          }else{
+            this.ruleForm.repaymentDeferPayment=this.ruleForm.repaymentDefer - value;
+            callback();
+          }
+        }
+      };
       return {
         productList:[],
         electData1: [
@@ -586,6 +1174,39 @@
         endDate:null,
         startDateLoan:null,
         endDateLoan:null,
+        centerDialogVisible1:false,
+        centerDialogVisible2:false,
+        centerDialogVisible3:false,
+        centerDialogVisible4:false,
+        centerDialogVisible5:false,
+        orderId:null,
+        ruleForm: {
+          shouldRepayment:null,//当前应还总金额
+          interest:null,//逾期+罚息
+          repaymentDiscountAmount:null,//正常减免金额
+          repaymentPaymentAmount:null,//正常实际还款金额
+          partialRepayment:null,//本次部分还款金额
+          partialUnpaidAmount:null,//部分还款剩余应还金额
+          partialDiscountAmount:null,//本次部分减免金额
+          partialRepaymentPayment:null,//本次部分实还金额
+          repaymentDefer:null,//展期应还金额
+          repaymentDeferDiscountAmount:null,//展期减免金额
+          repaymentDeferPayment:null,//展期实际还款金额
+        },
+        rules: {
+          repaymentDiscountAmount: [
+            { required: true, validator: validatorNumber, trigger: 'blur' }
+          ],
+          partialRepaymentPayment: [
+            { required: true, validator: validatorNumber2, trigger: 'blur' }
+          ],
+          partialDiscountAmount: [
+            { required: true, validator: validatorNumber3, trigger: 'blur' }
+          ],
+          repaymentDeferDiscountAmount: [
+            { required: true, validator: validatorNumber4, trigger: 'blur' }
+          ],
+        }
       }
     }
   }

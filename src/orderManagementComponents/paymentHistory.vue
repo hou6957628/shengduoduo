@@ -60,12 +60,13 @@
         ref="multipleTable"
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
           prop="orderId"
           label="订单ID"
-          width="250">
+          width="260">
         </el-table-column>
         <el-table-column
           fixed

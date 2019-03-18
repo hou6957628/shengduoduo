@@ -446,7 +446,7 @@
             this.electDataList.domains[this.count].operationalSymbolName='';
             this.electDataList.domains[this.count].symbolCode1='';
             this.electDataList.domains[this.count].symbolCode2='';
-            this.electDataList.domains[this.count].fieldValue='';
+            // this.electDataList.domains[this.count].fieldValue='';
             this.electDataList.domains[this.count].fieldValue1='';
             this.electDataList.domains[this.count].fieldValue2='';
             var type=res.data.body.rcField.dataType - 1;

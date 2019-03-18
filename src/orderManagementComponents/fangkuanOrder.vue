@@ -5,6 +5,7 @@
       <el-table
         :data="count"
         border
+        highlight-current-row
         style="width: 98%;margin-top: 20px;">
         <el-table-column
           fixed

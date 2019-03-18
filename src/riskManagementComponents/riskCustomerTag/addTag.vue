@@ -128,7 +128,6 @@
                 </el-option>
               </el-select>
               <el-input type="hidden" style="width: 1px;" v-model="domain.fieldDataType+1"></el-input>
-              <!--<el-input type="hidden" style="width: 1px;">{{domain.fieldValue=domain.fieldValue}}</el-input>-->
             </div>
             <!--时间类型type=4：两个输入框-->
             <div class="noDisplay" :class="['type'+index]">
@@ -439,7 +438,6 @@
             this.electDataList.domains[this.count].fieldType=res.data.body.rcField.fieldType;
             this.electDataList.domains[this.count].fieldDataType=res.data.body.rcField.dataType;
             this.electDataList.domains[this.count].selectValues=res.data.body.selectValues;
-            console.log(this.electDataList.domains[this.count].selectValues);
             $(".type"+this.count).css("display","none");
             $(".type"+this.count).eq(type).css("display","inline-block");
             this.$forceUpdate();
@@ -502,6 +500,7 @@
         this.electDataList.domains[index].operationalSymbolName=obj.Id;
       },
       changeSelect3(data){
+        console,log(data);
         this.$forceUpdate();
       },
       //添加标签

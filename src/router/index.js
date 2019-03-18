@@ -111,6 +111,7 @@ import collectionTaskList from '@/postLoanManagementComponents/collectionTaskLis
 import collectionTaskFinishList from '@/postLoanManagementComponents/collectionTaskFinishList'
 //通讯录、紧急联系人
 import addressList from '@/postLoanManagementComponents/addressList'
+import addressList1 from '@/postLoanManagementComponents/addressList1'
 import addCollectRecord2 from '@/orderManagementComponents/addCollectRecord2'
 import collectRecordList from '@/orderManagementComponents/collectRecordList'
 import collectRecordDetail from '@/orderManagementComponents/collectRecordDetail'
@@ -130,6 +131,11 @@ import editRole from '@/privilegeManagementComponents/editRole'
 import editCollectionPerson from '@/postLoanManagementComponents/editCollectionPerson'
 
 import approvalCenter from '@/orderManagementComponents/approvalCenter'
+//渠道统计、账户、充值
+import channelCount from '@/channelManagementComponents/channelCount'
+import accountCenter from '@/channelManagementComponents/accountCenter'
+import rechargeCenter from '@/channelManagementComponents/rechargeCenter'
+
 //订单区域-待审批
 import pendingApproval from '@/orderManagementComponents/pendingApproval'
 import orderDetail from '@/orderManagementComponents/orderDetail'
@@ -233,6 +239,7 @@ import triggerMessage from '@/messageManagementComponents/triggerMessage'
 import editTriggerMessage from '@/messageManagementComponents/editTriggerMessage'
 import editNoticeMessage from '@/messageManagementComponents/editNoticeMessage'
 import editMarketingMessage from '@/messageManagementComponents/editMarketingMessage'
+import taskDetail from '@/messageManagementComponents/taskDetail'
 
 
 Vue.use(Router);
@@ -270,8 +277,10 @@ axios.interceptors.response.use(
     return Promise.reject(error.response)   // 返回接口返回的错误信息
   });
 
+//测试环境
 Vue.prototype.baseUrl="39.105.217.251:31999";
-Vue.prototype.baseIp="http://39.105.217.251";
+//正式环境
+// Vue.prototype.baseUrl="60.205.216.141";
 //消息配置
 // Vue.prototype.baseUrl="localhost:9990";
 //风控
@@ -685,7 +694,7 @@ const vueRouter = new Router({
         {
           path:"/huankuanOrder6/:id",
           component:huankuanOrder6
-        }
+        },
       ],
       //重定向
       redirect: '/jibenOrder6/:id/:orderId',
@@ -733,7 +742,7 @@ const vueRouter = new Router({
         {
           path:"/huankuanOrder7/:id",
           component:huankuanOrder7
-        }
+        },
       ],
       //重定向
       redirect: '/jibenOrder7/:id/:orderId',
@@ -850,6 +859,14 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: addressList
+    },
+    {
+      path: '/addressList1/:id',
+      name: 'addressList1',
+      meta: {
+        requireAuth: true
+      },
+      component: addressList1
     },
     {
       path: '/addCollectRecord2/:orderId',
@@ -1096,7 +1113,6 @@ const vueRouter = new Router({
       },
       component: amountFlowLogList
     },
-
     {
       path: '/channelStatistics',
       name: 'channelStatistics',
@@ -1104,6 +1120,30 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: channelStatistics
+    },
+    {
+      path: '/channelCount',
+      name: 'channelCount',
+      meta: {
+        requireAuth: true
+      },
+      component: channelCount
+    },
+    {
+      path: '/accountCenter',
+      name: 'accountCenter',
+      meta: {
+        requireAuth: true
+      },
+      component: accountCenter
+    },
+    {
+      path: '/rechargeCenter',
+      name: 'rechargeCenter',
+      meta: {
+        requireAuth: true
+      },
+      component: rechargeCenter
     },
     {
       path: '/editAccount/:id',
@@ -1236,7 +1276,7 @@ const vueRouter = new Router({
         {
           path:"/huankuanOrder1/:id",
           component:huankuanOrder1
-        }
+        },
       ],
       //重定向
       redirect: '/jibenOrder1/:id/:orderId',
@@ -1284,7 +1324,7 @@ const vueRouter = new Router({
         {
           path:"/huankuanOrder2/:id",
           component:huankuanOrder2
-        }
+        },
       ],
       //重定向
       redirect: '/jibenOrder2/:id/:orderId',
@@ -1340,7 +1380,7 @@ const vueRouter = new Router({
         {
           path:"/huankuanOrder4/:id",
           component:huankuanOrder4
-        }
+        },
       ],
       //重定向
       redirect: '/jibenOrder4/:id/:orderId',
@@ -1388,7 +1428,7 @@ const vueRouter = new Router({
         {
           path:"/huankuanOrder5/:id",
           component:huankuanOrder5
-        }
+        },
       ],
       //重定向
       redirect: '/jibenOrder5/:id/:orderId',
@@ -1644,6 +1684,14 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: editMarketingMessage
+    },
+    {
+      path: '/taskDetail/:id/:type',
+      name: 'taskDetail',
+      meta: {
+        requireAuth: true
+      },
+      component: taskDetail
     },
 ]
 

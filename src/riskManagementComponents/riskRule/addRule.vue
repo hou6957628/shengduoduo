@@ -116,7 +116,7 @@
                   :value="item.key">
                 </el-option>
               </el-select>
-              <el-select v-model="domain.fieldValue" multiple style="width: 500px">
+              <el-select v-model="domain.fieldValue" multiple style="width: 500px" @change="changeSelect3(domain.selectValues)">
                 <el-option
                   v-for="item in domain.selectValues"
                   :key="item.value"
@@ -420,7 +420,7 @@
             this.electDataList.domains[this.count].symbolName='';
             this.electDataList.domains[this.count].symbolCode1='';
             this.electDataList.domains[this.count].symbolCode2='';
-            this.electDataList.domains[this.count].fieldValue='';
+            // this.electDataList.domains[this.count].fieldValue=null;
             this.electDataList.domains[this.count].fieldValue1='';
             this.electDataList.domains[this.count].fieldValue2='';
             var type=res.data.body.rcField.dataType - 1;
@@ -488,6 +488,9 @@
           return item.key === vId;
         });
         this.electDataList.domains[index].symbolName=obj.Id;
+      },
+      changeSelect3(data){
+        this.$forceUpdate();
       },
       //添加规则分类
       addTag(){
@@ -613,7 +616,7 @@
         ],
         electDataList: {
           domains: [{
-            itemAlias: "A",fieldValue:'',fieldCode:'',fieldName:'',fieldType:'',fieldDataType:'',selectValues: [ ],
+            itemAlias: "A",fieldValue:null,fieldCode:'',fieldName:'',fieldType:'',fieldDataType:'',selectValues: [ ],
             symbolCode: null,symbolName: '',symbolCode1: '',fieldValue1:'',symbolCode2: '',fieldValue2:'',ruleAction:null,
           }]
         },

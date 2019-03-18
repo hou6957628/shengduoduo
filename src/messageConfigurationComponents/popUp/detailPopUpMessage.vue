@@ -12,7 +12,8 @@
       <p><span>内容：</span>{{ruleForm.content}}</p>
       <p><span>位置：</span>{{ruleForm.positionName}}</p>
       <p><span>次数：</span>{{ruleForm.popupCount}}</p>
-      <p><span>弹窗图：</span><img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/message/admin/message/down?file='+ruleForm.picture+'&productCode='+ruleForm.productCode"/></p>
+      <p><span>弹窗图：</span><img style="height: 108px;width: 170px"
+                               :src="'http://'+this.baseUrl + '/message/admin/message/down?file='+ruleForm.picture+'&productCode='+ruleForm.productCode"/></p>
     </div>
     <el-button-group class="btGrop">
       <el-button @click="resetForm()" class="guan">返回</el-button>

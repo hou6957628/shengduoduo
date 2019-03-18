@@ -16,12 +16,14 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
           prop="id"
           label="编号"
-          width="150">
+          width="80">
         </el-table-column>
         <el-table-column
           prop="name"
@@ -34,14 +36,15 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="roleName"
+          prop="roles"
           label="群组角色"
-          width="150">
+          :formatter="rolesFormatter"
+          width="250">
         </el-table-column>
         <el-table-column
           prop="products"
           label="产品选择"
-          width="150"
+          width="250"
           :formatter="getAuto">
         </el-table-column>
         <el-table-column
@@ -58,10 +61,10 @@
           label="操作"
           width="150">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
+            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
+            <el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -86,27 +89,18 @@
   import axios from 'axios'
   export default {
     methods: {
-      //查询金融产品
+      //条件查询
       searchContent(data){
-        if(data==""){
-          this.getProductList(1,30,null,null);
-          // this.$message.error('搜索内容不可以为空');
-        }else {
-          this.getProductList(1,30,data,this.finProduct);
-          console.log(data);
-        }
+        this.getProductList(1,30,this.finProduct);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.finProduct,this.finProduct);
         this.nowPageSizes=val;
+        this.getProductList(this.pageNum,val,this.finProduct);
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.finProduct,this.finProduct);
+        this.getProductList(val,this.nowPageSizes,this.finProduct);
       },
       //创建角色
       toAddProduct(){
@@ -118,13 +112,11 @@
        * 获取金融产品列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 产品名称
-       * @param data4 产品编号
+       * @param data3 名称编号
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2,data3){
         axios({
           method:"POST",
-          // url:"http://"+this.baseUrl+"/operate/admin/Product/list",
           url:"http://"+this.baseUrl+"/operate/admin/account/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
@@ -133,6 +125,7 @@
           params:{
             pageNum: data1,
             pageSize: data2,
+            mobile: data3,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -140,7 +133,6 @@
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
             this.pageNum=res.data.body.pageNum;
-            console.log(this.tableData);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -158,8 +150,7 @@
       deleteProduct(row){
         axios({
           method:"post",
-          // url:"http://"+this.baseUrl+"/super/admin/product/obtainedProduct",
-          url:"http://"+this.baseUrl+"/operate/admin/product/delOrStopProduct",
+          url:"http://"+this.baseUrl+"/operate/admin/product/deleteOrStop",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -185,15 +176,39 @@
       obtainedProduct(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/operate/admin/product/delOrStopProduct",
+          url:"http://"+this.baseUrl+"/operate/admin/account/deleteOrStop",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
             id: row.id,
-            status: 0,
-            enabled: row.enabled,
+            stopTag: !row.enabled,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.getProductList(1,30);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //删除
+      deleteProduct(row){
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/operate/admin/account/deleteOrStop",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id: row.id,
+            deltetTag: true,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -213,13 +228,19 @@
         for(var i=0;i<row.products.length;i++){
           roleName.push(row.products[i].productName)
         }
-        return roleName.join(" ");
-
+        return roleName.join("、");
+      },
+      //过滤角色字段
+      rolesFormatter(row){
+        var roleName=[];
+        for(var i=0;i<row.roles.length;i++){
+          roleName.push(row.roles[i].roleName)
+        }
+        return roleName.join("、");
       },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      this.getProductList(1,30);
+      this.getProductList(1,30,null);
     },
     data() {
       return {

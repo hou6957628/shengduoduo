@@ -117,6 +117,7 @@
               :data="tableData"
               @selection-change="handleSelectionChange1"
               border
+              highlight-current-row
               style="width: 100%">
               <el-table-column
                 type="selection"
@@ -184,6 +185,7 @@
               :data="tableData"
               @selection-change="handleSelectionChange2"
               border
+              highlight-current-row
               style="width: 100%">
               <el-table-column
                 type="selection"
@@ -251,6 +253,7 @@
               :data="tableData"
               @selection-change="handleSelectionChange3"
               border
+              highlight-current-row
               style="width: 100%">
               <el-table-column
                 type="selection"
@@ -318,6 +321,7 @@
               :data="tableData"
               @selection-change="handleSelectionChange4"
               border
+              highlight-current-row
               style="width: 100%">
               <el-table-column
                 type="selection"
@@ -391,7 +395,8 @@
           <p><span>分类：</span>{{msg.classifyName}}</p>
           <p><span>备注：</span>{{msg.description}}</p>
           <p><span>内容：</span>{{msg.content}}</p>
-          <p><span>弹窗图：</span><img style="height: 80px;width: 170px" :src="'http://39.105.217.251:31999/message/admin/message/down?file='+msg.picture+'&productCode='+msg.productCode"/></p>
+          <p><span>弹窗图：</span><img style="height: 80px;width: 170px"
+                                   :src="'http://'+this.baseUrl + '/message/admin/message/down?file='+ruleForm.picture+'&productCode='+ruleForm.productCode"/></p>
           <p style="margin-top: 60px"><span>位置：</span>{{msg.positionName}}</p>
         </div>
         <el-button type="info" style="margin-left: 250px;margin-top: 10px" @click="centerDialogVisible6=false;">返回</el-button>
@@ -412,7 +417,8 @@
           <p><span>标题：</span>{{msg.title}}</p>
           <p><span>备注：</span>{{msg.description}}</p>
           <p><span>内容：</span>{{msg.content}}</p>
-          <p><span>LOGO：</span><img style="height: 80px;width: 170px" :src="'http://39.105.217.251:31999/message/admin/message/down?file='+msg.picture+'&productCode='+msg.productCode"/></p>
+          <p><span>LOGO：</span><img style="height: 80px;width: 170px"
+                                    :src="'http://'+this.baseUrl + '/message/admin/message/down?file='+msg.picture+'&productCode='+msg.productCode"/></p>
         </div>
         <el-button type="info" style="margin-left: 250px;margin-top: 60px" @click="centerDialogVisible7=false;">返回</el-button>
       </template>
@@ -431,7 +437,8 @@
           <p><span>分类：</span>{{msg.classifyName}}</p>
           <p><span>备注：</span>{{msg.description}}</p>
           <p><span>内容：</span>{{msg.content}}</p>
-          <p><span>ICON图：</span><img style="height: 80px;width: 170px" :src="'http://39.105.217.251:31999/message/admin/message/down?file='+msg.picture+'&productCode='+msg.productCode"/></p>
+          <p><span>ICON图：</span><img style="height: 80px;width: 170px"
+                                     :src="'http://'+this.baseUrl + '/message/admin/message/down?file='+msg.picture+'&productCode='+msg.productCode"/></p>
         </div>
         <el-button type="info" style="margin-left: 250px;margin-top: 60px" @click="centerDialogVisible8=false;">返回</el-button>
       </template>

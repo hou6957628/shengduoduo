@@ -10,6 +10,7 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -122,6 +123,7 @@
       },
       //添加催收标签
       toTag(){
+        this.ruleForm.callContent='';
         this.centerDialogVisible=true;
       },
       //添加催收标签-保存按钮

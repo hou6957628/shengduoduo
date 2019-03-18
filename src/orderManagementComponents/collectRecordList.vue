@@ -6,6 +6,7 @@
       <el-table
         :data="collection"
         border
+        highlight-current-row
         style="width: 98%;margin-top: 20px;">
         <el-table-column
           fixed

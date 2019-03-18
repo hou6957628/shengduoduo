@@ -29,7 +29,7 @@
         <el-input type="textarea" v-model="ruleForm.memo"></el-input>
       </el-form-item>
       <el-form-item v-for="(domain, index) in picList" label="图片:" :key="index">
-        <img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/credit/api/down?file='+domain.collectRecordImage"/>
+        <img style="height: 108px;width: 170px" :src="'http://'+baseUrl + '/credit/api/down?file='+domain.collectRecordImage"/>
       </el-form-item>
       <el-form-item label="上传图片:" v-for="(domain, index) in fileList" :key="index">
         <a class="upload-file" href="javascript:;" v-model="domain.filename">{{domain.image}}<input type="file"
@@ -127,7 +127,7 @@
         obj = list.find((item)=>{
           return item.id === vId;
         });
-        this.ruleForm.collectionLabelName=obj.labelName;
+        this.ruleForm.collectionLabelName=obj.labelContent;
       },
       //封装名称
       changeSelect2(vId,list){
@@ -135,7 +135,7 @@
         obj = list.find((item)=>{
           return item.id === vId;
         });
-        this.ruleForm.callTypeName=obj.callName;
+        this.ruleForm.callTypeName=obj.callContent;
       },
       //选择图片
       tirggerFile($event,index){

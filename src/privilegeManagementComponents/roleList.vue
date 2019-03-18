@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/roleList' }">角色列表</el-breadcrumb-item>
+      <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建角色<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
@@ -10,6 +10,7 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -20,7 +21,7 @@
         <el-table-column
           prop="roleName"
           label="角色名称"
-          width="120">
+          width="150">
         </el-table-column>
         <el-table-column
           prop="description"
@@ -31,38 +32,36 @@
           prop="authorities"
           label="角色权限"
           width="300"
-          :formatter="getAuto"
-        >
+          :formatter="getAuto">
         </el-table-column>
         <el-table-column
-          prop="enabled"
+          prop="enable"
           label="状态"
           width="80">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.enabled == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.enabled == true ? '启用' : '停用'}}</el-tag>
+              :type="scope.row.enable == true ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.enable == true ? '启用' : '停用'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="160">
         </el-table-column>
         <el-table-column
           prop="updateDate"
           label="更新时间"
-          width="200">
+          width="160">
         </el-table-column>
-
         <el-table-column
           label="操作"
           width="180">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">停用</el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="small">启用</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="text" size="small">删除</el-button>
+            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button v-if="scope.row.enable" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="!scope.row.enable" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
+            <el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -115,7 +114,6 @@
       getProductList(data1,data2,data3,data4){
         axios({
           method:"POST",
-          // url:"http://"+this.baseUrl+"/operate/admin/Product/list",
           url:"http://"+this.baseUrl+"/operate/admin/role/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
@@ -131,7 +129,6 @@
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
             this.pageNum=res.data.body.pageNum;
-            console.log(this.tableData);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -204,7 +201,7 @@
         for(var i=0;i<row.authorities.length;i++){
           roleName.push(row.authorities[i].authorityName)
         }
-        return roleName.join(" ");
+        return roleName.join("、");
 
       },
     },

@@ -205,7 +205,7 @@
       </el-form>
     </el-dialog>
     <router-view/>
-    <h3>催收记录</h3>
+    <h3>添加催收记录</h3>
     <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
       <el-form-item label="用户类型:" prop="collectionLabelId">
         <el-select v-model="ruleForm2.collectionLabelId" placeholder="请选择" @change="changeSelect1($event,labelList)">
@@ -241,7 +241,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
-        <el-button type="info" @click="resetForm('ruleForm2')">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        <!--<el-button type="info" @click="resetForm('ruleForm2')">取消<i class="el-icon-close el-icon&#45;&#45;right"></i></el-button>-->
       </el-form-item>
     </el-form>
   </div>
@@ -427,7 +427,7 @@
         obj = list.find((item)=>{
           return item.id === vId;
         });
-        this.ruleForm2.collectionLabelName=obj.labelName;
+        this.ruleForm2.collectionLabelName=obj.labelContent;
       },
       //封装名称
       changeSelect2(vId,list){
@@ -435,7 +435,7 @@
         obj = list.find((item)=>{
           return item.id === vId;
         });
-        this.ruleForm2.callTypeName=obj.callName;
+        this.ruleForm2.callTypeName=obj.callContent;
       },
       //选择图片
       tirggerFile($event,index){
@@ -454,6 +454,7 @@
       },
       //提交按钮
       submitForm(formName) {
+        console.log(this.ruleForm2);
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var param = new FormData();  // 创建form对象
@@ -488,7 +489,8 @@
                   message: '添加成功',
                   type: 'success'
                 });
-                this.$router.push('/afterLoanNoRepay');
+                this.ruleForm2.collectionLabelId='';
+                this.ruleForm2.callTypeId='';
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }

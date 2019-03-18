@@ -35,17 +35,18 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
           prop="id"
           label="ID"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="cusName"
           label="姓名"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="mobile"
@@ -55,12 +56,12 @@
         <el-table-column
           prop="flowName"
           label="子流程名称"
-          width="250">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="itemName"
           label="类型"
-          width="100">
+          width="150">
         </el-table-column>
         <el-table-column
           prop="memo"

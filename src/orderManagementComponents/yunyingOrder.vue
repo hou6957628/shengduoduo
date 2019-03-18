@@ -26,6 +26,7 @@
               <el-table
                 :data="tableDataFrom"
                 border
+                highlight-current-row
                 @sort-change="changeTableSortFrom"
                 style="width: 100%;margin-top: 20px;">
                 <el-table-column
@@ -89,6 +90,7 @@
               <el-table
                 :data="tableDataTo"
                 border
+                highlight-current-row
                 @sort-change="changeTableSortTo"
                 style="width: 100%;margin-top: 20px;">
                 <el-table-column

@@ -91,8 +91,7 @@
       getProductList() {
         axios({
           method: "POST",
-          // url:"http://"+this.baseUrl+"/operate/admin/merchant/list",
-          url: "http://39.107.228.38:31999/operate/admin/merchant/list",
+          url:"http://"+this.baseUrl+"/operate/admin/merchant/list",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token

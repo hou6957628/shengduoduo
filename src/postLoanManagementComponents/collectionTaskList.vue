@@ -88,7 +88,7 @@
           <el-option
             v-for="item in collectionList"
             :key="item.id"
-            :label="item.roleName"
+            :label="item.userName"
             :value="item.id">
           </el-option>
         </el-select>
@@ -99,6 +99,7 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -173,11 +174,6 @@
           prop="repaymentDefer"
           label="展期还款金额"
           width="100">
-        </el-table-column>
-        <el-table-column
-          prop="reBorrow"
-          label="展期次数"
-          width="80">
         </el-table-column>
         <el-table-column
           prop="productName"
@@ -324,7 +320,7 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.collectionList=res.data.body;
-            this.collectionList.unshift({id:null,roleName:"全部"});
+            this.collectionList.unshift({id:null,userName:"全部"});
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -501,8 +497,9 @@
       //通讯录
       mailList(row){
         let id=row.customerId;
+        let orderId=row.orderId;
         this.$router.push({
-          path: `/addressList/${id}`,
+          path: `/addressList/${id}/${orderId}`,
         });
       }
     },

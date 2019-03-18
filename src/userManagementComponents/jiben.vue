@@ -2,9 +2,15 @@
   <div>
     <div style="width: 1000px;margin: 0 auto;">
     <el-row style="text-align: center;margin: 0 auto">
-      <el-col style="width: 200px;margin-left: 5px" :span="4"><img class="ID1"  style="height: auto;width: 200px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.front"/></el-col>
-      <el-col style="width: 200px;margin-left: 50px" :span="4"><img class="ID2" style="height: auto;width: 200px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idCard.back"/></el-col>
-      <el-col style="width: 200px;margin-left: 50px" :span="4"><img class="Face" style="height: auto;width: 200px" :src="'http://39.105.217.251:31999/credit/api/down?file='+this.idFace.image"/></el-col>
+      <el-col style="width: 200px;margin-left: 5px" :span="4">
+        <img class="ID1"  style="height: auto;width: 200px" :src="'http://'+this.baseUrl + '/credit/api/down?file='+this.idCard.front"/>
+      </el-col>
+      <el-col style="width: 200px;margin-left: 50px" :span="4">
+        <img class="ID2" style="height: auto;width: 200px" :src="'http://'+this.baseUrl + '/credit/api/down?file='+this.idCard.back"/>
+      </el-col>
+      <el-col style="width: 200px;margin-left: 50px" :span="4">
+        <img class="Face" style="height: auto;width: 200px" :src="'http://'+this.baseUrl + '/credit/api/down?file='+this.idFace.image"/>
+      </el-col>
     </el-row>
     <el-row style="text-align: center;margin: 0 auto">
     <el-col :span="4" style="width: 200px;text-align: center;margin-left: 5px;z-index: 1">身份证正面</el-col>
@@ -114,7 +120,7 @@
       addressList(){
         let id=this.id;
         this.$router.push({
-          path: `/addressList/${id}`,
+          path: `/addressList1/${id}`,
         });
       },
       //取消按钮

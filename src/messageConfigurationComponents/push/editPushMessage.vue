@@ -39,7 +39,7 @@
         <el-input type="textarea" :rows="4" v-model="ruleForm.content"></el-input>
       </el-form-item>
       <el-form-item label="已有LOGO：" v-if="ruleForm.picture">
-        <img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/message/admin/message/down?file='+ruleForm.picture+'&productCode='+ruleForm.productCode"/>
+        <img style="height: 108px;width: 170px" :src="'http://'+this.baseUrl + '/message/admin/message/down?file='+ruleForm.picture+'&productCode='+ruleForm.productCode"/>
       </el-form-item>
       <el-form-item label="点此修改LOGO：">
         <a class="upload-file" href="javascript:;">{{ruleForm.fileName}}

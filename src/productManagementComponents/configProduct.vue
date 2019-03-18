@@ -74,14 +74,15 @@
                   :value="item.key">
                 </el-option>
               </el-select>
-              <el-select v-if="index==5" v-model="item.valueId" placeholder="请选择" @change="changeSelect3($event,index,selectList)">
-                <el-option
-                  v-for="item in selectList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-input type="text" v-if="index==5" v-model="item.value"></el-input>
+              <!--<el-select v-if="index==5" v-model="item.valueId" placeholder="请选择" @change="changeSelect3($event,index,selectList)">-->
+                <!--<el-option-->
+                  <!--v-for="item in selectList"-->
+                  <!--:key="item.id"-->
+                  <!--:label="item.name"-->
+                  <!--:value="item.id">-->
+                <!--</el-option>-->
+              <!--</el-select>-->
               <el-select v-if="index==6" v-model="item.valueId" placeholder="请选择">
                 <el-option
                   v-for="item in enableList"

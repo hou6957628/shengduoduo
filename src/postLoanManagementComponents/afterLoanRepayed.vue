@@ -109,12 +109,13 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-button id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -183,6 +184,7 @@
         <el-table-column
           prop="loanNumber"
           label="应还金额"
+          :formatter="shouldFormatter"
           width="110">
         </el-table-column>
         <el-table-column
@@ -199,6 +201,11 @@
           prop="defer"
           label="是否展期"
           width="110">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.defer == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.defer == 1 ? '是' : '否'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
           prop="repaymentDefer"
@@ -209,6 +216,11 @@
           prop="partial"
           label="是否是部分还款"
           width="110">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.partial == 1 ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.partial == 1 ? '是' : '否'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
           prop="partialRepayment"
@@ -433,6 +445,13 @@
         } else{
           return '---'
         }
+      },
+      //应还金额字段
+      shouldFormatter(row){
+        let repaymentCapital = row.repaymentCapital;
+        let repaymentOverdueFee = row.repaymentOverdueFee;
+        let repaymentPenaltyInterest = row.repaymentPenaltyInterest;
+        return repaymentCapital + repaymentOverdueFee + repaymentPenaltyInterest;
       },
       //时间筛选
       logTimeChange(){

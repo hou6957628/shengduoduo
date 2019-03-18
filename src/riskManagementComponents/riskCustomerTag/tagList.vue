@@ -25,6 +25,7 @@
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -35,7 +36,7 @@
         <el-table-column
           prop="tagName"
           label="标签名称"
-          width="200">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="tagTypeName"
@@ -45,12 +46,12 @@
         <el-table-column
           prop="createDate"
           label="创建时间"
-          width="200">
+          width="160">
         </el-table-column>
         <el-table-column
           prop="updateDate"
           label="更新时间"
-          width="200">
+          width="160">
         </el-table-column>
         <el-table-column
           prop="creator"

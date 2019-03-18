@@ -10,7 +10,8 @@
       <p><span>分类：</span>{{ruleForm.classifyName}}</p>
       <p><span>备注：</span>{{ruleForm.description}}</p>
       <p><span>内容：</span>{{ruleForm.content}}</p>
-      <p><span>ICON图：</span><img style="height: 108px;width: 170px" :src="'http://39.105.217.251:31999/message/admin/message/down?file='+ruleForm.picture+'&productCode='+ruleForm.productCode"/></p>
+      <p><span>ICON图：</span><img style="height: 108px;width: 170px"
+                                 :src="'http://'+this.baseUrl + '/message/admin/message/down?file='+ruleForm.picture+'&productCode='+ruleForm.productCode"/></p>
     </div>
     <el-button-group class="btGrop">
       <el-button @click="resetForm()" class="guan">返回</el-button>

@@ -16,6 +16,17 @@
         </el-select>
       </el-col>
       <el-col :span="6" style="height: 55px;">
+        状态：
+        <el-select v-model="status" placeholder="请选择">
+          <el-option
+            v-for="item in electData1"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
         新老户：
         <el-select v-model="reBorrow" placeholder="请选择">
           <el-option
@@ -45,7 +56,7 @@
       <el-col :span="6" style="height: 55px;">
       手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
       </el-col>
-      <el-col :span="8" style="height: 55px;">
+      <el-col :span="6" style="height: 55px;">
         用户姓名：<el-input class="searchContent" placeholder="用户姓名" v-model="cusName" clearable></el-input>
       </el-col>
       <el-col :span="10" style="height: 55px;">
@@ -84,19 +95,20 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-button style="margin-top: 55px" type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
         ref="multipleTable"
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
           prop="orderId"
           label="订单ID"
-          width="250">
+          width="260">
         </el-table-column>
         <el-table-column
           fixed
@@ -159,6 +171,7 @@
         <el-table-column
           prop="repaymentCapital"
           label="应还金额"
+          :formatter="shouldFormatter"
           width="100">
         </el-table-column>
         <el-table-column
@@ -415,14 +428,14 @@
         <el-form-item label="剩余应还金额:">
           <el-input v-model="ruleForm.partialUnpaidAmount" disabled></el-input>
         </el-form-item>
-        <el-form-item label="部分已还金额:" prop="partialRepayment">
-          <el-input v-model="ruleForm.partialRepayment"></el-input>
+        <el-form-item label="本次部分还款金额:">
+          <el-input v-model="ruleForm.partialRepayment" disabled></el-input>
         </el-form-item>
-        <el-form-item label="减免金额:" prop="partialDiscountAmount">
+        <el-form-item label="本次部分实还金额:" prop="partialRepaymentPayment">
+          <el-input v-model="ruleForm.partialRepaymentPayment"></el-input>
+        </el-form-item>
+        <el-form-item label="本次部分减免金额:" prop="partialDiscountAmount">
           <el-input v-model="ruleForm.partialDiscountAmount"></el-input>
-        </el-form-item>
-        <el-form-item label="实际部分还款:">
-          <el-input v-model="ruleForm.partialRepaymentPayment" disabled></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="partial('ruleForm')">线下部分还款<i class="el-icon-check el-icon--right"></i></el-button>
@@ -462,18 +475,18 @@
       //条件查询列表
       searchContent(data){
         this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName);
+          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
         this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName);
+          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status);
       },
       //翻页
       handleCurrentChange(val) {
         this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName);
+          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status);
       },
       /**
        * 获取待放款订单列表
@@ -490,8 +503,9 @@
        * @param data11 放款开始时间
        * @param data12 放款结束时间
        * @param data13 用户姓名
+       * @param data14 状态
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/list",
@@ -513,6 +527,7 @@
             endDate: data10,
             startDateLoan: data11,
             endDateLoan: data12,
+            status: data14,
             sortColumn: 'create_date',
             direction: 'desc',
           }
@@ -737,7 +752,7 @@
                 }
               }).then((res)=>{
                 if(res.data.msgCd=='ZYCASH-200'){
-                  this.centerDialogVisible3=false;
+                  this.centerDialogVisible4=false;
                   this.$message({
                     message: '操作成功',
                     type: 'success'
@@ -781,7 +796,7 @@
                 }
               }).then((res)=>{
                 if(res.data.msgCd=='ZYCASH-200'){
-                  this.centerDialogVisible3=false;
+                  this.centerDialogVisible4=false;
                   this.$message({
                     message: '操作成功',
                     type: 'success'
@@ -825,7 +840,7 @@
                 }
               }).then((res)=>{
                 if(res.data.msgCd=='ZYCASH-200'){
-                  this.centerDialogVisible3=false;
+                  this.centerDialogVisible4=false;
                   this.$message({
                     message: '操作成功',
                     type: 'success'
@@ -860,7 +875,11 @@
         } else {
           this.ruleForm.partialUnpaidAmount=0;
         }
-        //计算部分还款减免金额
+        //本次部分还款金额
+        this.ruleForm.partialRepayment=0;
+        //本次部分实还金额
+        this.ruleForm.partialRepaymentPayment=0;
+        //本次部分减免金额
         this.ruleForm.partialDiscountAmount=0;
       },
       //部分还款
@@ -910,6 +929,7 @@
       //详情
       detailProduct(row){
         let status=row.status;
+        console.log(status);
         let id=row.customerId;
         let orderId=row.orderId;
         if (status == 0 || status == 1 || status == 3) {
@@ -918,7 +938,7 @@
           });
         } else if (status == 4 || status == 5) {
           this.$router.push({
-            path: `/orderDetailPaymentLoan/${id}/${orderId}`,
+            path: `/orderDetailPendingLoan/${id}/${orderId}`,
           });
         } else if (status == 8) {
           this.$router.push({
@@ -985,6 +1005,13 @@
           return '---'
         }
       },
+      //应还金额字段
+      shouldFormatter(row){
+        let repaymentCapital = row.repaymentCapital;
+        let repaymentOverdueFee = row.repaymentOverdueFee;
+        let repaymentPenaltyInterest = row.repaymentPenaltyInterest;
+        return repaymentCapital + repaymentOverdueFee + repaymentPenaltyInterest;
+      },
       //申请时间筛选
       logTimeChange(){
         if(this.value4==''||this.value4==null){
@@ -1028,7 +1055,7 @@
           }
         }
       };
-      //部分已还金额
+      //本次部分实还金额
       var validatorNumber2 = (rule, value, callback) => {
         if (value==null) {
           callback(new Error('输入不能为空'));
@@ -1036,12 +1063,7 @@
           if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
             callback(new Error("请填写正整数"));
           }else{
-            if (this.partialFlag) {
-              this.ruleForm.partialUnpaidAmount=this.ruleForm.partialUnpaidAmount - value;
-            } else {
-              this.ruleForm.partialUnpaidAmount=this.ruleForm.shouldRepayment - value;
-            }
-            this.ruleForm.partialRepaymentPayment=value - this.ruleForm.partialDiscountAmount;
+            this.ruleForm.partialRepayment=Number(this.ruleForm.partialDiscountAmount) + Number(value);
             callback();
           }
         }
@@ -1054,7 +1076,7 @@
           if((/^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/).test(value) == false){
             callback(new Error("请填写正整数"));
           }else{
-            this.ruleForm.partialRepaymentPayment=this.ruleForm.partialRepayment - value;
+            this.ruleForm.partialRepayment=Number(this.ruleForm.partialRepaymentPayment) + Number(value);
             callback();
           }
         }
@@ -1075,6 +1097,23 @@
       return {
         partialFlag:null,//这笔订单是否已经是部分还款
         productList:[],
+        electData1: [
+          {classifyId:null,classifyName:"全部状态"},
+          {classifyId:0,classifyName:"待机审"},
+          {classifyId:1,classifyName:"机器审核中"},
+          {classifyId:2,classifyName:"审核拒绝"},
+          {classifyId:3,classifyName:"人工审核"},
+          {classifyId:4,classifyName:"待放款"},
+          {classifyId:5,classifyName:"放款中"},
+          {classifyId:6,classifyName:"放款失败"},
+          {classifyId:7,classifyName:"取消"},
+          {classifyId:8,classifyName:"放款成功，待还款"},
+          {classifyId:9,classifyName:"还款确认中"},
+          {classifyId:10,classifyName:"正常还款 "},
+          {classifyId:11,classifyName:"逾期未还"},
+          {classifyId:12,classifyName:"坏账"},
+          {classifyId:13,classifyName:"逾期已还"},
+        ],
         reBorrowList: [
           {classifyId:null,classifyName:"全部状态"},
           {classifyId:0,classifyName:"新户"},
@@ -1119,6 +1158,7 @@
           }]
         },
         productId:null,
+        status:null,
         reBorrow:null,
         parentChannelName:null,
         childrenChannelName:null,
@@ -1154,7 +1194,7 @@
           repaymentDiscountAmount: [
             { required: true, validator: validatorNumber, trigger: 'blur' }
           ],
-          partialRepayment: [
+          partialRepaymentPayment: [
             { required: true, validator: validatorNumber2, trigger: 'blur' }
           ],
           partialDiscountAmount: [

@@ -84,6 +84,7 @@
         :data="tableData"
         @selection-change="handleSelectionChange"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           type="selection"
@@ -754,6 +755,12 @@
       changeHandler(key) {
         this.ruleForm2.conditionName=key;
         this.centerDialogVisible2 = false;
+      },
+      //编辑
+      detailProduct(row){
+        let id = row.id;
+        let type = row.type;
+        this.$router.push({path: `/taskDetail/${id}/${type}`});
       },
     },
     mounted:function () {

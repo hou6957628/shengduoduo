@@ -107,7 +107,7 @@
       <el-table
         ref="multipleTable"
         :data="tableData"
-        @selection-change="handleSelectionChange"
+        highlight-current-row
         border
         style="width: 98%">
         <el-table-column
@@ -214,16 +214,6 @@
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
-          label="是否是黑名单"
-          width="110">
-          <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.isBlackList == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.isBlackList == true ? '是' : '否'}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
           prop="distributDate"
           label="分配时间"
           width="200">
@@ -258,12 +248,7 @@
         <el-table-column
           prop="collectorName"
           label="催收员"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="collectorName"
-          label="委外公司"
-          width="200">
+          width="150">
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -554,6 +539,10 @@
         })
         this.orderIds = ids;
       },
+      //选中变色
+      // handleSelectionChangeGlobal(val) {
+      //   this.currentRow = val;
+      // },
       //过滤用户标识字段
       reBorrowFormatter(row){
         let reBorrow = row.reBorrow;
@@ -636,6 +625,7 @@
             }
           }]
         },
+        currentRow: null
       }
     }
   }

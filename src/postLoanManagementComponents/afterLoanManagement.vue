@@ -109,12 +109,13 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-button id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
         :data="tableData"
         border
+        highlight-current-row
         style="width: 98%">
         <el-table-column
           fixed
@@ -200,6 +201,11 @@
           prop="defer"
           label="是否展期"
           width="110">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.defer == 1 ? 'primary' : 'info'"
+              disable-transitions>{{scope.row.defer == 1 ? '是' : '否'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
           prop="repaymentDefer"
@@ -210,6 +216,11 @@
           prop="partial"
           label="是否是部分还款"
           width="110">
+          <template slot-scope="scope">
+            <el-tag
+              :type="scope.row.partial == 1 ? 'primary' : 'info'"
+              disable-transitions>{{scope.row.partial == 1 ? '是' : '否'}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
           prop="partialRepayment"
@@ -252,19 +263,9 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
-          label="是否是黑名单"
-          width="110">
-        </el-table-column>
-        <el-table-column
-          prop="totalAmount"
-          label="逾期次数"
-          width="110">
-        </el-table-column>
-        <el-table-column
           prop="collectorName"
           label="催收员"
-          width="110">
+          width="150">
         </el-table-column>
         <el-table-column
           fixed="right"
