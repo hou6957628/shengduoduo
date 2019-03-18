@@ -55,12 +55,12 @@
       </el-button-group>
       <el-button-group v-if="!this.borrowingForm.defer" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
         <el-button class="la" type="danger" @click="offlineRepaymentTip()">线下还款</el-button>
-        <el-button class="la" type="danger" @click="onlineReliefTip()">线上减免</el-button>
-        <el-button class="la" type="danger" @click="separateDeductionTip()">单独扣款</el-button>
-        <el-button v-if="this.borrowingForm.enableDefer" class="la" type="danger" @click="lineDefferTip()">展期还款</el-button>
-        <el-button v-if="!this.borrowingForm.enableDefer" class="la" type="danger" @click="lineDefferTip()">特例展期</el-button>
-        <el-button class="la" type="danger" @click="partialTip()">部分还款</el-button>
-        <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
+        <el-button class="la" style="margin-left: 10px" type="danger" @click="onlineReliefTip()">线上减免</el-button>
+        <el-button class="la" style="margin-left: 10px" type="danger" @click="separateDeductionTip()">单独扣款</el-button>
+        <el-button v-if="this.borrowingForm.enableDefer" class="la" style="margin-left: 10px" type="danger" @click="lineDefferTip()">展期还款</el-button>
+        <el-button v-if="!this.borrowingForm.enableDefer" class="la" style="margin-left: 10px" type="danger" @click="lineDefferTip()">特例展期</el-button>
+        <el-button class="la" style="margin-left: 10px" type="danger" @click="partialTip()">部分还款</el-button>
+        <el-button class="la" style="margin-left: 10px" type="danger" @click="resetForm()">关闭</el-button>
       </el-button-group>
     </div>
     <div class="listContent">

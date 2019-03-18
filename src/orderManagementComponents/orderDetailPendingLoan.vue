@@ -42,10 +42,10 @@
       </table>
     </div>
     <el-button-group style="margin: 0 auto;width: 500px;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button class="la" type="danger" @click="batchAuditOrder('0')">同意</el-button>
-      <el-button class="la" type="danger" @click="batchAuditOrder('1')">拒绝</el-button>
-      <el-button class="la" type="danger" @click="cancelAuditOrder()">取消</el-button>
-      <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
+      <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrder('0')">同意</el-button>
+      <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrder('1')">拒绝</el-button>
+      <el-button style="margin-left: 10px" class="la" type="danger" @click="cancelAuditOrder()">取消</el-button>
+      <el-button style="margin-left: 10px" class="la" type="danger" @click="resetForm()">关闭</el-button>
     </el-button-group>
     <div class="listContent">
       <!--<router-link :to="{name:'jiben',params: {cusCustomer: this.cusCustomer,idCard: this.idCard}}" tag="li">基本信息</router-link>-->

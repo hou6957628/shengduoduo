@@ -213,7 +213,7 @@
       :visible.sync="centerDialogVisible2"
       width="60%"
       center>
-      <el-radio-group v-for="(item,index) in conditionList" style="text-align: center" v-model="ruleForm2.conditionId" size="medium">
+      <el-radio-group v-for="(item,index) in conditionList" :key="index" style="text-align: center" v-model="ruleForm2.conditionId" size="medium">
         <el-radio style="margin-bottom: 20px;width: 160px;margin-right: 10px" :dataType="item.id"
                   border :label="item.id" @change="changeHandler(item.conditionName)">{{item.conditionName}}</el-radio>
       </el-radio-group>

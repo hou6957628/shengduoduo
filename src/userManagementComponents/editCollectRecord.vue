@@ -29,7 +29,7 @@
         <el-input type="textarea" v-model="ruleForm.memo"></el-input>
       </el-form-item>
       <el-form-item v-for="(domain, index) in picList" label="图片:" :key="index">
-        <img style="height: 108px;width: 170px" :src="'http://'+baseUrl + '/credit/api/down?file='+domain.collectRecordImage"/>
+        <img class="ID1" style="height: 108px;width: 170px" :src="'http://'+baseUrl + '/credit/api/down?file='+domain.collectRecordImage"/>
       </el-form-item>
       <el-form-item label="上传图片:" v-for="(domain, index) in fileList" :key="index">
         <a class="upload-file" href="javascript:;" v-model="domain.filename">{{domain.image}}<input type="file"
@@ -271,5 +271,21 @@
     border-color: #78C3F3;
     color: #004974;
     text-decoration: none;
+  }
+  .ID1{
+    transition: All 0.4s ease-in-out;
+    -webkit-transition: All 0.4s ease-in-out;
+    -moz-transition: All 0.4s ease-in-out;
+    -o-transition: All 0.4s ease-in-out;
+    z-index: 1000;
+    cursor: pointer;
+  }
+  .ID1:hover{
+    transform: translate(-200px,0) scale(4);
+    -webkit-transform: translate(-200px,0) scale(4);
+    -moz-transform: translate(-200px,0) scale(4);
+    -o-transform: translate(-200px,0) scale(4);
+    -ms-transform: translate(-200px,0) scale(4);
+    z-index: 3000;
   }
 </style>
