@@ -146,16 +146,10 @@
                 <el-menu-item index="/channelconnectionManagement">渠道链接列表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/channelStatistics">渠道统计列表</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/channelCount">渠道统计中心</el-menu-item>
+                <el-menu-item index="/channelCount">渠道统计列表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item index="/accountCenter">账户中心</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/rechargeCenter">充值中心</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="9" style="padding-left:0 ;">

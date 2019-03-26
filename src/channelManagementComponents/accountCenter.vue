@@ -19,7 +19,7 @@
                   v-model="proName"
                   clearable>
         </el-input>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button type="primary" icon="el-icon-search" @click="searchProduct">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="searchContent">搜索</el-button>
     </div>
     <template>
       <el-table
@@ -67,7 +67,7 @@
           label="操作"
           width="100">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">充值</el-button>
+            <el-button @click="recharge(scope.row)" type="text" size="medium">充值</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -87,7 +87,7 @@
     <!--新增账户结构-->
     <el-dialog title="新增账户" :visible.sync="dialogFormVisible" width="40%" center>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="80px" class="demo-ruleForm">
-        <el-form-item label="账户名称">
+        <el-form-item label="账户名称" prop="accountName">
           <el-input v-model="accountName" autocomplete="off" placeholder="填写账户名称"></el-input>
         </el-form-item>
         <el-form-item label="备注">
@@ -96,7 +96,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addProduct">确 定</el-button>
+        <el-button type="primary" @click="addProduct('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -106,43 +106,32 @@
   import axios from 'axios'
   export default {
     methods: {
-      handleClick(row) {
-        console.log(row.id);
-        var id=row.id;
-        this.$router.push({
-          path: `/Recharge/${id}`,
-        });
-      },
-      chaClick(row) {
-        console.log(row.name);
-        var name=row.name;
-        this.$router.push({
-          path: `/productList/${name}`,
-        });
-      },
-      searchContent(data){
+      //条件查询
+      searchContent(){
         if(data==""){
-          this.$message.error('搜索内容不可以为空');
           this.getProductList(1,10,null,this.electValue);
         }else {
           this.getProductList(1,10,data,this.electValue);
           console.log(data);
         }
       },
+      //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.getProductList(this.pageNum,val,null,this.electValue);
         this.nowPageSizes=val;
       },
+      //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
         this.getProductList(val,this.nowPageSizes,null,this.electValue);
       },
-      toAddProduct(val){
-        this.$router.push('/addProduct');
-      },
-      getProductList(data1,data2,data3){
+      /**
+       * 查询账户列表
+       * @param data1 查询第几页
+       * @param data2 每页显示多少条数据
+       * @param data3 渠道id集合
+       * @param data4 渠道名称或链接
+       */
+      getProductList(data1,data2,data3,data4){
         axios({
           method:"post",
           url:"http://"+this.baseUrl+"/super/admin/account/list",
@@ -153,7 +142,8 @@
           params:{
             pageNum: data1,
             pageSize: data2,
-            accountName: data3,
+            channelIds: data3,
+            channelName: data4,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
@@ -166,102 +156,50 @@
           }
         })
       },
-      selectChange(){
-        console.log(this.electValue);
-        this.getProductList(1,10,null,this.electValue);
-      },
-      searchProduct(){
-        console.log(this.proName);
-        this.getProductList(1,10,this.proName);
-      },
-      addProduct(){
-        console.log(this.accountName);
-        console.log(this.remark);
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/super/admin/account/addAccount",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            accountName: this.accountName,
-            remark: this.remark,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
-            this.$message({
-              message: '添加成功',
-              type: 'success'
-            });
-            this.dialogFormVisible = false;
-            this.getProductList(1,10);
-          }else {
-            this.$message.error(res.data.msgInfo);
+      //添加账户
+      addProduct(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios({
+              method: "post",
+              url: "http://" + this.baseUrl + "/super/admin/account/addAccount",
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              params: {
+                accountName: this.ruleForm.accountName,
+                description: this.ruleForm.description,
+              }
+            }).then((res) => {
+              if (res.data.msgCd == 'ZYCASH-SUPERMARKET-200') {
+                this.$message({
+                  message: '添加成功',
+                  type: 'success'
+                });
+                this.dialogFormVisible = false;
+                this.getProductList(1, 10);
+              } else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
         })
       },
-      logTimeChange(){
-        var startTime=this.value7[0];
-        var endTime=this.value7[1];
-      },
-      open3() {
-        this.$prompt('请输入邮箱', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-          inputErrorMessage: '邮箱格式不正确'
-        }).then(({ value }) => {
-          this.$message({
-            type: 'success',
-            message: '你的邮箱是: ' + value
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消输入'
-          });
-        });
+      recharge(row){
+        let id = row.id;
+        this.$router.push({path: `/rechargeCenter/${id}`});
       }
     },
     mounted:function () {
-      this.getProductList(1,10);
+      this.getProductList(1,20,null,null);
     },
     data() {
       return {
         tableData: [],
-        value4: '',
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
-        pickerOptions2: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
         pageNum: null,
         proTotal:null,
         pageSize:null,
@@ -271,6 +209,15 @@
         accountName: '',
         remark: '',
         dialogFormVisible:false,
+        ruleForm: {
+          accountName: '',
+          description: '',
+        },
+        rules: {
+          accountName: [
+            {required: true, message: '请输入账户名称', trigger: 'blur'},
+          ],
+        },
       }
     }
   }

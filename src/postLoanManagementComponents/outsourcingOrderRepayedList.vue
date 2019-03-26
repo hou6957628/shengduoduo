@@ -252,19 +252,9 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
-          label="是否是黑名单"
-          width="110">
-        </el-table-column>
-        <el-table-column
-          prop="totalAmount"
-          label="逾期次数"
-          width="110">
-        </el-table-column>
-        <el-table-column
           prop="collectorName"
           label="催收员"
-          width="110">
+          width="150">
         </el-table-column>
         <el-table-column
           fixed="right"

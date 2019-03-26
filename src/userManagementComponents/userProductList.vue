@@ -319,25 +319,41 @@
       },
       //批量解锁用户
       batchUnlock(){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/user_center/admin/customer/batchUnlock",
-          headers:{
-            'Content-Type':'application/json',
-            'Authorization': localStorage.token
-          },
-          data:JSON.stringify(this.ids),
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.getProductList(1,20,null,null,null,null,null,null,null,null);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        if (this.ids.length==0) {
+          this.$message({
+            showClose: true,
+            message: '请至少选择一条记录',
+            type: 'warning'
+          });
+        } else {
+          this.$confirm('是否确定解锁选定的用户?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+          }).then(() => {
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/user_center/admin/customer/batchUnlock",
+              headers:{
+                'Content-Type':'application/json',
+                'Authorization': localStorage.token
+              },
+              data:JSON.stringify(this.ids),
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+                this.multipleSelection = [];
+                this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId,this.locked);
+              }else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          });
+        }
       },
     },
     mounted:function () {

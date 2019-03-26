@@ -200,7 +200,7 @@
           width="110">
         </el-table-column>
         <el-table-column
-          prop="repaymentDefer"
+          prop="repaymentDeferPayment"
           label="实际展期还款金额"
           width="110">
         </el-table-column>
@@ -473,7 +473,7 @@
         })
       },
       //条件查询列表
-      searchContent(data){
+      searchContent(){
         this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
           this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status);
       },

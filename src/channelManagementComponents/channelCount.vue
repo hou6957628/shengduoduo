@@ -35,7 +35,7 @@
         </el-col>
         <el-col :span="6" style="height: 55px;">
           渠道：
-          <el-select v-model="productId" placeholder="请选择">
+          <el-select v-model="channelIds" placeholder="请选择">
             <el-option
               v-for="item in productList"
               :key="item.productId"
@@ -49,7 +49,7 @@
           v-model="value8"
           clearable>
         </el-input>
-        <el-button type="primary" icon="el-icon-search" @click="searchBtn">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="searchContent">搜索</el-button>
         <el-button type="primary" @click="daoBtn">导出<i class="el-icon-download el-icon--right"></i></el-button>
           <!--<a :href="http://192.168.20.216:9999/super/admin/productinfo/export?name="++'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+localStorage.token">导出</a>-->
           <!--<a href="http://192.168.20.216:9999/super/admin/productinfo/export?name"+{{}}+>导出</a>-->
@@ -117,8 +117,8 @@
             label="操作"
             width="160">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small">详情</el-button>
-              <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+              <el-button @click="detailChannel(scope.row)" type="text" size="small">详情</el-button>
+              <el-button @click="editChannel(scope.row)" type="text" size="small">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -142,59 +142,32 @@
   import axios from 'axios'
   export default {
     methods: {
-      handleClick(row) {
-        var id=row.id;
-        if(row.countType==null){
-          var countType=1;
-        }else {
-          var countType=row.countType;
-        }
-        this.$router.push({
-          path: `/operation/${id}/${countType}`,
-        });
+      //条件查询
+      searchContent(){
+        this.getProductList(this.pageNum,this.nowPageSizes,this.startTime,this.endTime,this.productId,this.channelIds,this.channelName);
       },
-      detailClick(row) {
-        console.log(row.productId);
-        var id=row.productId;
-        this.$router.push({
-          path: `/productStatistics/${id}`,
-        });
-      },
-      searchContent(data){
-        if(data==""){
-          this.$message.error('搜索内容不可以为空');
-        }else {
-          console.log(data);
-        }
-      },
+      //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,this.value8,this.startTime,this.endTime);
         this.nowPageSizes=val;
+        this.getProductList(this.pageNum,val,this.startTime,this.endTime,this.productId,this.channelIds,this.channelName);
       },
+      //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,this.value8,this.startTime,this.endTime);
+        this.getProductList(val,this.nowPageSizes,this.startTime,this.endTime,this.productId,this.channelIds,this.channelName);
       },
-      toAddProduct(val){
-        this.$router.push('/addProduct');
-      },
+      //时间筛选
       logTimeChange(){
-        if(this.value7==''||this.value7==null){
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,null,null);
-        }else {
+        if(this.value7!='' && this.value7!=null){
           var startTime=this.value7[0];
           var endTime=this.value7[1];
           this.startTime=startTime;
           this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
+        } else {
+          this.startTime='';
+          this.endTime='';
         }
       },
-      searchBtn(){
-        this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
-      },
+      //导出
       daoBtn(){
         axios({
           method:"get",
@@ -223,7 +196,17 @@
           });
         })
       },
-      getProductList(data1,data2,data3,data4,data5){
+      /**
+       * 列表查询
+       * @param data1 查询第几页
+       * @param data2 每页显示多少条数据
+       * @param data3 开始时间
+       * @param data4 结束时间
+       * @param data5 产品id
+       * @param data6 渠道id集合
+       * @param data7 名称或链接
+       */
+      getProductList(data1,data2,data3,data4,data5,data6,data7){
         axios({
           method:"get",
           url:"http://"+this.baseUrl+"/super/admin/productinfo/getProductInfoListByName",
@@ -234,9 +217,11 @@
           params:{
             pageNum: data1,
             pageSize: data2,
-            name: data3,
-            startDate: data4,
-            endDate: data5,
+            startDate: data3,
+            endDate: data4,
+            productId: data5,
+            channelIds: data6,
+            channelName: data7,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
@@ -249,7 +234,7 @@
           }
         })
       },
-      // 下载文件
+      //下载文件
       download (data) {
         if (!data) {
           return
@@ -261,18 +246,26 @@
         link.setAttribute('download', 'excel.xls');
         document.body.appendChild(link);
         link.click()
+      },
+      //详情
+      detailChannel(){
+        this.$router.push({
+          path: `/operation/${id}/${countType}`,
+        });
+      },
+      //编辑
+      detailChannel(){
+        this.$router.push({
+          path: `/operation/${id}/${countType}`,
+        });
       }
     },
     mounted:function () {
-      this.id=this.$route.params.id;
-      this.token=localStorage.token;
-      this.getProductList(1,10);
+      this.getProductList(1,10,null,null,null,null,null);
     },
     data() {
       return {
         tableData: [],
-        options: [],
-        value4: '',
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -300,18 +293,18 @@
             }
           }]
         },
-        value6: '',
-        value7: '',
         value8:'',
         pageNum: null,
         proTotal:null,
         pageSize:null,
         pageSizes:[10,30,50],
         nowPageSizes:10,
-        proName: '',
-        accountName: '',
+        value7: '',
         startTime:'',
         endTime:'',
+        productId: '',
+        channelIds: '',
+        channelName: '',
         token:""
       }
     }

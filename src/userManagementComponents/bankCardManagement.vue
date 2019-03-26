@@ -292,38 +292,46 @@
       },
       //批量删除银行卡提示
       batchDelTip(row){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/isHaveUnPaymentList",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            customerId:this.customerId,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            if (res.data.body.isHaveUnPaymentList) {
-              this.$alert('此用户有未还完订单，不能进行删卡操作', '提示', {
-                confirmButtonText: '确定',
-                type: 'warning',
-                center: true
-              })
-            } else {
-              this.$confirm('是否确认删除选择的银行卡?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-              }).then(() => {
-                this.batchDel();
-              });
+        if (this.customerId == null) {
+          this.$message({
+            showClose: true,
+            message: '请至少选择一条记录',
+            type: 'warning'
+          });
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/order/admin/borrowing/isHaveUnPaymentList",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              customerId:this.customerId,
             }
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body.isHaveUnPaymentList) {
+                this.$alert('此用户有未还完订单，不能进行删卡操作', '提示', {
+                  confirmButtonText: '确定',
+                  type: 'warning',
+                  center: true
+                })
+              } else {
+                this.$confirm('是否确认删除选择的银行卡?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning',
+                  center: true
+                }).then(() => {
+                  this.batchDel();
+                });
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
       },
       //确认批量删除银行卡接口
       batchDel(){
@@ -392,7 +400,11 @@
           ids.push(item.id);
         })
         this.ids = ids;
-        this.customerId = this.multipleSelection[0].customerId;
+        if (this.multipleSelection.length == 0) {
+          this.customerId = null;
+        } else {
+          this.customerId = this.multipleSelection[0].customerId;
+        }
       },
     },
     mounted:function () {
@@ -444,7 +456,7 @@
         startTime:'',
         endTime:'',
         ids:[],
-        customerId:'',
+        customerId:null,
       }
     }
   }

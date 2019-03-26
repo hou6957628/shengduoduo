@@ -3,13 +3,13 @@
     <div style="width: 1000px;margin: 0 auto;">
     <el-row style="text-align: center;margin: 0 auto">
       <el-col style="width: 200px;margin-left: 5px" :span="4">
-        <img class="ID1"  style="height: auto;width: 200px" :src="'http://'+this.baseUrl + '/credit/api/down?file='+this.idCard.front"/>
+        <img class="ID1"  style="height: auto;width: 200px" :src="this.idCard.front"/>
       </el-col>
       <el-col style="width: 200px;margin-left: 50px" :span="4">
-        <img class="ID2" style="height: auto;width: 200px" :src="'http://'+this.baseUrl + '/credit/api/down?file='+this.idCard.back"/>
+        <img class="ID2" style="height: auto;width: 200px" :src="this.idCard.back"/>
       </el-col>
       <el-col style="width: 200px;margin-left: 50px" :span="4">
-        <img class="Face" style="height: auto;width: 200px" :src="'http://'+this.baseUrl + '/credit/api/down?file='+this.idFace.image"/>
+        <img class="Face" style="height: auto;width: 200px" :src="this.idFace.image"/>
       </el-col>
     </el-row>
     <el-row style="text-align: center;margin: 0 auto">

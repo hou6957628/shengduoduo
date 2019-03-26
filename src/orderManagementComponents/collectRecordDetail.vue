@@ -29,7 +29,7 @@
         <el-input type="textarea" v-model="ruleForm.memo"></el-input>
       </el-form-item>
       <el-form-item v-for="(domain, index) in picList" label="图片:">
-        <img style="height: 108px;width: 170px" :src="'http://'+this.baseUrl + '/credit/api/down?file='+domain.collectRecordImage"/>
+        <img style="height: 108px;width: 170px" :src="domain.collectRecordImage"/>
       </el-form-item>
       <el-form-item label="上传图片:" v-for="(domain, index) in fileList" :key="index">
         <a class="upload-file" href="javascript:;" v-model="domain.filename">{{domain.image}}<input type="file"

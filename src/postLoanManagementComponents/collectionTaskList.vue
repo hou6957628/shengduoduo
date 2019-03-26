@@ -206,11 +206,6 @@
           width="200">
         </el-table-column>
         <el-table-column
-          prop="totalAmount"
-          label="逾期次数"
-          width="200">
-        </el-table-column>
-        <el-table-column
           prop="reBorrow"
           label="用户标识"
           :formatter="reBorrowFormatter"
@@ -218,13 +213,8 @@
         </el-table-column>
         <el-table-column
           prop="collectorName"
-          label="催收群组"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="collectorName"
           label="催收员"
-          width="100">
+          width="150">
         </el-table-column>
         <el-table-column
           fixed="right"

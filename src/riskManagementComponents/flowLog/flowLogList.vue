@@ -244,9 +244,6 @@
       //时间筛选
       logTimeChange(){
         if(this.value7==''||this.value7==null){
-          this.value7=[new Date().getTime() - 3600 * 1000 * 24 * 7,new Date()];
-          var startTime=this.value7[0];
-          var endTime=this.value7[1];
           this.startDate=startTime;
           this.endDate=endTime;
         }else {
