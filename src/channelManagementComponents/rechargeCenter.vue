@@ -1,11 +1,12 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item>充值中心</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/accountCenter' }">账户中心</el-breadcrumb-item>
+      <el-breadcrumb-item>充值列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <div class="block">
-        <el-button type="primary" icon="el-icon-plus" @click="dialogFormVisible = true">充值</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addCashTip">充值</el-button>
         <el-date-picker style="margin-left: 25px"
           v-model="value7"
           type="datetimerange"
@@ -19,25 +20,25 @@
           value-format="yyyy-MM-dd HH:mm:ss"
           @change="logTimeChange()">
         </el-date-picker>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button type="primary" icon="el-icon-search" @click="searchProduct">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="searchContent">搜索</el-button>
       </div>
     </div>
     <template>
       <el-table
         :data="tableData"
-        :span-method="objectSpanMethod"
         border
+        highlight-current-row
         style="width: 100%">
         <el-table-column
           fixed
-          prop="name"
+          prop="parentChannelName"
           label="渠道名称"
           width="150">
         </el-table-column>
         <el-table-column
           prop="createDate"
           label="时间"
-          width="160">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="balance"
@@ -45,12 +46,12 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="amount"
+          prop="rechargeAmount"
           label="充值金额"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="remark"
+          prop="description"
           label="备注"
           width="300">
         </el-table-column>
@@ -71,16 +72,16 @@
     <!--充值结构-->
     <el-dialog title="充值" :visible.sync="dialogFormVisible" width="40%" center>
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="80px" class="demo-ruleForm">
-        <el-form-item label="充值金额">
-          <el-input v-model="value8" autocomplete="off" placeholder="填写充值金额"></el-input>
+        <el-form-item label="充值金额" prop="rechargeAmount">
+          <el-input v-model="ruleForm.rechargeAmount" autocomplete="off" placeholder="填写充值金额"></el-input>
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="remark" autocomplete="off" placeholder="填写备注"></el-input>
+          <el-input v-model="ruleForm.description" autocomplete="off" placeholder="填写备注"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCash">确 定</el-button>
+        <el-button type="primary" @click="addCash('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -90,32 +91,24 @@
   import axios from 'axios'
   export default {
     methods: {
-      handleClick(row) {
-        console.log(row);
-      },
+      //条件查询
       searchContent(data){
-        if(data==""){
-          this.$message.error('搜索内容不可以为空');
-          this.getProductList(1,10,null,this.electValue);
-        }else {
-          this.getProductList(1,10,data,this.electValue);
-          console.log(data);
-        }
+        this.getProductList(1,30,this.channelName,this.startDate,this.endDate);
       },
+      //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-        this.getProductList(this.pageNum,val,null,this.startTime,this.endTime);
         this.nowPageSizes=val;
+        this.getProductList(this.pageNum,val,this.channelName,this.startDate,this.endDate);
       },
+      //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
-        this.getProductList(val,this.nowPageSizes,null,this.startTime,this.endTime);
+        this.getProductList(val,this.nowPageSizes,this.channelName,this.startDate,this.endDate);
       },
+      //充值列表
       getProductList(data1,data2,data3,data4,data5){
         axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/super/admin/account/cashList",
+          method:"get",
+          url:"http://"+this.baseUrl+"/channel/admin/account/recharge/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -123,12 +116,12 @@
           params:{
             pageNum: data1,
             pageSize: data2,
-            accountId: this.id,
-            startTime: data4,
-            endTime: data5,
+            channelName: data3,
+            startDate: data4,
+            endDate: data5,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+          if(res.data.msgCd=='ZYCASH-200'){
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
@@ -138,81 +131,67 @@
           }
         })
       },
-      selectChange(){
-        console.log(this.electValue);
-        this.getProductList(1,10,null,this.electValue);
+      //充值弹窗
+      addCashTip(){
+        this.dialogFormVisible=true;
+        this.ruleForm.rechargeAmount='';
+        this.ruleForm.description='';
       },
-      searchProduct(){
-        console.log(this.proName);
-        this.getProductList(1,10,this.proName);
-      },
-      addCash(){
-        if(this.value8==''){
-          this.$message.error('请输入充值金额');
-        }else {
-          axios({
-            method:"post",
-            url:"http://"+this.baseUrl+"/super/admin/account/cash",
-            headers:{
-              'Content-Type':'application/x-www-form-urlencoded',
-              'Authorization': localStorage.token
-            },
-            params:{
-              accountId	: this.id,
-              amount: this.value8,
-              remark: this.remark,
-            }
-          }).then((res)=>{
-            if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
-              this.$message({
-                message: '添加成功',
-                type: 'success'
-              });
-              this.dialogFormVisible = false;
-              this.getProductList(1,10);
-            }else {
-              this.$message.error(res.data.msgInfo);
-            }
-          })
-        }
-        console.log(this.accountName);
-      },
-      logTimeChange(){
-        var startTime=this.value7[0];
-        var endTime=this.value7[1];
-        this.startTime=startTime;
-        this.endTime=endTime;
-        console.log(this.value7);
-        this.getProductList(1,10,this.id,startTime,endTime);
-      },
-      objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-        if (columnIndex === 6) {
-          if (rowIndex % 1 === 0) {
-            return {
-              rowspan: 10,
-              colspan: 1
-            };
+      //充值
+      addCash(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios({
+              method: "post",
+              url: "http://" + this.baseUrl + "/channel/admin/account/recharge/add",
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              params: {
+                accountId: this.accountId,
+                rechargeAmount: this.ruleForm.rechargeAmount,
+                description: this.ruleForm.description,
+              }
+            }).then((res) => {
+              if (res.data.msgCd == 'ZYCASH-200') {
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+                this.dialogFormVisible = false;
+                this.getProductList(1,30,this.channelName,this.startDate,this.endDate);
+              } else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
           } else {
-            return {
-              rowspan: 0,
-              colspan: 0
-            };
+            console.log('error submit!!');
+            return false;
           }
+        })
+      },
+      //日期变化
+      logTimeChange(){
+        if(this.value7!='' && this.value7!=null){
+          var startTime=this.value7[0];
+          var endTime=this.value7[1];
+          this.startDate=startTime;
+          this.endDate=endTime;
+        } else {
+          this.startDate=null;
+          this.endDate=null;
         }
-      }
+      },
     },
     mounted:function () {
-      this.id=this.$route.params.id;
-      this.getProductList(1,10,this.id);
+      this.channelName=this.$route.params.channelName;
+      this.accountId=this.$route.params.id;
+      this.getProductList(1,30,this.channelName,null,null);
     },
     data() {
       return {
         tableData: [],
-        value4: '',
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -243,14 +222,24 @@
         pageNum: null,
         proTotal:null,
         pageSize:null,
-        pageSizes:[10,30,50],
-        nowPageSizes:10,
-        proName: '',
-        accountName: '',
+        pageSizes:[20,30,50],
+        nowPageSizes:30,
+        channelName: '',
+        accountId: '',
         value7:'',
-        value8:'',
+        startDate:'',
+        endDate:'',
         remark: '',
         dialogFormVisible:false,
+        ruleForm: {
+          rechargeAmount: '',
+          description: '',
+        },
+        rules: {
+          rechargeAmount: [
+            {required: true, message: '请输入充值金额', trigger: 'blur'},
+          ],
+        },
       }
     }
   }

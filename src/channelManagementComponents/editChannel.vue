@@ -6,7 +6,7 @@
     </el-breadcrumb>
     <el-form :model="ruleForm" :key="1" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
       <el-form-item label="主渠道名称:">
-        <el-select v-model="ruleForm.parentChannelCode" placeholder="请选择" disabled @change="selectChange1($event,channelList)">
+        <el-select v-model="ruleForm.parentChannelName" placeholder="请选择" disabled @change="selectChange1($event,channelList)">
           <el-option
             v-for="item in channelList"
             :key="item.id"
@@ -14,16 +14,12 @@
             :value="item.parentChannelCode">
           </el-option>
         </el-select>
-        <!--<el-button @click="addChannel()" type="primary" style="position: absolute;right:0;top: 0;">添加主渠道</el-button>-->
       </el-form-item>
       <el-form-item label="子渠道名称:">
         <el-input v-model="ruleForm.subChannelName" disabled="disabled"></el-input>
       </el-form-item>
-      <el-form-item label="渠道账户:" prop="parentChannelCode">
-        <el-input v-model="ruleForm.parentChannelCode" disabled="disabled"></el-input>
-      </el-form-item>
-      <el-form-item label="所属应用:" prop="productId">
-        <el-select v-model="ruleForm.productId" placeholder="请选择" @change="selectChange2($event,productList)">
+      <el-form-item label="所属应用:">
+        <el-select v-model="ruleForm.productName" placeholder="请选择" disabled="disabled">
           <el-option
             v-for="item in productList"
             :key="item.productId"
@@ -50,19 +46,9 @@
       return {
         ruleForm: {
           id:'',
-          parentChannelName: '',
-          parentChannelCode: '',
-          productId: '',
-          productName: '',
-          productCode: '',
-          cpaPrice: '',
-          cpsPrice: '',
           password: '',
         },
         rules: {
-          productId: [
-            {required: true, message: '请选择产品', trigger: 'change'}
-          ],
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'}
           ],
@@ -74,6 +60,47 @@
       };
     },
     methods: {
+      //获取所有产品
+      getFenList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/productManage/productMerchantInfo",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productList=res.data.body;
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //获取所有账户
+      getAccountList() {
+        axios({
+          method: "GET",
+          url: "http://"+this.baseUrl+"/channel/admin/account/list",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.channelList = res.data.body.list;
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
       //保存渠道
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
@@ -87,15 +114,6 @@
               },
               params:{
                 id:this.ruleForm.id,
-                parentChannelName: this.ruleForm.parentChannelName,
-                parentChannelCode: this.ruleForm.parentChannelCode,
-                subChannelName: this.ruleForm.subChannelName,
-                productName: this.ruleForm.productName,
-                productCode: this.ruleForm.productCode,
-                productId: this.ruleForm.productId,
-                merchantId: this.ruleForm.merchantId,
-                merchantName: this.ruleForm.merchantName,
-                merchantCode: this.ruleForm.merchantCode,
                 password: this.ruleForm.password,
               },
             }).then((res) => {
@@ -139,36 +157,14 @@
         this.ruleForm.merchantName=obj1.merchantName;
         this.ruleForm.merchantCode=obj1.merchantCode;
       },
-      //获取所有主渠道和产品
-      getProductList() {
-        axios({
-          method: "GET",
-          url: "http://"+this.baseUrl+"/channel/admin/channel/get",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-        }).then((res) => {
-          if (res.data.msgCd == 'ZYCASH-200') {
-            this.channelList = res.data.body.channelParentList;
-            this.productList = res.data.body.productList;
-          } else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
       //取消按钮
       resetForm() {
         this.$router.go(-1);
       },
-      //跳转到主渠道
-      addChannel(){
-        this.centerDialogVisible=true;
-      },
       //获取渠道详情
       getChannelById(data) {
         axios({
-          method: "GET",
+          method: "POST",
           url: "http://"+this.baseUrl+"/channel/admin/channel/getById",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -179,7 +175,7 @@
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
-            this.ruleForm = res.data.body.channelParent;
+            this.ruleForm = res.data.body;
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -188,8 +184,9 @@
     },
     mounted: function () {
       this.id=this.$route.params.id;
-      this.getProductList();
+      this.getFenList();
       this.getChannelById(this.id);
+      this.getAccountList();
     }
   }
 </script>

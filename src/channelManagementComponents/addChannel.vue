@@ -34,17 +34,6 @@
           <el-input v-model="ruleForm.number" maxlength="10" placeholder="请输入子渠道数"></el-input>
         </el-tooltip>
       </el-form-item>
-      <el-form-item label="选择账户:" prop="countType">
-        <el-select v-model="ruleForm.countType" placeholder="请选择" @change="selectChange3()">
-          <el-option
-            v-for="item in countTypeList"
-            :key="item.key"
-            :label="item.name"
-            :value="item.key">
-          </el-option>
-        </el-select>
-        <el-button @click="centerDialogVisible1=true" type="primary" style="position: absolute;right:0;top: 0;">创建账户</el-button>
-      </el-form-item>
       <el-form-item label="计价方式:" prop="countType">
         <el-select v-model="ruleForm.countType" placeholder="请选择" @change="selectChange3()">
           <el-option
@@ -74,38 +63,35 @@
     <el-dialog
       title="创建主渠道"
       :visible.sync="centerDialogVisible"
-      width="30%"
+      width="40%"
       center>
       <el-form-item label="主渠道名称:" prop="parentChannelName1">
-        <el-input v-model="ruleForm1.parentChannelName1"></el-input>
+        <el-input v-model="ruleForm1.parentChannelName1" placeholder="主渠道名称"></el-input>
       </el-form-item>
-      <el-form-item label="主渠道账号:" prop="parentChannelCode1">
-        <el-input v-model="ruleForm1.parentChannelCode1"></el-input>
+      <el-form-item label="账号:" prop="account">
+        <el-input v-model="ruleForm1.account" placeholder="主渠道账号"></el-input>
+      </el-form-item>
+      <el-form-item label="密码:" prop="passwd">
+        <el-input v-model="ruleForm1.passwd" placeholder="主渠道密码"></el-input>
+      </el-form-item>
+      <el-form-item label="所属应用:" prop="productId1">
+        <el-select v-model="ruleForm1.productId1" placeholder="请选择" @change="selectChange4($event,productList)">
+          <el-option
+            v-for="item in productList"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productId">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="备注:" prop="description">
+        <el-input v-model="ruleForm1.description" placeholder="备注"></el-input>
       </el-form-item>
       <span slot="footer" class="dialog-footer">
     <el-button @click="centerDialogVisible=false">取 消</el-button>
     <el-button type="primary" @click="submitForm1('ruleForm1')">确 定</el-button>
   </span>
     </el-dialog>
-    </el-form>
-    <!--创建账户结构-->
-    <el-form :model="ruleForm2" :key="2" :rules="rules2" ref="ruleForm2" label-width="90px" class="demo-ruleForm">
-      <el-dialog
-        title="创建账户"
-        :visible.sync="centerDialogVisible1"
-        width="30%"
-        center>
-        <el-form-item label="账户名称:" prop="accountName">
-          <el-input v-model="ruleForm2.accountName"></el-input>
-        </el-form-item>
-        <el-form-item label="备注:" prop="remark">
-          <el-input v-model="ruleForm2.remark"></el-input>
-        </el-form-item>
-        <span slot="footer" class="dialog-footer">
-    <el-button @click="centerDialogVisible1=false">取 消</el-button>
-    <el-button type="primary" @click="submitForm2('ruleForm1')">确 定</el-button>
-  </span>
-      </el-dialog>
     </el-form>
   </div>
 </template>
@@ -114,6 +100,16 @@
   import axios from 'axios'
   export default {
     data() {
+      //创建子渠道数小于10个
+      var validateName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入创建子渠道数'));
+        } else if (value > 10) {
+          callback(new Error('一次性创建子渠道数要小于10个'));
+        } else {
+          callback();
+        }
+      };
       return {
         ruleForm: {
           parentChannelName: '',
@@ -135,7 +131,7 @@
             {required: true, message: '请选择产品', trigger: 'change'}
           ],
           number: [
-            {required: true, message: '请输入创建子渠道数', trigger: 'blur'}
+            {required: true, validator: validateName, trigger: 'blur'}
           ],
           countType: [
             {required: true, message: '请选择计价方式', trigger: 'change'}
@@ -152,27 +148,26 @@
         },
         ruleForm1: {
           parentChannelName1: '',
-          parentChannelCode1: '',
+          account: '',
+          passwd: '',
+          productId1: '',
+          productName1: '',
+          productCode1: '',
+          description: '',
         },
         rulesList: {
           parentChannelName1: [
             {required: true, message: '请输入主渠道名称', trigger: 'blur'},
           ],
-          parentChannelCode1: [
-            {required: true, message: '请输入主渠道账户', trigger: 'blur'}
-          ]
-        },
-        ruleForm2: {
-          accountName: '',
-          remark: '',
-        },
-        rules2: {
-          accountName: [
-            {required: true, message: '请输入账户名称', trigger: 'blur'},
+          account: [
+            {required: true, message: '请输入账号', trigger: 'blur'}
           ],
-          remark: [
-            {required: true, message: '请输入备注', trigger: 'blur'}
-          ]
+          passwd: [
+            {required: true, message: '请输入密码', trigger: 'blur'},
+          ],
+          productId1: [
+            {required: true, message: '请选择所属应用', trigger: 'change'},
+          ],
         },
         channelList:[],
         productList:[],
@@ -187,6 +182,26 @@
       };
     },
     methods: {
+      //获取所有产品
+      getFenList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/productManage/productMerchantInfo",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productList=res.data.body;
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
       //保存渠道
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
@@ -201,7 +216,6 @@
               params:{
                 parentChannelName: this.ruleForm.parentChannelName,
                 parentChannelCode: this.ruleForm.parentChannelCode,
-                subChannelName: this.ruleForm.subChannelName,
                 productName: this.ruleForm.productName,
                 productCode: this.ruleForm.productCode,
                 productId: this.ruleForm.productId,
@@ -240,14 +254,20 @@
           if (valid) {
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/channel/admin/channel_parent/add",
+              url: "http://"+this.baseUrl+"/channel/admin/account/add",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
               },
               params:{
                 parentChannelName: this.ruleForm1.parentChannelName1,
-                parentChannelCode: this.ruleForm1.parentChannelCode1,
+                accountName: this.ruleForm1.parentChannelName1,
+                account: this.ruleForm1.account,
+                passwd: this.ruleForm1.passwd,
+                productId: this.ruleForm1.productId1,
+                productName: this.ruleForm1.productName1,
+                productCode: this.ruleForm1.productCode1,
+                description: this.ruleForm1.description,
               },
             }).then((res) => {
               if (res.data.msgCd == 'ZYCASH-200') {
@@ -255,44 +275,8 @@
                   message: '添加成功',
                   type: 'success'
                 });
-                this.getProductList();
+                this.getAccountList();
                 this.centerDialogVisible=false;
-              } else if (res.data.msgCd == 'ZYCASH-1009') {
-                this.$message.error(res.data.msgInfo);
-              }
-              else {
-                this.$message.error(res.data.msgInfo);
-              }
-            })
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      //添加账户
-      submitForm2(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            axios({
-              method: "POST",
-              url: "http://"+this.baseUrl+"/channel/admin/channel_parent/add",
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': localStorage.token
-              },
-              params:{
-                accountName: this.ruleForm2.accountName,
-                remark: this.ruleForm2.remark,
-              },
-            }).then((res) => {
-              if (res.data.msgCd == 'ZYCASH-200') {
-                this.$message({
-                  message: '添加成功',
-                  type: 'success'
-                });
-                this.getProductList();
-                this.centerDialogVisible1=false;
               } else if (res.data.msgCd == 'ZYCASH-1009') {
                 this.$message.error(res.data.msgInfo);
               }
@@ -313,7 +297,6 @@
           return item.parentChannelCode ===vId;
         });
         this.ruleForm.parentChannelName=obj.parentChannelName;
-        this.ruleForm.parentChannelCode=obj.parentChannelCode;
       },
       //所属应用下拉选择
       selectChange2(vId,list){
@@ -326,6 +309,15 @@
         this.ruleForm.merchantId=obj1.merchantId;
         this.ruleForm.merchantName=obj1.merchantName;
         this.ruleForm.merchantCode=obj1.merchantCode;
+      },
+      //所属应用下拉选择
+      selectChange4(vId,list){
+        let obj1 = {};
+        obj1 = list.find((item)=>{
+          return item.productId ===vId;
+        });
+        this.ruleForm1.productName1=obj1.productName;
+        this.ruleForm1.productCode1=obj1.productCode;
       },
       //选择计价方式
       selectChange3(){
@@ -340,19 +332,22 @@
           this.ruleForm.cpaPrice='';
         }
       },
-      //获取所有主渠道和产品
-      getProductList() {
+      //获取所有账户
+      getAccountList() {
         axios({
           method: "GET",
-          url: "http://"+this.baseUrl+"/channel/admin/channel/get",
+          url: "http://"+this.baseUrl+"/channel/admin/account/list",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
+          }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
-            this.channelList = res.data.body.channelParentList;
-            this.productList = res.data.body.productList;
+            this.channelList = res.data.body.list;
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -368,7 +363,8 @@
       },
     },
     mounted: function () {
-       this.getProductList();
+      this.getAccountList();
+      this.getFenList();
     }
   }
 </script>

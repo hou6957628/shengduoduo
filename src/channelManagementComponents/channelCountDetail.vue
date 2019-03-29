@@ -1,7 +1,8 @@
 <template>
     <div class="content">
       <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>渠道统计列表</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/channelCount' }">渠道统计列表</el-breadcrumb-item>
+        <el-breadcrumb-item>详情</el-breadcrumb-item>
       </el-breadcrumb>
       <div class="operationContent">
         <el-col :span="9" style="height: 55px;">
@@ -24,10 +25,10 @@
         </el-col>
         <el-col :span="6" style="height: 55px;">
           产品：
-          <el-select v-model="productCodes" multiple placeholder="请选择" @change="selectChange1()">
+          <el-select v-model="productCode" placeholder="请选择" @change="selectChange1()">
             <el-option
               v-for="item in productList"
-              :key="item.productId"
+              :key="item.productCode"
               :label="item.productName"
               :value="item.productCode">
             </el-option>
@@ -35,7 +36,7 @@
         </el-col>
         <el-col :span="6" style="height: 55px;">
           主渠道：
-          <el-select v-model="parentChannelCodes" multiple placeholder="请选择" @change="selectChange2()">
+          <el-select v-model="parentChannelCode" placeholder="请选择" @change="selectChange2()">
             <el-option
               v-for="item in parentChannelList"
               :key="item.parentChannelCode"
@@ -46,7 +47,7 @@
         </el-col>
         <el-col :span="6" style="height: 55px;">
           子渠道：
-          <el-select v-model="subChannelCodes" multiple placeholder="请选择">
+          <el-select v-model="subChannelCode" placeholder="请选择">
             <el-option
               v-for="item in subChannelList"
               :key="item.subChannelCode"
@@ -56,11 +57,9 @@
           </el-select>
         </el-col>
         <el-button type="primary" icon="el-icon-search" @click="searchContent" style="margin-left: -800px;margin-top: 55px">搜索</el-button>
-        <el-button type="primary" @click="daoBtn">导出<i class="el-icon-download el-icon--right"></i></el-button>
-          <!--<a :href="http://192.168.20.216:9999/super/admin/productinfo/export?name="++'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+localStorage.token">导出</a>-->
-          <!--<a href="http://192.168.20.216:9999/super/admin/productinfo/export?name"+{{}}+>导出</a>-->
-          <!--<a v-bind:href="['http://192.168.20.216:9999/super/admin/productinfo/export?name'+this.value8+'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+localStorage.token]">导出</a>-->
-          <!--<a :href="'http://192.168.20.216:9999/super/admin/productinfo/export?name'+this.value8+'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+this.token">这是一个动态链接</a>-->
+        <el-button type="primary" @click="daoBtn">导出<i class="el-icon-download el-icon--right"></i></el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        消耗：<span>{{usedMoney}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        余额：<span>{{balance}}</span>
       </div>
       <template>
         <el-table
@@ -153,9 +152,8 @@
           <el-table-column
             fixed="right"
             label="操作"
-            width="160">
+            width="100">
             <template slot-scope="scope">
-              <el-button @click="detailChannel(scope.row)" type="text" size="medium">详情</el-button>
               <el-button @click="editChannel(scope.row)" type="text" size="medium">编辑</el-button>
             </template>
           </el-table-column>
@@ -182,19 +180,15 @@
     methods: {
       //选择产品后查询产品对应的主渠道
       selectChange1(){
-        this.parentChannelCodes=[];
-        this.subChannelCodes=[];
+        this.parentChannelCode=null;
+        this.subChannelCode=null;
         this.subChannelList=[];
-        this.getParentChannelList();
+        this.getParentChannelList(this.productCode);
       },
       //选择主渠道后查询对应的子渠道
       selectChange2(){
-        this.subChannelCodes=[];
-        if (this.parentChannelCodes.length == 0) {
-          this.subChannelList=[];
-        } else {
-          this.getSubChannelList();
-        }
+        this.subChannelCode=null;
+        this.getSubChannelList(this.parentChannelCode);
       },
       //获取所有产品
       getFenList(){
@@ -217,21 +211,20 @@
         })
       },
       //通过产品code集合获取对应的主渠道
-      getParentChannelList(){
-        let productCodes = this.productCodes.join(',');
+      getParentChannelList(data){
         axios({
           method:"GET",
-          url:"http://"+this.baseUrl+"/channel/admin/account/searchByProdCode",
+          url:"http://"+this.baseUrl+"/channel/admin/account/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params: {
-            productCodes:productCodes
+            productCodes:data
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.parentChannelList=res.data.body;
+            this.parentChannelList=res.data.body.list;
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -241,7 +234,9 @@
         })
       },
       //通过主渠道code集合获取对应的子渠道
-      getSubChannelList(){
+      getSubChannelList(data){
+        let parentChannelCodes = [];
+        parentChannelCodes.push(data);
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/channel/admin/channel/getSubChannel",
@@ -249,7 +244,7 @@
             'Content-Type':'application/json',
             'Authorization': localStorage.token
           },
-          data:JSON.stringify(this.parentChannelCodes),
+          data:JSON.stringify(parentChannelCodes),
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.subChannelList=res.data.body;
@@ -261,18 +256,113 @@
           }
         })
       },
+      //通过主渠道code获取账户余额
+      getBalance(data){
+        axios({
+          method:"GET",
+          url:"http://"+this.baseUrl+"/channel/admin/account/getByChannelCode",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            channelCode:data
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.balance=res.data.body.balance;
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
+      //通过3个code获取消耗
+      getUsedMoney(data1,data2,data3,data4,data5){
+        var data  = {
+          'startDate':data1,
+          'endDate':data2,
+          'productCodes':data3,
+          'parentChannelCodes':data4,
+          'subChannelCodes':data5,
+        };
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/channelConsume",
+          headers:{
+            'Content-Type':'application/json',
+            'Authorization': localStorage.token
+          },
+          data:JSON.stringify(data),
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.usedMoney=res.data.body;
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
       //条件查询
       searchContent(){
-        this.getProductList(this.pageNum,this.nowPageSizes,this.startTime,this.endTime,this.productCodes,this.parentChannelCodes,this.subChannelCodes);
+        if (this.parentChannelCode==null) {
+          this.$message({
+            showClose: true,
+            message: '请选择主渠道',
+            type: 'warning'
+          });
+        } else if (this.subChannelCode==null) {
+          this.$message({
+            showClose: true,
+            message: '请选择子渠道',
+            type: 'warning'
+          });
+        } else {
+          this.getProductList(this.pageNum,this.nowPageSizes,this.startTime,this.endTime,this.productCode,this.parentChannelCode,this.subChannelCode);
+          this.getUsedMoney(null,null,this.productCode,this.parentChannelCode,this.subChannelCode);
+          this.getBalance(this.parentChannelCode);
+        }
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.nowPageSizes=val;
-        this.getProductList(this.pageNum,val,this.startTime,this.endTime,this.productCodes,this.parentChannelCodes,this.subChannelCodes);
+        if (this.parentChannelCode==null) {
+          this.$message({
+            showClose: true,
+            message: '请选择主渠道',
+            type: 'warning'
+          });
+        } else if (this.subChannelCode==null) {
+          this.$message({
+            showClose: true,
+            message: '请选择子渠道',
+            type: 'warning'
+          });
+        } else {
+          this.nowPageSizes=val;
+          this.getProductList(this.pageNum,val,this.startTime,this.endTime,this.productCode,this.parentChannelCode,this.subChannelCode);
+        }
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.startTime,this.endTime,this.productCodes,this.parentChannelCodes,this.subChannelCodes);
+        if (this.parentChannelCode==null) {
+          this.$message({
+            showClose: true,
+            message: '请选择主渠道',
+            type: 'warning'
+          });
+        } else if (this.subChannelCode==null) {
+          this.$message({
+            showClose: true,
+            message: '请选择子渠道',
+            type: 'warning'
+          });
+        } else {
+          this.getProductList(val,this.nowPageSizes,this.startTime,this.endTime,this.productCode,this.parentChannelCode,this.subChannelCode);
+        }
       },
       //时间筛选
       logTimeChange(){
@@ -291,9 +381,9 @@
         var data  = {
           'startDate':this.startDate,
           'endDate':this.endDate,
-          'productCodes':this.productCodes,
-          'parentChannelCodes':this.parentChannelCodes,
-          'subChannelCodes':this.subChannelCodes,
+          'productCodes':this.productCode,
+          'parentChannelCodes':this.parentChannelCode,
+          'subChannelCodes':this.subChannelCode,
         };
         axios({
           method:"POST",
@@ -315,6 +405,7 @@
       },
       // 下载文件
       download1(data) {
+        console.log(data);
         if (!data) {
           return
         }
@@ -323,7 +414,7 @@
         let link = document.createElement('a');
         link.style.display = 'none';
         link.href = url;
-        link.setAttribute('download', '统计表.xls');
+        link.setAttribute('download', '统计表详情.xls');
         document.body.appendChild(link);
         link.click()
       },
@@ -366,20 +457,30 @@
           }
         })
       },
+      //下载文件
+      download (data) {
+        if (!data) {
+          return
+        }
+        let url = "http://"+this.baseUrl+"/super/admin/productinfo/export?name="+this.value8+"&startDate="+this.startTime+"&endDate="+this.endTime+"&token="+this.token;
+        let link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = url;
+        link.setAttribute('download', 'excel.xls');
+        document.body.appendChild(link);
+        link.click()
+      },
       //详情
-      detailChannel(row){
-        let productCode = row.productCode;
-        let parentChannelCode = row.parentChannelCode;
-        let subChannelCode = row.subChannelCode;
+      detailChannel(){
         this.$router.push({
-          path: `/channelCountDetail/${productCode}/${parentChannelCode}/${subChannelCode}`,
+          path: `/operation/${id}/${countType}`,
         });
       },
       //编辑
       editChannel(row){
         let id = row.id;
         this.$router.push({
-          path: `/editChannelStatistics/${id}`,
+          path: `/editChannelStatisticsDetail/${id}`,
         });
       },
       //过滤计价方式
@@ -397,8 +498,15 @@
       }
     },
     mounted:function () {
+      this.productCode=this.$route.params.productCode;
+      this.parentChannelCode=this.$route.params.parentChannelCode;
+      this.subChannelCode=this.$route.params.subChannelCode;
       this.getFenList();
-      this.getProductList(1,30,null,null,null,null,null);
+      this.getParentChannelList(this.productCode);
+      this.getSubChannelList(this.parentChannelCode);
+      this.getUsedMoney(null,null,this.productCode,this.parentChannelCode,this.subChannelCode);
+      this.getBalance(this.parentChannelCode);
+      this.getProductList(1,30,null,null,null,null,this.subChannelCode);
     },
     data() {
       return {
@@ -442,9 +550,11 @@
         productList:[],
         parentChannelList:[],
         subChannelList:[],
-        productCodes:[],
-        parentChannelCodes:[],
-        subChannelCodes:[],
+        productCode:null,
+        parentChannelCode:null,
+        subChannelCode:null,
+        usedMoney:null,
+        balance:null,
       }
     }
   }

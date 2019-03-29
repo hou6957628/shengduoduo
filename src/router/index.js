@@ -124,19 +124,21 @@ import addAccount from '@/privilegeManagementComponents/addAccount'
 import channelconnectionManagement from '@/channelManagementComponents/channelconnectionManagement'
 import addChannel from '@/channelManagementComponents/addChannel'
 import editChannel from '@/channelManagementComponents/editChannel'
-import childrenChannelDetail from '@/channelManagementComponents/childrenChannelDetail'
+import channelCountDetail from '@/channelManagementComponents/channelCountDetail'
+import editChannelStatistics from '@/channelManagementComponents/editChannelStatistics'
+import editChannelStatisticsDetail from '@/channelManagementComponents/editChannelStatisticsDetail'
 
 import editAccount from '@/privilegeManagementComponents/editAccount'
 import editRole from '@/privilegeManagementComponents/editRole'
 import editCollectionPerson from '@/postLoanManagementComponents/editCollectionPerson'
 
-import approvalCenter from '@/orderManagementComponents/approvalCenter'
 //渠道统计、账户、充值
 import channelCount from '@/channelManagementComponents/channelCount'
 import accountCenter from '@/channelManagementComponents/accountCenter'
 import rechargeCenter from '@/channelManagementComponents/rechargeCenter'
 
 //订单区域-待审批
+import approvalCenter from '@/orderManagementComponents/approvalCenter'
 import pendingApproval from '@/orderManagementComponents/pendingApproval'
 import orderDetail from '@/orderManagementComponents/orderDetail'
 import jibenOrder from '@/orderManagementComponents/jibenOrder'
@@ -959,12 +961,28 @@ const vueRouter = new Router({
       component: editChannel
     },
     {
-      path: '/childrenChannelDetail',
-      name: 'childrenChannelDetail',
+      path: '/channelCountDetail/:productCode/:parentChannelCode/:subChannelCode',
+      name: 'channelCountDetail',
       meta: {
         requireAuth: true
       },
-      component: childrenChannelDetail
+      component: channelCountDetail
+    },
+    {
+      path: '/editChannelStatistics/:id',
+      name: 'editChannelStatistics',
+      meta: {
+        requireAuth: true
+      },
+      component: editChannelStatistics
+    },
+    {
+      path: '/editChannelStatisticsDetail/:id',
+      name: 'editChannelStatisticsDetail',
+      meta: {
+        requireAuth: true
+      },
+      component: editChannelStatisticsDetail
     },
     {
       path: '/yunying',
@@ -1140,7 +1158,7 @@ const vueRouter = new Router({
       component: accountCenter
     },
     {
-      path: '/rechargeCenter',
+      path: '/rechargeCenter/:channelName/:id',
       name: 'rechargeCenter',
       meta: {
         requireAuth: true

@@ -5,17 +5,17 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">添加渠道&nbsp;&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-input class="searchContent" placeholder="主渠道名称或子渠道名称" v-model="channel" clearable>
-        <el-button id="searchBtn" @click="searchContent(channel)" slot="append" icon="el-icon-search">查询</el-button>
-      </el-input>
-      <el-select v-model="ruleForm.productId" placeholder="请选择产品" @change="selectChange()">
-        <el-option
-          v-for="item in electData"
-          :key="item.productId"
-          :label="item.productName"
-          :value="item.productId">
-        </el-option>
-      </el-select>
+      <el-input class="searchContent" placeholder="主渠道名称或子渠道名称" v-model="channel" clearable></el-input>
+      <el-input class="searchContent" placeholder="渠道链接" v-model="longUrl" clearable style="margin-left: 0px"></el-input>
+      <el-button id="searchBtn" @click="searchContent()" icon="el-icon-search" type="primary">查询</el-button>
+      <!--<el-select v-model="ruleForm.productId" placeholder="请选择产品" @change="selectChange()">-->
+        <!--<el-option-->
+          <!--v-for="item in electData"-->
+          <!--:key="item.productId"-->
+          <!--:label="item.productName"-->
+          <!--:value="item.productId">-->
+        <!--</el-option>-->
+      <!--</el-select>-->
     </div>
     <template>
       <el-table
@@ -90,17 +90,37 @@
   import axios from 'axios'
   export default {
     methods: {
+      //获取所有产品
+      getFenList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/productManage/productMerchantInfo",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.electData=res.data.body;
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
       //查询金融产品
       searchContent(){
-        this.getProductList(1,10,this.channel,this.ruleForm.productId);
+        this.getProductList(1,30,this.channel,this.longUrl);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.channel,this.ruleForm.productId);
+        this.getProductList(this.pageNum,val,this.channel,this.longUrl);
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.channel,this.ruleForm.productId);
+        this.getProductList(val,this.nowPageSizes,this.channel,this.longUrl);
       },
       //添加渠道
       toAddProduct(){
@@ -113,11 +133,11 @@
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
        * @param data3 主渠道名称或者子渠道名称
-       * @param data4 产品id
+       * @param data4 渠道链接
        */
       getProductList(data1,data2,data3,data4){
         axios({
-          method:"get",
+          method:"POST",
           url:"http://"+this.baseUrl+"/channel/admin/channel/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
@@ -127,12 +147,11 @@
             pageNum: data1,
             pageSize: data2,
             channelName: data3,
-            productId: data4,
+            longUrl: data4,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.tableData=res.data.body.channelList;
-            this.electData=res.data.body.productList;
+            this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
             this.pageNum=res.data.body.pageNum;
@@ -190,17 +209,19 @@
       },
     },
     mounted:function () {
-       this.getProductList(1,10,null,null);
+       this.getProductList(1,30,null,null);
+       // this.getFenList();
     },
     data() {
       return {
         tableData: [],
         channel: '',
+        longUrl: '',
         pageNum: null,
         proTotal:null,
         pageSize:null,
-        pageSizes:[10,20,30],
-        nowPageSizes:10,
+        pageSizes:[30,50,100],
+        nowPageSizes:30,
         electData: [],
         ruleForm: {
           id: '',
