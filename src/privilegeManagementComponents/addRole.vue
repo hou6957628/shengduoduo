@@ -82,20 +82,20 @@
         this.getCheckedKeys();
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            var param = new FormData();
-            param.append('roleId', null);
-            param.append('roleName', this.ruleForm.roleName);
-            param.append('description', this.ruleForm.description);
-            param.append('enabled', this.ruleForm.enabled);
-            param.append('authority', this.ruleForm.authority);
+            var data  = {
+              'roleName':this.ruleForm.roleName,
+              'description':this.ruleForm.description,
+              'enabled':this.ruleForm.enabled,
+              'authoritiyIds':this.ruleForm.authority,
+            };
             axios({
               method: "POST",
               url:"http://"+this.baseUrl+"/operate/admin/role/save",
               headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
                 'Authorization': localStorage.token
               },
-              data: param,
+              data:JSON.stringify(data),
             }).then((res) => {
               if (res.data.msgCd == 'ZYCASH-200') {
                 this.$message({
@@ -119,10 +119,10 @@
       selectChange() {
         console.log(this.ruleForm.enabled);
       },
+      //获取所有权限
       getProductList() {
         axios({
           method: "POST",
-          // url:"http://"+this.baseUrl+"/operate/admin/merchant/list",
            url:"http://"+this.baseUrl+"/operate/admin/authority/get",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -130,20 +130,19 @@
           },
           params: {
             pageNum: 1,
-            pageSize: 30,
+            pageSize: 100,
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
             this.electData = res.data.body;
-            console.log(this.electData);
           } else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
       //取消按钮
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
+      resetForm() {
+        this.$router.go(-1);
       },
       getCheckedKeys() {
         /*返回选中的id组成的数组*/

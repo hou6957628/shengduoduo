@@ -14,9 +14,9 @@
         style="width: 98%">
         <el-table-column
           fixed
-          prop="roleCode"
+          prop="id"
           label="角色ID"
-          width="150">
+          width="80">
         </el-table-column>
         <el-table-column
           prop="roleName"
@@ -29,9 +29,10 @@
           width="150">
         </el-table-column>
         <el-table-column
+          :show-overflow-tooltip="true"
           prop="authorities"
           label="角色权限"
-          width="300"
+          width="500"
           :formatter="getAuto">
         </el-table-column>
         <el-table-column
@@ -55,11 +56,12 @@
           width="160">
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作"
           width="180">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
-            <el-button v-if="scope.row.enable" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="scope.row.enable" @click="obtainedProductTip(scope.row)" type="text" size="medium">停用</el-button>
             <el-button v-if="!scope.row.enable" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
             <el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>
           </template>
@@ -88,14 +90,11 @@
     methods: {
       //每页显示多少条
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.getProductList(this.pageNum,val);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
         this.getProductList(val,this.nowPageSizes);
       },
       //创建角色
@@ -108,10 +107,8 @@
        * 获取金融产品列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 产品名称
-       * @param data4 产品编号
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/operate/admin/role/list",
@@ -136,17 +133,58 @@
       },
       //编辑产品接口
       editProduct(row){
-        console.log(row.roleId);
-        var id=row.roleId;
+        var id=row.roleCode;
         this.$router.push({
           path: `/editRole/${id}`,
         });
       },
       //删除产品接口
       deleteProduct(row){
+        this.$confirm('是否确定删除此角色?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          axios({
+            method:"post",
+            url:"http://"+this.baseUrl+"/operate/admin/role/edit",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              roleCode: row.roleCode,
+              deltetTag: true,
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              });
+              this.getProductList(1,20);
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        });
+      },
+      //提示停用产品接口
+      obtainedProductTip(row){
+        this.$confirm('是否确定停用此角色?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          this.obtainedProduct(row);
+        });
+      },
+      //停用产品接口
+      obtainedProduct(row){
         axios({
           method:"post",
-          // url:"http://"+this.baseUrl+"/super/admin/product/obtainedProduct",
           url:"http://"+this.baseUrl+"/operate/admin/role/edit",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
@@ -154,8 +192,7 @@
           },
           params:{
             roleCode: row.roleCode,
-            deltetTag: true,
-            enabled: row.enabled,
+            stopTag: !row.enable,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -163,33 +200,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,30);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
-      //停用产品接口
-      obtainedProduct(row){
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/operate/admin/product/delOrStopProduct",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            roleCode: row.roleCode,
-            deltetTag: false,
-            enabled: !row.enabled,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.getProductList(1,30);
+            this.getProductList(1,20);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -198,26 +209,27 @@
       //过滤类型字段
       getAuto(row,column){
         var roleName=[];
-        for(var i=0;i<row.authorities.length;i++){
-          roleName.push(row.authorities[i].authorityName)
+        if (row.list != null) {
+          for(var i=0;i<row.list.length;i++){
+            roleName.push(row.list[i].authorityName)
+          }
+          return roleName.join("、");
+        } else {
+          return roleName.join('');
         }
-        return roleName.join("、");
-
       },
     },
     mounted:function () {
-      // this.finProduct=this.$route.params.name;
-      this.getProductList(1,30);
+      this.getProductList(1,20);
     },
     data() {
       return {
         tableData: [],
-        finProduct: '',
         pageNum: null,
         proTotal:null,
         pageSize:null,
-        pageSizes:[30,40,50],
-        nowPageSizes:30,
+        pageSizes:[10,20,30],
+        nowPageSizes:20,
       }
     }
   }

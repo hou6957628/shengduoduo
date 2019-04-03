@@ -220,14 +220,18 @@
       getChannelList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/getChannelList",
+          url:"http://"+this.baseUrl+"/channel/admin/channel/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
+          },
+          params:{
+            pageNum:1,
+            pageSize:100
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.channelList=res.data.body;
+            this.channelList=res.data.body.list;
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }

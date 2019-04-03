@@ -6,7 +6,7 @@
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">添加账号<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-input class="searchContent"
-                placeholder="姓名、账号搜索"
+                placeholder="请输入姓名或手机号"
                 v-model="finProduct"
                 clearable>
         <el-button id="searchBtn" @click="searchContent(finProduct)" slot="append" icon="el-icon-search">查询</el-button>
@@ -140,7 +140,6 @@
       },
       //编辑产品接口
       editProduct(row){
-        console.log(row.id);
         var id=row.id;
         this.$router.push({
           path: `/editAccount/${id}`,
@@ -166,7 +165,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,30,this.finProduct,this.finProduct);
+            this.getProductList(1,20,this.finProduct,this.finProduct);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -191,7 +190,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,30);
+            this.getProductList(1,20);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -216,7 +215,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,30);
+            this.getProductList(1,20);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -240,7 +239,7 @@
       },
     },
     mounted:function () {
-      this.getProductList(1,30,null);
+      this.getProductList(1,20,null);
     },
     data() {
       return {
@@ -249,8 +248,8 @@
         pageNum: null,
         proTotal:null,
         pageSize:null,
-        pageSizes:[30,40,50],
-        nowPageSizes:30,
+        pageSizes:[10,20,30],
+        nowPageSizes:20,
       }
     }
   }

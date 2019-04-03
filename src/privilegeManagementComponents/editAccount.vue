@@ -11,23 +11,23 @@
       <el-form-item label="手机号:" prop="mobile">
         <el-input v-model="ruleForm.mobile"></el-input>
       </el-form-item>
-      <el-form-item label="密码:" prop="password">
-        <el-input v-model="ruleForm.password"></el-input>
+      <el-form-item label="修改密码:" prop="password">
+        <el-input v-model="ruleForm.password" placeholder="请输入修改的密码"></el-input>
       </el-form-item>
       <el-form-item style="margin-top: 20px" label="角色:" prop="roleId">
         <el-select v-model="ruleForm.roleId" value-key="index" placeholder="请选择" @change="selectChange1($event,electData1)">
           <el-option
             v-for="(item,index) in electData1"
-            :key="item.roleId"
+            :key="item.id"
             :label="item.roleName"
-            :value="item.roleId">
+            :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
       <el-form-item style="margin-top: 20px" label="管理产品:" prop="productIds">
         <el-select v-model="ruleForm.productIds" value-key="id" multiple placeholder="请选择">
           <el-option
-            v-for="item in products"
+            v-for="item in electData2"
             :key="item.index"
             :label="item.productName"
             :value="item.id">
@@ -122,7 +122,7 @@
             }).then((res) => {
               if (res.data.msgCd == 'ZYCASH-200') {
                 this.$message({
-                  message: '添加成功',
+                  message: '操作成功',
                   type: 'success'
                 });
                 this.$router.push('/accountManagement');
@@ -143,7 +143,7 @@
       selectChange1(vId,list){
         let obj = {};
         obj = list.find((item)=>{
-          return item.roleId === vId;
+          return item.id === vId;
         });
         this.ruleForm.roleName=obj.roleName;
       },
@@ -163,13 +163,7 @@
           if (res.data.msgCd == 'ZYCASH-200') {
             this.ruleForm = res.data.body;
             this.ruleForm.roleId = res.data.body.roles[0].id;
-            let products = res.data.body.products;
-            let _this = this;
-            products.forEach(function (item,index) {
-              console.log(item.id + '=====');
-              _this.ruleForm.productIds.push(item.id);
-            });
-            // console.log(this.ruleForm.productIds);
+            this.ruleForm.password = null;
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -195,12 +189,12 @@
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
             this.electData2 = res.data.body.list;
-            for(var i=0;i<this.electData2.length;i++){
-              this.products.push({
-                id:this.electData2[i].id.toString(),
-                productName:this.electData2[i].productName
-              });
-            }
+            // for(var i=0;i<this.electData2.length;i++){
+            //   this.products.push({
+            //     id:this.electData2[i].id.toString(),
+            //     productName:this.electData2[i].productName
+            //   });
+            // }
           } else {
             this.$message.error(res.data.msgInfo);
           }

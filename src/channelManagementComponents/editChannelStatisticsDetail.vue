@@ -27,14 +27,14 @@
         <el-form-item label="CPA单价" prop="cpaPrice">
           <el-input v-model="ruleForm.cpaPrice"></el-input>
         </el-form-item>
-        <el-form-item label="CPA数量" prop="borrowingNum" >
-          <el-input v-model="ruleForm.borrowingNum"></el-input>
+        <el-form-item label="CPA数量" prop="cpaNum" >
+          <el-input v-model="ruleForm.cpaNum"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="ruleForm.remark"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="CPAForm(1)">保存</el-button>
+          <el-button type="primary" @click="CPAForm(1,'ruleForm')">保存</el-button>
           <el-button type="info" @click="cancel()">返回</el-button>
         </el-form-item>
       </div>
@@ -56,7 +56,7 @@
           <el-input v-model="ruleForm.remark"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="CPSForm(2)">保存</el-button>
+          <el-button type="primary" @click="CPSForm(2,'ruleForm')">保存</el-button>
           <el-button type="info" @click="cancel()">返回</el-button>
         </el-form-item>
       </div>
@@ -78,7 +78,7 @@
           <el-input v-model="ruleForm.remark"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="UVForm(3)">保存</el-button>
+          <el-button type="primary" @click="UVForm(3,'ruleForm')">保存</el-button>
           <el-button type="info" @click="cancel()">返回</el-button>
         </el-form-item>
       </div>
@@ -98,7 +98,7 @@
         ],
         ruleForm: {
           cpaPrice:'',
-          borrowingNum:'',
+          cpaNum:'',
           cpsPrice:'',
           cpsNum:'',
           uvPrice:'',
@@ -109,7 +109,7 @@
           cpaPrice: [
             { required: true, message: '请填写CPA单价', trigger: 'blur' },
           ],
-          borrowingNum: [
+          cpaNum: [
             { required: true, message: '请填写CPA数量', trigger: 'blur' },
           ],
           cpsPrice: [
@@ -153,86 +153,107 @@
           }
         })
       },
-      CPAForm(data){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: this.id,
-            countType:data,
-            cpaPrice:this.ruleForm.cpaPrice,
-            borrowingNum:this.ruleForm.borrowingNum,
-            remark:this.ruleForm.remark,
+      CPAForm(data,formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              params:{
+                id: this.id,
+                countType:data,
+                cpaPrice:this.ruleForm.cpaPrice,
+                cpaNum:this.ruleForm.cpaNum,
+                remark:this.ruleForm.remark,
+              }
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+                this.$router.go(-1);
+              }else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.$router.push('/channelCount');
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        });
       },
-      CPSForm(data){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: this.id,
-            countType:data,
-            cpsPrice:this.ruleForm.cpsPrice,
-            cpsNum:this.ruleForm.cpsNum,
-            remark:this.ruleForm.remark,
+      CPSForm(data,formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              params:{
+                id: this.id,
+                countType:data,
+                cpsPrice:this.ruleForm.cpsPrice,
+                cpsNum:this.ruleForm.cpsNum,
+                remark:this.ruleForm.remark,
+              }
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+                this.$router.go(-1);
+              }else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.$router.push('/channelCount');
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        });
       },
-      UVForm(data){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: this.id,
-            countType:data,
-            uvPrice:this.ruleForm.uvPrice,
-            uvNum:this.ruleForm.uvNum,
-            remark:this.ruleForm.remark,
+      UVForm(data,formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            axios({
+              method:"POST",
+              url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+              headers:{
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Authorization': localStorage.token
+              },
+              params:{
+                id: this.id,
+                countType:data,
+                uvPrice:this.ruleForm.uvPrice,
+                uvNum:this.ruleForm.uvNum,
+                remark:this.ruleForm.remark,
+              }
+            }).then((res)=>{
+              if(res.data.msgCd=='ZYCASH-200'){
+                this.$message({
+                  message: '操作成功',
+                  type: 'success'
+                });
+                this.$router.go(-1);
+              }else {
+                this.$message.error(res.data.msgInfo);
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.$router.push('/channelCount');
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        });
       },
       //取消
       cancel(){

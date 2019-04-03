@@ -175,7 +175,6 @@
         axios({
           method:"GET",
           url:"http://"+this.baseUrl+"/risk/admin/customer_tag/list",
-          //url:"http://39.105.217.251:9998/risk/admin/customer_tag/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token

@@ -26,14 +26,14 @@
           <el-form-item label="CPA单价" prop="cpaPrice">
             <el-input v-model="ruleForm.cpaPrice"></el-input>
           </el-form-item>
-          <el-form-item label="CPA数量" prop="borrowingNum" >
-            <el-input v-model="ruleForm.borrowingNum"></el-input>
+          <el-form-item label="CPA数量" prop="cpaNum" >
+            <el-input v-model="ruleForm.cpaNum"></el-input>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input v-model="ruleForm.remark"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="CPAForm(1)">保存</el-button>
+            <el-button type="primary" @click="CPAForm(1,'ruleForm')">保存</el-button>
             <el-button type="info" @click="cancel()">返回</el-button>
           </el-form-item>
         </div>
@@ -55,7 +55,7 @@
             <el-input v-model="ruleForm.remark"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="CPSForm(2)">保存</el-button>
+            <el-button type="primary" @click="CPSForm(2,'ruleForm')">保存</el-button>
             <el-button type="info" @click="cancel()">返回</el-button>
           </el-form-item>
         </div>
@@ -77,7 +77,7 @@
             <el-input v-model="ruleForm.remark"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="UVForm(3)">保存</el-button>
+            <el-button type="primary" @click="UVForm(3,'ruleForm')">保存</el-button>
             <el-button type="info" @click="cancel()">返回</el-button>
           </el-form-item>
         </div>
@@ -97,7 +97,7 @@
         ],
         ruleForm: {
           cpaPrice:'',
-          borrowingNum:'',
+          cpaNum:'',
           cpsPrice:'',
           cpsNum:'',
           uvPrice:'',
@@ -108,7 +108,7 @@
           cpaPrice: [
             { required: true, message: '请填写CPA单价', trigger: 'blur' },
           ],
-          borrowingNum: [
+          cpaNum: [
             { required: true, message: '请填写CPA数量', trigger: 'blur' },
           ],
           cpsPrice: [
@@ -152,7 +152,15 @@
           }
         })
       },
-      CPAForm(data){
+      CPAForm(data,formName){
+        this.$refs[formName].validate((valid) => {
+            if (valid) {
+
+            } else {
+              console.log('error submit!!');
+              return false;
+            }
+        });
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
@@ -164,7 +172,7 @@
             id: this.id,
             countType:data,
             cpaPrice:this.ruleForm.cpaPrice,
-            borrowingNum:this.ruleForm.borrowingNum,
+            cpaNum:this.ruleForm.cpaNum,
             remark:this.ruleForm.remark,
           }
         }).then((res)=>{
@@ -179,7 +187,16 @@
           }
         })
       },
-      CPSForm(data){
+      CPSForm(data,formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
@@ -206,7 +223,16 @@
           }
         })
       },
-      UVForm(data){
+      UVForm(data,formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",

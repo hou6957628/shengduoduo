@@ -2,7 +2,7 @@
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/roleList' }">角色列表</el-breadcrumb-item>
-      <el-breadcrumb-item>添加角色</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
       <el-form-item label="角色名称:" prop="roleName">
@@ -19,7 +19,9 @@
         node-key="id"
         ref="tree"
         highlight-current
-        :props="defaultProps" style="padding-left: 15px;">
+        :props="defaultProps"
+        :default-checked-keys="electData2"
+        style="padding-left: 15px;">
       </el-tree>
       <el-form-item style="margin-top: 20px" label="是否启用:" prop="enabled">
         <el-select v-model="ruleForm.enabled" placeholder="请选择" @change="selectChange">
@@ -48,32 +50,35 @@
     data() {
       return {
         electData:[],
+        electData2:[],
         electData1: [
           {key: false, Id: "不启用"},
           {key: true, Id: "启用"},
         ],
         electValue: '',
         ruleForm: {
+          roleId: '',
           roleName: '',
           description: '',
-          enabled: true,
-          authority:[],
+          enabled: '',
+          authorities:[],
         },
         rules: {
           roleName: [
             {required: true, message: '请输入角色名称', trigger: 'blur'},
           ],
           description: [
-            {required: true, message: '请输入角色说明', trigger: 'change'}
+            {required: true, message: '请输入角色说明', trigger: 'blur'}
           ],
           enabled: [
-            {required: true, message: '请选择是否启用', trigger: 'change'}
+            {required: true, message: '请选择是否启用', trigger: 'blur'}
           ]
         },
         defaultProps: {
           children: 'list',
           label: 'name'
-        }
+        },
+        roleCode:''
       };
     },
     methods: {
@@ -82,20 +87,21 @@
         this.getCheckedKeys();
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            var param = new FormData();
-            param.append('roleId', this.id);
-            param.append('roleName', this.ruleForm.roleName);
-            param.append('description', this.ruleForm.description);
-            param.append('enabled', this.ruleForm.enabled);
-            param.append('authority', this.ruleForm.authority);
+            var data  = {
+              'roleId':this.ruleForm.roleId,
+              'roleName':this.ruleForm.roleName,
+              'description':this.ruleForm.description,
+              'enabled':this.ruleForm.enabled,
+              'authoritiyIds':this.ruleForm.authorities,
+            };
             axios({
               method: "POST",
               url:"http://"+this.baseUrl+"/operate/admin/role/save",
               headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
                 'Authorization': localStorage.token
               },
-              data: param,
+              data:JSON.stringify(data),
             }).then((res) => {
               if (res.data.msgCd == 'ZYCASH-200') {
                 this.$message({
@@ -117,42 +123,75 @@
         });
       },
       selectChange() {
-        console.log(this.ruleForm.enabled);
+        this.$forceUpdate();
       },
-      getProductList() {
+      //获取角色详情
+      getProductList(data) {
         axios({
           method: "POST",
-          // url:"http://"+this.baseUrl+"/operate/admin/merchant/list",
           url:"http://"+this.baseUrl+"/operate/admin/role/get",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params: {
-            roleCode: this.id,
+            roleCode: data,
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {
-            this.electData = res.data.body;
-            console.log(this.electData);
+            this.ruleForm = res.data.body;
+            this.ruleForm.enabled = res.data.body.enable;
+            //默认选中
+            var _this = this;
+            if (this.ruleForm.authorities.length == 0) {
+              this.electData2=null;
+            } else {
+              this.ruleForm.authorities.forEach(function (item,index) {
+                _this.electData2.push(item.id);
+              })
+            }
+            this.$forceUpdate();
+            console.log(this.electData2);
           } else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
       //取消按钮
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
+      resetForm() {
+        this.$router.go(-1);
       },
+      //获取所有权限
+      getAuthorityList() {
+        axios({
+          method: "POST",
+          url:"http://"+this.baseUrl+"/operate/admin/authority/get",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            pageNum: 1,
+            pageSize: 100,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.electData = res.data.body;
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //获取选中的内容
       getCheckedKeys() {
         /*返回选中的id组成的数组*/
-        this.ruleForm.authority=this.$refs.tree.getCheckedKeys();
-        console.log(this.ruleForm.authority);
+        this.ruleForm.authorities=this.$refs.tree.getCheckedKeys();
       },
     },
     mounted: function () {
-      this.id=this.$route.params.id;
-      this.getProductList();
+      this.roleCode=this.$route.params.id;
+      this.getProductList(this.roleCode);
+      this.getAuthorityList();
     }
   }
 </script>

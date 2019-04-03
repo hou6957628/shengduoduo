@@ -21,9 +21,9 @@
         <el-select v-model="ruleForm.roleId" value-key="id" placeholder="请选择" @change="selectChange1($event,electData1)">
           <el-option
             v-for="item in electData1"
-            :key="item.roleId"
+            :key="item.id"
             :label="item.roleName"
-            :value="item.roleId">
+            :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -175,7 +175,7 @@
       selectChange1(vId,list){
         let obj = {};
         obj = list.find((item)=>{
-          return item.roleId === vId;
+          return item.id === vId;
         });
         this.ruleForm.roleName=obj.roleName;
       },

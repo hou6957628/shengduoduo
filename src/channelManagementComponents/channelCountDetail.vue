@@ -109,12 +109,12 @@
             width="80">
           </el-table-column>
           <el-table-column
-            prop="borrowingNum"
+            prop="cpaNum"
             label="CPA数量"
             width="80">
           </el-table-column>
           <el-table-column
-            prop="borrowingFactNum"
+            prop="cpaFactNum"
             label="CPA实际"
             width="80">
           </el-table-column>

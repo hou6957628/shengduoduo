@@ -317,7 +317,7 @@
     },
     data() {
       //账户名称不能重复
-      var validateName = (rule, value, callback) => {
+      var validateName1 = (rule, value, callback) => {
         if (!value) {
           callback(new Error('请输入账户名称'));
         } else {
@@ -329,11 +329,39 @@
               'Authorization': localStorage.token
             },
             params:{
-              name: value
+              parentChannelName: value
             }
           }).then((res)=>{
             if(res.data.msgCd=='ZYCASH-200'){
-              if (res.data.body == false) {
+              if (res.data.body.parentChannelName == 'false') {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
+      };
+      //账号名称不能重复
+      var validateName2 = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入账号名称'));
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/channel/admin/account/checkRepetition",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              accout: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body.accout == 'false') {
                 callback(new Error('名称重复'));
               } else {
                 callback();
@@ -367,10 +395,10 @@
         },
         rules: {
           parentChannelName: [
-            {required: true, validator: validateName, trigger: 'blur'},
+            {required: true, validator: validateName1, trigger: 'blur'},
           ],
           account: [
-            {required: true, message: '请输入账户账号', trigger: 'blur'},
+            {required: true, validator: validateName2, trigger: 'blur'},
           ],
           passwd: [
             {required: true, message: '请输入账户密码', trigger: 'blur'},

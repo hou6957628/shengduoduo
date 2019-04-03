@@ -100,6 +100,62 @@
   import axios from 'axios'
   export default {
     data() {
+      //账户名称不能重复
+      var validateName1 = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入主渠道名称'));
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/channel/admin/account/checkRepetition",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              parentChannelName: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body.parentChannelName == 'false') {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
+      };
+      //账号名称不能重复
+      var validateName2 = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入账号名称'));
+        } else {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/channel/admin/account/checkRepetition",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              accout: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body.accout == 'false') {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
+      };
       //创建子渠道数小于10个
       var validateName = (rule, value, callback) => {
         if (!value) {
@@ -157,10 +213,10 @@
         },
         rulesList: {
           parentChannelName1: [
-            {required: true, message: '请输入主渠道名称', trigger: 'blur'},
+            {required: true, validator: validateName1, trigger: 'blur'},
           ],
           account: [
-            {required: true, message: '请输入账号', trigger: 'blur'}
+            {required: true, validator: validateName2, trigger: 'blur'}
           ],
           passwd: [
             {required: true, message: '请输入密码', trigger: 'blur'},
