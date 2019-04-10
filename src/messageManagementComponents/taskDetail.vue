@@ -39,7 +39,8 @@
             </el-table-column>
             <el-table-column
               prop="classifyName"
-              label="分类"
+              label="消息分类"
+              :formatter="classifyNameFormatter"
               width="150">
             </el-table-column>
             <el-table-column
@@ -77,7 +78,8 @@
             </el-table-column>
             <el-table-column
               prop="classifyName"
-              label="分类"
+              label="消息分类"
+              :formatter="classifyNameFormatter"
               width="150">
             </el-table-column>
             <el-table-column
@@ -120,7 +122,8 @@
             </el-table-column>
             <el-table-column
               prop="classifyName"
-              label="分类"
+              label="消息分类"
+              :formatter="classifyNameFormatter"
               width="150">
             </el-table-column>
             <el-table-column
@@ -191,14 +194,18 @@
       modeIdFormatter(row){
         let modeId = row.modeId;
         if(modeId == 1){
-          return '提醒'
+          return '提醒消息'
         } else if (modeId == 2){
-          return '短信'
+          return '短信消息'
         } else if (modeId == 3){
-          return '弹窗'
+          return '弹窗消息'
         } else if (modeId == 4){
-          return '推送'
+          return '推送消息'
         }
+      },
+      //过滤分类字段
+      classifyNameFormatter(row){
+        return this.ruleForm.classifyName;
       },
     },
     mounted: function () {

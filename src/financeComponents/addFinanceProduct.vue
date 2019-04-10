@@ -91,8 +91,9 @@
           <!--周期：<el-input style="display: inline-block;width: 200px;margin-right: 5px;margin-bottom: 10px;" v-model="electDataList.domains.period"></el-input>-->
           <!--利率：<el-input style="display: inline-block;width: 200px;margin-right: 5px;margin-bottom: 10px;" v-model="electDataList.domains.rate"></el-input>-->
         <el-form-item v-for="(domain, index) in electDataList.domains" :key="index">
-          周期：<el-input style="display: inline-block;width: 200px;margin-right: 5px;margin-bottom: 10px;" v-model.number="domain.period"></el-input>
-          利率：<el-input style="display: inline-block;width: 200px;margin-right: 5px;margin-bottom: 10px;" v-model.number="domain.rate"></el-input>
+          周期：<el-input style="display: inline-block;width: 130px;margin-right: 5px;margin-bottom: 10px;" v-model.number="domain.period"></el-input>
+          金额：<el-input style="display: inline-block;width: 130px;margin-right: 5px;margin-bottom: 10px;" v-model.number="domain.amount"></el-input>
+          利率：<el-input style="display: inline-block;width: 130px;margin-right: 5px;margin-bottom: 10px;" v-model.number="domain.rate"></el-input>
           <el-button style="display: inline-block;width: 100px" @click.prevent="removeDomain(domain)">删除</el-button>
         </el-form-item>
         <el-form-item>
@@ -246,8 +247,7 @@
         ],
         electDataList: {
           domains: [
-            {period: null,rate: null},
-            {period: null,rate: null}
+            {period: null,rate: null,amount: null},
             ]
         }
         ,
@@ -428,6 +428,7 @@
       addDomain() {
         this.electDataList.domains.push({
           period: null,
+          amount: null,
           rate: null,
         });
       }

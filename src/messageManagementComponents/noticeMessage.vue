@@ -17,7 +17,7 @@
       </el-form-item>
       <el-form-item label="用户：" prop="conditionName" style="margin-top: 20px;width: 480px;position: relative;">
         <el-input v-model="ruleForm.conditionName" disabled></el-input>
-        <el-button style="position: absolute;right:-115px;top:1px;" @click="addUser()" type="primary" plain>添加用户</el-button>
+        <el-button style="position: absolute;right:-115px;top:1px;" @click="addUser(0)" type="primary" plain>添加用户</el-button>
       </el-form-item>
       <el-form-item label="分类：" prop="classifyId" style="margin-top: 20px;width: 480px">
         <el-select style="width: 320px" v-model="ruleForm.classifyId" placeholder="请选择" @change="selectChange2($event,messageClassifyList)">
@@ -611,7 +611,7 @@
         })
       },
       //添加用户弹窗
-      addUser(){
+      addUser(data){
         this.centerDialogVisible=true;
         //后台查询条件
         axios({
@@ -620,6 +620,9 @@
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
+          },
+          params:{
+            type:data
           }
         }).then((res) => {
           if (res.data.msgCd == 'ZYCASH-200') {

@@ -134,7 +134,8 @@
         <el-table-column
           prop="updateDate"
           label="发送时间"
-          width="180">
+          :formatter="sendTimeFormatter"
+          width="240">
         </el-table-column>
         <el-table-column
           prop="enabled"
@@ -608,6 +609,30 @@
           return '营销类';
         } else if (type == 3) {
           return '技术人员';
+        }
+      },
+      //过滤发送时间字段
+      sendTimeFormatter(row){
+        let type = row.type;
+        if (type == 1) {
+          return '触发类无发送时间';
+        } else {
+          let setTime = row.setTime;
+          let specificTime = row.specificTime;
+          let timeQuantum = row.timeQuantum;
+          let days = row.days;
+          let date = row.date;
+          if (setTime == 0) {
+            return '每一天：' + specificTime;
+          } else if (setTime == 1) {
+            return '时间段：' + timeQuantum + ' ' + specificTime;
+          } else if (setTime == 2) {
+            return '某天：' + date + ' ' + specificTime;
+          } else if (setTime == 3) {
+            return '每隔多少天：' + days + '天 '+ specificTime;
+          } else if (setTime == 4) {
+            return '立即执行';
+          }
         }
       },
       //批量执行任务接口

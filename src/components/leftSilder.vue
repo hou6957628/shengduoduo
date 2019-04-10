@@ -1,6 +1,6 @@
 <template>
     <div class="leftSilder">
-      <div style="width: 165px;height: 70px"></div>
+      <div style="width: 175px;height: 70px"></div>
       <el-row class="tac">
         <el-col :span="24">
           <el-menu

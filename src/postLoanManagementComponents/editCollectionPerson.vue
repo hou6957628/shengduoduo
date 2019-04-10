@@ -326,10 +326,12 @@
             this.ruleForm=res.data.body.accountManager;
             this.ruleForm.productIds=[];
             this.ruleForm.groupId=res.data.body.accountManager.operationGroup.id;
-            this.ruleForm.roleId=res.data.body.accountManager.role.id;
-            res.data.body.accountManager.products.forEach(function (item,index) {
+            this.ruleForm.roleId=res.data.body.accountManager.roles[0].id;
+            let products = res.data.body.accountManager.products;
+            products.forEach(function (item,index) {
               _this.ruleForm.productIds.push(item.id);
             });
+            console.log(this.ruleForm.productIds);
           }else {
             this.$message.error(res.data.msgInfo);
           }

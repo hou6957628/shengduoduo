@@ -41,7 +41,7 @@
         <el-select v-model="period" placeholder="请选择">
           <el-option
             v-for="(item ,index) in periodList"
-            :key="index"
+            :key="item.id"
             :label="item.period"
             :value="item.id">
           </el-option>

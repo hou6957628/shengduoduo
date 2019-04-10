@@ -56,6 +56,7 @@
             <el-table-column
               prop="classifyName"
               label="分类"
+              :formatter="classifyNameFormatter"
               width="120">
             </el-table-column>
             <el-table-column
@@ -777,6 +778,10 @@
         } else if (modeId == 4){
           return '推送'
         }
+      },
+      //过滤分类字段
+      classifyNameFormatter(row){
+        return this.ruleForm.classifyName;
       },
       //移除
       deleteRow(index, rows) {
