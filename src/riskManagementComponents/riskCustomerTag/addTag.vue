@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/userTagsList' }">用户标签管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/tagList' }">用户标签管理</el-breadcrumb-item>
       <el-breadcrumb-item>创建标签</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">

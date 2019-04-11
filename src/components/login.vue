@@ -8,7 +8,7 @@
             <el-input v-model="ruleForm.username"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password" style="margin-bottom: 10px;font-size: 16px;">
-            <el-input v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
+            <el-input type="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
           </el-form-item>
           <el-form-item style="text-align: left">
             <el-checkbox-group v-model="ruleForm.type">
@@ -44,7 +44,7 @@
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'},
           ]
-        }
+        },
       };
     },
     methods: {
@@ -69,7 +69,8 @@
                   message: '登录成功',
                   type: 'success'
                 });
-                this.goHome();
+                this.getPermissionByUserId();
+                this.$forceUpdate();
               }else {
                 this.$message.error(res.data.msgInfo);
               }
@@ -84,9 +85,54 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      goHome(){
-        this.$router.push('/financeProductList');
-      }
+      goHome(url){
+        this.$router.push('/'+url);
+      },
+      //获取登录用户的权限
+      getPermissionByUserId(){
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/operate/admin/getAuthoryByUser",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            //左侧列表权限
+            let arrV1 = ["operate:productlist","operate:merchantlist","operate:productManage:list","user:customer:list","user:black:list","credit:bank:getBankCardInfoByParams",
+              "risk:field:list","risk:tag:list","risk:rule:list","risk:rule_collection:list","risk:collection_flow:list","risk:parent_flow:list","risk:flow_log:list",
+              "order:borrowing:getOrderList","order:borrowing:getOrderList","order:borrowing:getOrderList","order:borrowing:getOrderList","order:borrowing:getOrderList",
+              "order:label:list","order:callType:list","operate:collection:list","operate:group:list","order:borrowing:find","order:borrowing:findAssignedOrder",
+              "order:borrowing:findCollectionOrder","order:borrowing:findCollectionOrder","operate:role:list","operate:account:list","channel:channel:list","channel:channel_statistics:list",
+              "channel:account:list","order:audit:list","order:pending:list","order:borrowing:list","order:borrowing:list","order:repayment:list","order:payment:list",
+              "quota:amountField:list","quota:amountTag:list","quota:amountFlow:list","quota:amountFlow:list","order:flowField:getFieldList","order:flowField:list",
+              "order:ordertTag:hitList","message:message_classify:find","message:message:find","message:message:find","message:message:find","message:message:find",
+              "message:message:find","message:messagelog:list"];
+            let arrV2 = ["financeProductList","merchantProductList","productProductList","userProductList","blackList","bankCardManagement","fieldList","tagList","ruleList",
+              "collectionList","flowList","flowHeadList","flowLogList","afterLoanManagement","afterLoanNoRepay","afterLoanRepayed","outsourcingOrderList","outsourcingOrderRepayedList",
+              "collectionTag","callTypeTag","collectionPersonManagement","collectionGroupManagement","collectionOrder","collectionOrderList","collectionTaskList","collectionTaskFinishList",
+              "roleList","accountManagement","channelconnectionManagement","channelCount","accountCenter","pendingApproval","pendingLoan","loanMade","orderList",
+              "paymentHistory","loanRecord","amountFieldList","amountTagList","amountFlowList","amountFlowLogList","orderFieldList","orderFlowList","orderFlowLogList",
+              "messageClassify","smsMessage","reminderMessage","popUpMessage","pushMessage","messageConfigurationList","messageRecord"];
+            let arr = res.data.body;
+            let flag = '';
+            for(var i=0;i<arr.length;i++) {
+              flag = arrV1.indexOf(arr[i]);
+              if (flag != -1) {
+                console.log(flag);
+                break;
+              }
+            }
+            localStorage.authorities=res.data.body;
+            if(localStorage.authorities.length){
+              this.goHome(arrV2[flag]);
+            }
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
   }
 </script>

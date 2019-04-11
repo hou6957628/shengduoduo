@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/userTagsList' }">用户标签</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/tagList' }">用户标签</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建标签<i class="el-icon-upload el-icon-circle-plus"></i></el-button>

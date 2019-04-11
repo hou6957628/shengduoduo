@@ -42,7 +42,12 @@ Vue.prototype.currentDate=new Date();
 Vue.prototype.currentDateZero=new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0);
 //当前时间前一个月
 Vue.prototype.beforeOneMonth=new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0);
-
+//权限全局方法
+Vue.prototype.hasPermissionCustom = function (permission){
+  // console.log(localStorage.authorities + '===');
+  let flag = localStorage.authorities.indexOf(permission);
+  return flag != -1;
+};
 new Vue({
   el: '#app',
   router,

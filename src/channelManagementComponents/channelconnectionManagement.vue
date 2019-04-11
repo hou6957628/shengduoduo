@@ -47,6 +47,7 @@
         <el-table-column
           prop="longUrl"
           label="长链接"
+          :formatter="longUrlFormatter"
           width="500">
         </el-table-column>
         <el-table-column
@@ -207,6 +208,13 @@
       selectChange(){
         this.getProductList(1,10,this.channel,this.ruleForm.productId);
       },
+      //过去长链接字段
+      longUrlFormatter(row){
+        let longUrl = row.longUrl;
+        var index=longUrl.indexOf("\/");
+        let obj=longUrl.substring(index);
+        return 'http://jmyq.wzgeek.com' + obj;
+      }
     },
     mounted:function () {
        this.getProductList(1,30,null,null);

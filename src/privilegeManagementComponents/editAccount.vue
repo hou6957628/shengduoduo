@@ -14,7 +14,7 @@
       <el-form-item label="修改密码:" prop="password">
         <el-input v-model="ruleForm.password" placeholder="请输入修改的密码"></el-input>
       </el-form-item>
-      <el-form-item style="margin-top: 20px" label="角色:" prop="roleId">
+      <el-form-item style="margin-top: 20px" label="角色名称:" prop="roleId">
         <el-select v-model="ruleForm.roleId" value-key="index" placeholder="请选择" @change="selectChange1($event,electData1)">
           <el-option
             v-for="(item,index) in electData1"

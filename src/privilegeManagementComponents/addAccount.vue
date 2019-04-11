@@ -5,7 +5,7 @@
       <el-breadcrumb-item>添加账户</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="角色名称:" prop="name">
+      <el-form-item label="账号名称:" prop="name">
         <el-input v-model="ruleForm.name"></el-input>
       </el-form-item>
       <el-form-item label="手机号:" prop="mobile">
@@ -17,7 +17,7 @@
       <el-form-item label="确认密码:" prop="rePassword">
         <el-input v-model="ruleForm.rePassword"></el-input>
       </el-form-item>
-      <el-form-item style="margin-top: 20px" label="角色:" prop="roleId">
+      <el-form-item style="margin-top: 20px" label="角色名称:" prop="roleId">
         <el-select v-model="ruleForm.roleId" value-key="id" placeholder="请选择" @change="selectChange1($event,electData1)">
           <el-option
             v-for="item in electData1"

@@ -20,7 +20,7 @@
         <el-input v-model="ruleForm.parentChannelCode" disabled="disabled"></el-input>
       </el-form-item>
       <el-form-item label="所属应用:" prop="productId">
-        <el-select v-model="ruleForm.productId" placeholder="请选择" @change="selectChange2($event,productList)">
+        <el-select v-model="ruleForm.productId" disabled="disabled" placeholder="请选择">
           <el-option
             v-for="item in productList"
             :key="item.productId"
@@ -353,6 +353,9 @@
           return item.parentChannelCode ===vId;
         });
         this.ruleForm.parentChannelName=obj.parentChannelName;
+        this.ruleForm.productId=obj.productId;
+        this.ruleForm.productName=obj.productName;
+        this.ruleForm.productCode=obj.productCode;
       },
       //所属应用下拉选择
       selectChange2(vId,list){

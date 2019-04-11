@@ -48,8 +48,9 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="role.roleName"
+          prop="roles"
           label="群组角色"
+          :formatter="roleNameFormatter"
           width="150">
         </el-table-column>
         <el-table-column
@@ -222,10 +223,13 @@
         });
         return productName;
       },
+      //过滤群组角色字段
+      roleNameFormatter(row){
+        return row.roles[0].roleName;
+      },
       //下拉选择
       selectChange(row){
         this.getProductList(1,30,this.finProduct,this.electValue);
-        console.log(this.electValue);
       },
     },
     mounted:function () {

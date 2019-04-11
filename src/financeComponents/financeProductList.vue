@@ -100,8 +100,8 @@
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
             <el-button @click="openWarningDelete(scope.row)" type="text" size="medium">删除</el-button>
             <el-button @click="copyProduct(scope.row)" type="text" size="medium">复制</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
+            <el-button @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
           </template>
         </el-table-column>
       </el-table>

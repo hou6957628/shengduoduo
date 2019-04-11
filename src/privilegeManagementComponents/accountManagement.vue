@@ -27,23 +27,23 @@
         </el-table-column>
         <el-table-column
           prop="name"
-          label="姓名"
-          width="150">
-        </el-table-column>
-        <el-table-column
-          prop="mobile"
           label="账号"
           width="150">
         </el-table-column>
         <el-table-column
+          prop="mobile"
+          label="手机号"
+          width="150">
+        </el-table-column>
+        <el-table-column
           prop="roles"
-          label="群组角色"
+          label="角色名称"
           :formatter="rolesFormatter"
           width="250">
         </el-table-column>
         <el-table-column
           prop="products"
-          label="产品选择"
+          label="产品名称"
           width="250"
           :formatter="getAuto">
         </el-table-column>

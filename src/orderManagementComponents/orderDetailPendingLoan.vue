@@ -42,8 +42,8 @@
       </table>
     </div>
     <el-button-group style="margin: 0 auto;width: 500px;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrder('0')">同意</el-button>
-      <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrder('1')">拒绝</el-button>
+      <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrderTip('0')">同意</el-button>
+      <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrderTip('1')">拒绝</el-button>
       <el-button style="margin-left: 10px" class="la" type="danger" @click="cancelAuditOrder()">取消</el-button>
       <el-button style="margin-left: 10px" class="la" type="danger" @click="resetForm()">关闭</el-button>
     </el-button-group>
@@ -90,6 +90,28 @@
       };
     },
     methods: {
+      //审核订单弹窗
+      batchAuditOrderTip(status){
+        if (status == 0) {
+          this.$confirm('是否确定同意?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+          }).then(() => {
+            this.batchAuditOrder(status);
+          });
+        } else if (status == 1) {
+          this.$confirm('是否确定拒绝?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+          }).then(() => {
+            this.batchAuditOrder(status);
+          });
+        }
+      },
       //审核订单
       batchAuditOrder(status){
         axios({
@@ -118,27 +140,34 @@
       },
       //取消订单
       cancelAuditOrder(){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/cancel",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            orderId: this.orderId2,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            });
-            this.$router.go(-1);
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+        this.$confirm('是否确定取消?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/order/admin/borrowing/cancel",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              orderId: this.orderId2,
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              });
+              this.$router.go(-1);
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        });
       },
       //取消按钮
       resetForm() {

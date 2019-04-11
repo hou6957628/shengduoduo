@@ -5,8 +5,10 @@
       <el-breadcrumb-item>产品列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">创建产品&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-button class="upLoadBtn" @click="toMerchantProductList()" type="primary">商户列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">
+        创建产品&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button class="upLoadBtn" @click="toMerchantProductList()" type="primary">
+        商户列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-input @click="searchProduct" class="searchContent"
         placeholder="产品名称、编号搜索"
         v-model="finProduct"
@@ -104,7 +106,6 @@
           <template slot-scope="scope">
             <el-button @click="configureProduct(scope.row)" type="text" size="medium">配置</el-button>
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
-            <!--<el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>-->
             <el-button @click="copyProduct(scope.row)" type="text" size="medium">复制</el-button>
             <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>
             <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
