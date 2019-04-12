@@ -47,7 +47,7 @@
             字段名称：<el-button @click="xuan(index)" :id="['btn'+index]">点击选择</el-button>
             <!--数字类型type=0：两个输入框-->
             <div class="noDisplay" :class="['type'+index]">
-              <el-select v-model="domain.symbolCode1">
+              <el-select v-model="domain.symbolCode1" @change="changeSelect3()">
                 <el-option
                   v-for="item in fieldCodeList0"
                   :key="item.key"
@@ -56,7 +56,7 @@
                 </el-option>
               </el-select>
               <el-input type="text" style="width: 200px" v-model="domain.fieldValue1" @keyup.native="numberCheck1(index)"></el-input>
-              <el-select v-model="domain.symbolCode2">
+              <el-select v-model="domain.symbolCode2" @change="changeSelect3()">
                 <el-option
                   v-for="item in fieldCodeList0"
                   :key="item.key"
@@ -500,7 +500,6 @@
         this.electDataList.domains[index].operationalSymbolName=obj.Id;
       },
       changeSelect3(data){
-        console,log(data);
         this.$forceUpdate();
       },
       //添加标签

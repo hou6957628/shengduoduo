@@ -280,9 +280,9 @@ axios.interceptors.response.use(
   });
 
 //测试环境
-// Vue.prototype.baseUrl="39.105.217.251:31999";
+Vue.prototype.baseUrl="47.93.234.167:31999";
 //正式环境
-Vue.prototype.baseUrl="60.205.216.141";
+// Vue.prototype.baseUrl="60.205.216.141";
 //渠道管理
 // Vue.prototype.baseUrl="localhost:9996";
 //消息配置

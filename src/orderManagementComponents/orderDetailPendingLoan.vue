@@ -36,12 +36,10 @@
           <td>展期应还金额：{{this.borrowingForm.repaymentDefer}}</td>
           <td>展期实际还款金额（元）：{{this.borrowingForm.repaymentDeferPayment}}</td>
           <td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>
-          <td>展期次数：没有此字段</td>
-          <td>还款方式：没有此字段</td>
         </tr>
       </table>
     </div>
-    <el-button-group style="margin: 0 auto;width: 500px;display: block;margin-top: 40px;margin-bottom: 40px">
+    <el-button-group style="margin: 0 auto;width: 600px;display: block;margin-top: 40px;margin-bottom: 40px">
       <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrderTip('0')">同意</el-button>
       <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrderTip('1')">拒绝</el-button>
       <el-button style="margin-left: 10px" class="la" type="danger" @click="cancelAuditOrder()">取消</el-button>

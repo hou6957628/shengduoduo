@@ -147,11 +147,13 @@
               this.electData2=null;
             } else {
               this.ruleForm.authorities.forEach(function (item,index) {
-                _this.electData2.push(item.id);
+                if (item.type == 1) {
+                  _this.electData2.push(item.id);
+                }
               })
             }
-            this.$forceUpdate();
             console.log(this.electData2);
+            this.$forceUpdate();
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -185,7 +187,9 @@
       //获取选中的内容
       getCheckedKeys() {
         /*返回选中的id组成的数组*/
-        this.ruleForm.authorities=this.$refs.tree.getCheckedKeys();
+        let vv1 = this.$refs.tree.getHalfCheckedKeys();
+        let vv2 = this.$refs.tree.getCheckedKeys();
+        this.ruleForm.authorities = vv1.concat(vv2);
       },
     },
     mounted: function () {

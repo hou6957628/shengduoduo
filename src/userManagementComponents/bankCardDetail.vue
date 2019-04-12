@@ -16,7 +16,6 @@
       <p><span>是否是快捷支付：</span>{{bankCard.id}}</p>
       <p><span>创建时间：</span>{{bankCard.createDate}}</p>
       <p><span>更新时间：</span>{{bankCard.updateDate}}</p>
-      <p><span>备注：</span>后台无此属性</p>
       <p><span>用户姓名：</span>{{bankCard.name}}</p>
       <p><span>身份证号：</span>{{bankCard.number}}</p>
       <p><span>注册手机号：</span>{{bankCard.registerMobile}}</p>

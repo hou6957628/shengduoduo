@@ -22,8 +22,8 @@
       <h3>基本信息</h3>
       <table >
         <tr>
-          <td>用户ID：{{this.cusCustomer.id}}</td><td> 手机号：{{this.cusCustomer.mobile}}</td><td>  渠道：{{this.cusCustomer.channelName==null?'--':this.cusCustomer.channelName}}</td>
-          <td>新户老户：{{this.cusCustomer.reBorrow==1?'老户':'新户'}}</td><td>手机机型：{{this.cusCustomer.device==null?'--':this.cusCustomer.device}}</td>
+          <td>用户ID：{{this.cusCustomer.id}}</td><td> 手机号：{{this.cusCustomer.mobile}}</td><td>  渠道：{{this.cusCustomer.channelName==null?'无':this.cusCustomer.channelName}}</td>
+          <td>新户老户：{{this.cusCustomer.reBorrow==1?'老户':'新户'}}</td>
           <td>注册时间：{{this.cusCustomer.createDate}}</td><td>所属平台：{{this.cusCustomer.productName}}</td>
         </tr>
         <tr>
@@ -49,7 +49,6 @@
       <table >
         <tr>
           <td>学历：{{this.basicInfo.education}}</td><td>婚姻情况：{{this.basicInfo.marital}}</td><td>居住地址：{{this.basicInfo.addressDetail==null?'--':this.basicInfo.addressDetail}}</td>
-          <td>工作地址：{{this.basicInfo.corpDetail==null?'--':this.basicInfo.corpDetail}}</td><td>职业：{{this.basicInfo.status==null?'--':this.basicInfo.status}}</td>
         </tr>
       </table>
       <h3>联系人</h3>
@@ -97,8 +96,13 @@
         bankCard:[],
         cusCustomer:{},
         tianjiReport:{},
-        idCard:[],
-        idFace:[],
+        idCard:{
+          "front":"http://39.96.195.239/images/zhan.jpg",
+          "back":"http://39.96.195.239/images/zhan.jpg",
+        },
+        idFace:{
+          "image":"http://39.96.195.239/images/zhan.jpg",
+        },
         front:{},
         id:null,
         linkMan:[
@@ -158,36 +162,42 @@
             this.bankCard = res.data.body.bankCard;
             this.cusCustomer = res.data.body.cusCustomer;
             this.tianjiReport = res.data.body.tianjiReport;
-            this.idCard = res.data.body.idCard;
-            this.idFace = res.data.body.idFace;
+            if (res.data.body.idCard != undefined) {
+              this.idCard = res.data.body.idCard;
+            }
+            if (res.data.body.idFace != null) {
+              this.idFace = res.data.body.idFace;
+            }
             this.linkMan = res.data.body.linkMan;
             this.authorizationStatus = res.data.body.authorizationStatus;
-            this.basicInfo = res.data.body.basicInfo;
-            if (res.data.body.basicInfo.marital==1) {
-              this.basicInfo.marital='已婚';
-            } else if (res.data.body.basicInfo.marital==2) {
-              this.basicInfo.marital='未婚';
-            } else if (res.data.body.basicInfo.marital==3) {
-              this.basicInfo.marital='离异';
-            } else {
-              this.basicInfo.marital='--';
-            }
-            if (res.data.body.basicInfo.education==0) {
-              this.basicInfo.education='初中及以下';
-            } else if (res.data.body.basicInfo.education==1) {
-              this.basicInfo.education='高中';
-            } else if (res.data.body.basicInfo.education==2) {
-              this.basicInfo.education='专科';
-            } else if (res.data.body.basicInfo.education==3) {
-              this.basicInfo.education='本科';
-            } else if (res.data.body.basicInfo.education==4) {
-              this.basicInfo.education='研究生';
-            } else if (res.data.body.basicInfo.education==5) {
-              this.basicInfo.education='博士生';
-            } else if (res.data.body.basicInfo.education==6) {
-              this.basicInfo.education='留学生';
-            } else {
-              this.basicInfo.education='--';
+            if (res.data.body.basicInfo != null) {
+              this.basicInfo = res.data.body.basicInfo;
+              if (res.data.body.basicInfo.marital==1) {
+                this.basicInfo.marital='已婚';
+              } else if (res.data.body.basicInfo.marital==2) {
+                this.basicInfo.marital='未婚';
+              } else if (res.data.body.basicInfo.marital==3) {
+                this.basicInfo.marital='离异';
+              } else {
+                this.basicInfo.marital='--';
+              }
+              if (res.data.body.basicInfo.education==0) {
+                this.basicInfo.education='初中及以下';
+              } else if (res.data.body.basicInfo.education==1) {
+                this.basicInfo.education='高中';
+              } else if (res.data.body.basicInfo.education==2) {
+                this.basicInfo.education='专科';
+              } else if (res.data.body.basicInfo.education==3) {
+                this.basicInfo.education='本科';
+              } else if (res.data.body.basicInfo.education==4) {
+                this.basicInfo.education='研究生';
+              } else if (res.data.body.basicInfo.education==5) {
+                this.basicInfo.education='博士生';
+              } else if (res.data.body.basicInfo.education==6) {
+                this.basicInfo.education='留学生';
+              } else {
+                this.basicInfo.education='--';
+              }
             }
             var _this=this;
             this.linkMan.forEach(function (item,index) {

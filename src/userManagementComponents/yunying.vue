@@ -55,12 +55,12 @@
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="time"
+                  prop="calledTime"
                   label="联系时间(分)"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="number"
+                  prop="calledNumber"
                   label="被叫次数"
                   width="150">
                 </el-table-column>
@@ -116,12 +116,12 @@
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="time"
+                  prop="callTime"
                   label="联系时间(分)"
                   width="150">
                 </el-table-column>
                 <el-table-column
-                  prop="number"
+                  prop="callNumber"
                   label="主叫次数"
                   width="150">
                 </el-table-column>

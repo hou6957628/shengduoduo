@@ -146,8 +146,9 @@
       },
       getCheckedKeys() {
         /*返回选中的id组成的数组*/
-        this.ruleForm.authority=this.$refs.tree.getCheckedKeys();
-        console.log(this.ruleForm.authority);
+        let vv1 = this.$refs.tree.getHalfCheckedKeys();
+        let vv2 = this.$refs.tree.getCheckedKeys();
+        this.ruleForm.authority = vv1.concat(vv2);
       },
     },
     mounted: function () {

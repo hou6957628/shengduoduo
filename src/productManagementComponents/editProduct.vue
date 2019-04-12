@@ -55,7 +55,6 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            console.log(this.type);
             var param = new FormData();  // 创建form对象
             param.append('id', this.id)  // 通过append向form对象添加数据
             param.append('productName', this.ruleForm.productName)  // 通过append向form对象添加数据
@@ -64,7 +63,7 @@
             if (!this.type) {
               axios({
                 method:"POST",
-                url:"http://"+this.baseUrl+"/operate/admin/productManage/copyProduct",
+                url:"http://"+this.baseUrl+"/operate/admin/productManage/saveProduct",
                 headers:{
                   'Content-Type':'application/x-www-form-urlencoded',
                   'Authorization': localStorage.token

@@ -65,6 +65,7 @@
       </el-col>
       <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
       <el-button type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>
+      <el-button type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>
     </div>
     <template>
       <el-table
@@ -142,9 +143,10 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="100">
+          width="150">
           <template slot-scope="scope">
             <el-button @click="detailProduct(scope.row)" type="text" size="medium">审核</el-button>
+            <el-button @click="jsProduct(scope.row)" type="text" size="medium">机审</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -190,6 +192,50 @@
         } else {
           this.centerDialogVisible1=true;
         }
+      },
+      //批量机审弹窗
+      batchjsOrderTip(){
+        if (this.orderIds.length==0) {
+          this.$message({
+            showClose: true,
+            message: '请选择至少一个订单',
+            type: 'warning'
+          });
+        } else {
+          this.$confirm('是否确定批量机审?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+          }).then(() => {
+            this.batchjsOrder();
+          });
+        }
+      },
+      //批量机审
+      batchjsOrder(){
+        let orderIdsStr = this.orderIds.join(',');
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/audit/machineTrial",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            orderIds: orderIdsStr,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
       },
       //批量审核订单
       batchAuditOrder(status){
@@ -310,6 +356,37 @@
         let orderId=row.orderId;
         this.$router.push({
           path: `/orderDetail/${id}/${orderId}`,
+        });
+      },
+      //机审
+      jsProduct(row){
+        this.$confirm('是否确定机审?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/order/admin/audit/machineTrial",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              orderIds: row.orderId,
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              });
+              this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
         });
       },
       //全选

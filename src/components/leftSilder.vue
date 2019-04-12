@@ -80,7 +80,7 @@
                 <el-menu-item v-if="this.hasPermissionCustom('risk:flow_log:list')" index="/flowLogList">风险命中列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu v-if="this.hasPermissionCustom('order')" index="6" style="padding-left:0 ;">
+            <el-submenu v-if="this.hasPermissionCustom('order:daihou')" index="6" style="padding-left:0 ;">
               <template style="padding-left: 5px" slot="title">
                 <i class="el-icon-menu"></i>
                 <span>贷后管理</span>

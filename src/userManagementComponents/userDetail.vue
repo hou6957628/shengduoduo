@@ -12,7 +12,9 @@
       <router-link :to="'/jiben/'+this.id" tag="li">基本信息</router-link>
       <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
       <router-link :to="'/yunying/' + this.id" tag="li">运营商通讯录比对</router-link>
+      <template v-if="this.tianjiReport">
       <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
+      </template>
       <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>
       <router-link :to="'/yonghu/' + this.id" tag="li">用户催收记录</router-link>
       <router-link :to="'/dingdan/' + this.id" tag="li">订单记录</router-link>
@@ -67,7 +69,9 @@
             this.bankCard = res.data.body.bankCard;
             this.cusCustomer = res.data.body.cusCustomer;
             this.tianjiReport = res.data.body.tianjiReport;
-            this.tianjiReport.tianjiUrl = res.data.body.tianjiReport.html;
+            if (this.tianjiReport != null) {
+              this.tianjiReport.tianjiUrl = res.data.body.tianjiReport.html;
+            }
             this.idCard = res.data.body.idCard;
             this.idFace = res.data.body.idFace;
             this.linkMan = res.data.body.linkMan;
@@ -139,6 +143,7 @@
         }
       },
       htmlFalse:function(arg1){
+        console.log(arg1 + "--");
         var result = arg1.substring(13);
         return 'http://39.96.195.239' + result;
       }

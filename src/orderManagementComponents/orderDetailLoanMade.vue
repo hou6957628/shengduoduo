@@ -36,8 +36,6 @@
         <td>展期应还金额：{{this.borrowingForm.repaymentDefer}}</td>
         <td>展期实际还款金额（元）：{{this.borrowingForm.repaymentDeferPayment}}</td>
         <td>减免金额：{{this.borrowingForm.repaymentDiscountAmount}}</td>
-        <td>展期次数：没有此字段</td>
-        <td>还款方式：没有此字段</td>
       </tr>
       <tr>
         <td>催收员：{{this.borrowingForm.collectorName}}</td>
