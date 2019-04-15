@@ -152,8 +152,7 @@
                 }
               })
             }
-            console.log(this.electData2);
-            this.$forceUpdate();
+            this.getAuthorityList();
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -195,7 +194,6 @@
     mounted: function () {
       this.roleCode=this.$route.params.id;
       this.getProductList(this.roleCode);
-      this.getAuthorityList();
     }
   }
 </script>
