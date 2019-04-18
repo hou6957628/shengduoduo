@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/pendingLoan' }">待放款列表</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/pendingLoan' }">委外订单</el-breadcrumb-item>
       <el-breadcrumb-item>详情</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="jiben">
@@ -17,7 +17,7 @@
         </tr>
         <tr>
           <td>申请时间：{{this.borrowingForm.createDate}}</td>
-          <td>放款时间：{{this.borrowingForm.borrowingPaymentDate==null?'--':this.borrowingForm.borrowingPaymentDate}}</td>
+          <td>放款时间：{{this.borrowingForm.borrowingPaymentDate}}</td>
           <td>预计还款时间：{{this.borrowingForm.repaymentEndDate}}</td>
           <td>实际还款时间：{{this.borrowingForm.repaymentPaymentDate==null?'--':this.borrowingForm.repaymentPaymentDate}}</td>
           <td>借款金额：{{this.borrowingForm.borrowingCapital}}</td>
@@ -39,23 +39,16 @@
         </tr>
       </table>
     </div>
-    <el-button-group style="margin: 0 auto;width: 600px;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button v-if="hasPermissionCustom('order:pending:batchLoanOrder')" style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrderTip('0')">同意</el-button>
-      <el-button v-if="hasPermissionCustom('order:pending:refuseOrder')" style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrderTip('1')">拒绝</el-button>
-      <el-button v-if="hasPermissionCustom('order:pending:cancelOrder')" style="margin-left: 10px" class="la" type="danger" @click="cancelAuditOrder()">取消</el-button>
-      <el-button style="margin-left: 10px" class="la" type="danger" @click="resetForm()">关闭</el-button>
-    </el-button-group>
     <div class="listContent">
-      <!--<router-link :to="{name:'jiben',params: {cusCustomer: this.cusCustomer,idCard: this.idCard}}" tag="li">基本信息</router-link>-->
-      <router-link :to="'/jibenOrder1/'+this.id+'/'+this.orderId2" tag="li">基本信息</router-link>
-      <router-link :to="'/fenxianOrder1/' + this.id" tag="li">风险命中列表</router-link>
-      <router-link :to="'/yunyingOrder1/' + this.id" tag="li">运营商通讯录比对</router-link>
+      <router-link :to="'/jibenOrder8/'+this.id+'/'+this.orderId2" tag="li">基本信息</router-link>
+      <router-link :to="'/fenxianOrder8/' + this.id" tag="li">风险命中列表</router-link>
+      <router-link :to="'/yunyingOrder8/' + this.id" tag="li">运营商通讯录比对</router-link>
       <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
       <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>
-      <router-link :to="'/yonghuOrder1/' + this.id" tag="li">用户催收记录</router-link>
-      <router-link :to="'/dingdanOrder1/' + this.id" tag="li">订单记录</router-link>
-      <router-link :to="'/fangkuanOrder1/' + this.id" tag="li">放款记录</router-link>
-      <router-link :to="'/huankuanOrder1/' + this.id" tag="li">还款记录</router-link>
+      <router-link :to="'/yonghuOrder8/' + this.id" tag="li">用户催收记录</router-link>
+      <router-link :to="'/dingdanOrder8/' + this.id" tag="li">订单记录</router-link>
+      <router-link :to="'/fangkuanOrder8/' + this.id" tag="li">放款记录</router-link>
+      <router-link :to="'/huankuanOrder8/' + this.id" tag="li">还款记录</router-link>
     </div>
     <router-view/>
   </div>
@@ -88,84 +81,54 @@
       };
     },
     methods: {
-      //审核订单弹窗
-      batchAuditOrderTip(status){
-        if (status == 0) {
-          this.$confirm('是否确定同意?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-            center: true
-          }).then(() => {
-            this.batchAuditOrder(status);
-          });
-        } else if (status == 1) {
-          this.$confirm('是否确定拒绝?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-            center: true
-          }).then(() => {
-            this.batchAuditOrder(status);
-          });
-        }
-      },
-      //审核订单
-      batchAuditOrder(status){
+      //拉黑
+      addBlack() {
         axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/pending/batchLoanOrder",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/black/setBlack",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
-          params:{
-            orderIds: this.orderId2,
-            status: status,
-            memo: null,
+          params: {
+            customerId: this.id,
+            description: '后台系统手动拉黑',
           }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
             this.$message({
               message: '操作成功',
               type: 'success'
             });
             this.$router.go(-1);
-          }else {
+          } else {
             this.$message.error(res.data.msgInfo);
           }
         })
       },
-      //取消订单
-      cancelAuditOrder(){
-        this.$confirm('是否确定取消?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          center: true
-        }).then(() => {
-          axios({
-            method:"POST",
-            url:"http://"+this.baseUrl+"/order/admin/borrowing/cancel",
-            headers:{
-              'Content-Type':'application/x-www-form-urlencoded',
-              'Authorization': localStorage.token
-            },
-            params:{
-              orderId: this.orderId2,
-            }
-          }).then((res)=>{
-            if(res.data.msgCd=='ZYCASH-200'){
-              this.$message({
-                message: '操作成功',
-                type: 'success'
-              });
-              this.$router.go(-1);
-            }else {
-              this.$message.error(res.data.msgInfo);
-            }
-          })
-        });
+      //移除黑名单
+      removeBlack() {
+        axios({
+          method: "POST",
+          url:"http://"+this.baseUrl+"/user_center/admin/customer/deleteBlack",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params: {
+            id: this.id,
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.$router.go(-1);
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
       },
       //取消按钮
       resetForm() {

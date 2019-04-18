@@ -4,7 +4,7 @@
       <el-breadcrumb-item :to="{ path: '/collectionGroupManagement' }">催收群组管理</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">新建群组<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button v-if="hasPermissionCustom('operate:group:save')" class="upLoadBtn" @click="toAddProduct()" type="primary">新建群组<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-input class="searchContent"
         placeholder="催收组名"
         v-model="finProduct"
@@ -53,9 +53,9 @@
           label="操作"
           width="180">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProductTip(scope.row)" type="text" size="medium">停用</el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
+            <el-button v-if="hasPermissionCustom('operate:group:edit')" @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button v-if="scope.row.enabled && hasPermissionCustom('operate:group:stop')" @click="obtainedProductTip(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="!scope.row.enabled && hasPermissionCustom('operate:group:stop')" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
           </template>
         </el-table-column>
       </el-table>

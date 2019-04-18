@@ -278,17 +278,24 @@
           <template slot-scope="scope">
             <div v-if="scope.row.status==8 || scope.row.status==9 || scope.row.status==11 || scope.row.status==12">
               <div v-if="scope.row.partial">
-                <el-button @click="partialTip(scope.row)" type="text" size="medium">部分还款</el-button>
-                <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+                <el-button v-if="hasPermissionCustom('order:audit:list')" @click="partialTip(scope.row)" type="text" size="medium">部分还款</el-button>
+                <el-button v-if="hasPermissionCustom('order:audit:list')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
               </div>
               <div v-if="!scope.row.partial">
-                <el-button @click="offlineRepaymentTip(scope.row)" type="text" size="medium">线下还款</el-button>
-                <el-button @click="onlineReliefTip(scope.row)" type="text" size="medium">线上减免</el-button>
-                <el-button @click="separateDeductionTip(scope.row)" type="text" size="medium">单独扣款</el-button>
-                <el-button v-if="scope.row.enableDefer" @click="lineDefferTip(scope.row)" type="text" size="medium">展期还款</el-button>
-                <el-button v-if="!scope.row.enableDefer" @click="lineDefferTip(scope.row)" type="text" size="medium">特例展期</el-button>
-                <el-button @click="partialTip(scope.row)" type="text" size="medium">部分还款</el-button>
-                <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+                <el-button v-if="hasPermissionCustom('order:payment:offlineRepayment')"
+                           @click="offlineRepaymentTip(scope.row)" type="text" size="medium">线下还款</el-button>
+                <el-button v-if="hasPermissionCustom('order:payment:onlineRelief')"
+                           @click="onlineReliefTip(scope.row)" type="text" size="medium">线上减免</el-button>
+                <el-button v-if="hasPermissionCustom('order:payment:separateDeduction')"
+                           @click="separateDeductionTip(scope.row)" type="text" size="medium">单独扣款</el-button>
+                <el-button v-if="scope.row.enableDefer && hasPermissionCustom('order:payment:deffer')"
+                           @click="lineDefferTip(scope.row)" type="text" size="medium">展期还款</el-button>
+                <el-button v-if="!scope.row.enableDefer && hasPermissionCustom('order:payment:deffer')"
+                           @click="lineDefferTip(scope.row)" type="text" size="medium">特例展期</el-button>
+                <el-button v-if="hasPermissionCustom('order:payment:partial')"
+                           @click="partialTip(scope.row)" type="text" size="medium">部分还款</el-button>
+                <el-button v-if="hasPermissionCustom('order:payment:detail')"
+                           @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
               </div>
             </div>
             <div v-else>
@@ -465,10 +472,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
             this.productList.unshift({productId: null, productName: '全部产品'});
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res);
           }
         })

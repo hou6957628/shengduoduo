@@ -93,6 +93,14 @@ import fangkuanOrder7 from '@/orderManagementComponents/fangkuanOrder'
 import huankuanOrder7 from '@/orderManagementComponents/huankuanOrder'
 //委外订单
 import outsourcingOrderList from '@/postLoanManagementComponents/outsourcingOrderList'
+import orderDetailOutsourcing from '@/postLoanManagementComponents/orderDetailOutsourcing'
+import jibenOrder8 from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder8 from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder8 from '@/orderManagementComponents/yunyingOrder'
+import yonghuOrder8 from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder8 from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder8 from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder8 from '@/orderManagementComponents/huankuanOrder'
 //委外已还
 import outsourcingOrderRepayedList from '@/postLoanManagementComponents/outsourcingOrderRepayedList'
 //催收标签、通话类型
@@ -242,6 +250,8 @@ import editTriggerMessage from '@/messageManagementComponents/editTriggerMessage
 import editNoticeMessage from '@/messageManagementComponents/editNoticeMessage'
 import editMarketingMessage from '@/messageManagementComponents/editMarketingMessage'
 import taskDetail from '@/messageManagementComponents/taskDetail'
+import techMessage from '@/messageManagementComponents/techMessage'
+import editTechMessage from '@/messageManagementComponents/editTechMessage'
 
 
 Vue.use(Router);
@@ -751,6 +761,46 @@ const vueRouter = new Router({
       //重定向
       redirect: '/jibenOrder7/:id/:orderId',
       component: orderDetailAfterLoanRepayed
+    },
+    {
+      path: '/orderDetailOutsourcing/:id/:orderId',
+      name: 'orderDetailOutsourcing',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder8/:id/:orderId",
+          component:jibenOrder8
+        },
+        {
+          path:"/fenxianOrder8/:id",
+          component:fenxianOrder8
+        },
+        {
+          path:"/yunyingOrder8/:id",
+          component:yunyingOrder8
+        },
+        {
+          path:"/yonghuOrder8/:id",
+          component:yonghuOrder8
+        },
+        {
+          path:"/dingdanOrder8/:id",
+          component:dingdanOrder8
+        },
+        {
+          path:"/fangkuanOrder8/:id",
+          component:fangkuanOrder8
+        },
+        {
+          path:"/huankuanOrder8/:id",
+          component:huankuanOrder8
+        },
+      ],
+      //重定向
+      redirect: '/jibenOrder8/:id/:orderId',
+      component: orderDetailOutsourcing
     },
     {
       path: '/outsourcingOrderList',
@@ -1712,6 +1762,22 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: taskDetail
+    },
+    {
+      path: '/techMessage',
+      name: 'techMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: techMessage
+    },
+    {
+      path: '/editTechMessage/:id',
+      name: 'editTechMessage',
+      meta: {
+        requireAuth: true
+      },
+      component: editTechMessage
     },
 ]
 

@@ -4,7 +4,7 @@
       <el-breadcrumb-item>催收人员管理</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">添加人员<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button v-if="hasPermissionCustom('operate:collection:save')" class="upLoadBtn" @click="toAddProduct()" type="primary">添加人员<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       <el-input class="searchContent"
         placeholder="催收员姓名或手机号"
         v-model="finProduct"
@@ -60,11 +60,6 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="remark1"
-          label="备注"
-          width="120">
-        </el-table-column>
-        <el-table-column
           prop="enabled"
           label="状态"
           width="80">
@@ -78,9 +73,9 @@
           label="操作"
           width="180">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProductTip(scope.row)" type="text" size="medium">停用</el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
+            <el-button v-if="hasPermissionCustom('operate:collection:edit')" @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button v-if="scope.row.enabled && hasPermissionCustom('operate:collection:update')" @click="obtainedProductTip(scope.row)" type="text" size="medium">停用</el-button>
+            <el-button v-if="!scope.row.enabled && hasPermissionCustom('operate:collection:update')" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
           </template>
         </el-table-column>
       </el-table>

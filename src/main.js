@@ -4,6 +4,7 @@ import Vue from 'vue'
 import home from './home'
 import router from './router'
 import ElementUI from 'element-ui'
+
 import axios from 'axios'
 import $ from 'jquery'
 Vue.config.productionTip = false;
@@ -44,10 +45,32 @@ Vue.prototype.currentDateZero=new Date(new Date().getFullYear(), new Date().getM
 Vue.prototype.beforeOneMonth=new Date(new Date().getFullYear(), new Date().getMonth()-1, new Date().getDate(), 0, 0, 0);
 //权限全局方法
 Vue.prototype.hasPermissionCustom = function (permission){
-  // console.log(localStorage.authorities + '===');
+  // console.log('===');
   let flag = localStorage.authorities.indexOf(permission);
   return flag != -1;
 };
+// 节流
+export function _throttle(fn, interval) {
+  var last;
+  var timer;
+  var interval = interval || 200;
+  return function () {
+    var th = this;
+    var args = arguments;
+    var now = +new Date();
+    if (last && now - last < interval) {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        last = now;
+        fn.apply(th, args);
+      }, interval);
+    } else {
+      last = now;
+      fn.apply(th, args);
+    }
+  }
+}
+
 new Vue({
   el: '#app',
   router,

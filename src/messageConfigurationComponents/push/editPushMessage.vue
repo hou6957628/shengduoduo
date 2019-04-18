@@ -39,7 +39,7 @@
         <el-input type="textarea" :rows="4" v-model="ruleForm.content"></el-input>
       </el-form-item>
       <el-form-item label="已有LOGO：" v-if="ruleForm.picture">
-        <img style="height: 108px;width: 170px" :src="'http://'+this.baseUrl + '/message/admin/message/down?file='+ruleForm.picture+'&productCode='+ruleForm.productCode"/>
+        <img style="height: 108px;width: 170px" :src="ruleForm.picture"/>
       </el-form-item>
       <el-form-item label="点此修改LOGO：">
         <a class="upload-file" href="javascript:;">{{ruleForm.fileName}}
@@ -170,10 +170,13 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res);
           }
         })

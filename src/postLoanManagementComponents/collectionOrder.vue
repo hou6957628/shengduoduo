@@ -85,10 +85,10 @@
               <el-button type="info"  @click="removeDomain(index,adminIds)" size="medium">删除</el-button>
             </div>
         </el-form-item>
-          <el-button type="primary"  @click="addDomain" size="medium">添加催收员</el-button>
+          <el-button v-if="hasPermissionCustom('order:distribution:distribution')" type="primary"  @click="addDomain" size="medium">添加催收员</el-button>
       </el-col>
       <el-col :span="24" style="margin-top: 30px;text-align: center">
-        <el-button type="primary" class="btntn" @click="fendan('ruleForm')">分单</el-button>
+        <el-button v-if="hasPermissionCustom('order:distribution:distribution')" type="primary" class="btntn" @click="fendan('ruleForm')">分单</el-button>
         <!--<el-button class="btntn" @click="resetForm('ruleForm')">取消</el-button>-->
       </el-col>
     </el-form>
@@ -208,10 +208,13 @@
             this.getCaseNumber(null,null,null,this.startDate,this.startDate,this.productId);
             this.getCollectionList(this.productId);
             this.getBorrowingProductByProductCode(this.productList[0].productCode);
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res);
           }
         })

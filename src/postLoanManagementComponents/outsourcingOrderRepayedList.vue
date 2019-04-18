@@ -184,6 +184,7 @@
         <el-table-column
           prop="loanNumber"
           label="应还金额"
+          :formatter="shouldFormatter"
           width="110">
         </el-table-column>
         <el-table-column
@@ -261,7 +262,7 @@
           label="操作"
           width="60">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            <el-button v-if="hasPermissionCustom('order:outsourcing:detail')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -325,7 +326,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productListData=res.data.body;
             this.productListData.unshift({productId: null, productName: '全部产品'});
-          }else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res.data.msgInfo);
           }
         })
@@ -424,6 +431,13 @@
           return '逾期还款'
         }
       },
+      //应还金额字段
+      shouldFormatter(row){
+        let repaymentCapital = row.repaymentCapital;
+        let repaymentOverdueFee = row.repaymentOverdueFee;
+        let repaymentPenaltyInterest = row.repaymentPenaltyInterest;
+        return repaymentCapital + repaymentOverdueFee + repaymentPenaltyInterest;
+      },
       //过滤用户标识字段
       reBorrowFormatter(row){
         let reBorrow = row.reBorrow;
@@ -457,8 +471,6 @@
           var endTime=this.value6[1];
           this.startTime=startTime;
           this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
         }
       },
       //时间筛选2
@@ -473,6 +485,14 @@
           console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
           // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
         }
+      },
+      //详情接口
+      detailProduct(row){
+        let id=row.customerId;
+        let orderId=row.orderId;
+        this.$router.push({
+          path: `/orderDetailOutsourcing/${id}/${orderId}`,
+        });
       },
     },
     mounted:function () {

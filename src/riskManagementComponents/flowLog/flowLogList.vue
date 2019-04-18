@@ -9,12 +9,17 @@
           <template slot="prepend">姓名</template>
         </el-input>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="6" style="margin-left: 10px">
         <el-input placeholder="请输入手机号" clearable v-model="mobile">
           <template slot="prepend">手机号</template>
         </el-input>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="6" style="margin-left: 10px">
+        <el-input placeholder="请输入类型" clearable v-model="itemName">
+          <template slot="prepend">类型</template>
+        </el-input>
+      </el-col>
+      <el-col :span="8" style="margin-left: -20px;margin-top: 10px;margin-bottom: 10px">
         <el-date-picker style="margin-left: 20px"
                         v-model="value7"
                         type="datetimerange"
@@ -29,7 +34,8 @@
                         @change="logTimeChange()">
         </el-date-picker>
       </el-col>
-      <el-button id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search" type="primary">查询</el-button>
+      <el-button id="searchBtn" @click="searchContent()" style="margin-left: -570px;margin-top: 49px" icon="el-icon-search" type="primary">查询</el-button>
+      <el-button @click="searchContent()" icon="el-icon-download el-icon-right" type="primary">导出拒绝原因</el-button>
     </div>
     <template>
       <el-table
@@ -125,27 +131,70 @@
   import axios from 'axios'
   export default {
     methods: {
+      //导出
+      daoBtn(){
+        var data  = {
+          'cusName':this.cusName,
+          'mobile':this.mobile,
+          'startDate':this.startDate,
+          'endDate':this.endDate,
+          'itemName':this.itemName,
+        };
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/risk/admin/flow_log/export",
+          headers:{
+            "content-type":"application/octet-stream;charset=utf-8",
+            "content-disposition":"attachment;filename=total.xls",
+            'Authorization': localStorage.token
+          },
+          responseType: 'blob',
+          data:JSON.stringify(data),
+        }).then((res)=>{
+          this.download1(res.data);
+          this.$message({
+            message: '导出成功',
+            type: 'success'
+          });
+        })
+      },
+      // 下载文件
+      download1(data) {
+        if (!data) {
+          return
+        }
+        let url = window.URL.createObjectURL(new Blob([data]));
+        let link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = url;
+        link.setAttribute('download', '拒绝原因.xlsx');
+        document.body.appendChild(link);
+        link.click()
+      },
       //条件查询规则集列表
       searchContent(){
-        this.getProductList(1,20,this.cusName,this.mobile,this.startDate,this.endDate);
+        this.getProductList(1,20,this.cusName,this.mobile,this.startDate,this.endDate,this.itemName);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.cusName,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,val,this.cusName,this.mobile,this.startDate,this.endDate,this.itemName);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.cusName,this.mobile,this.startDate,this.endDate);
+        this.getProductList(val,this.nowPageSizes,this.cusName,this.mobile,this.startDate,this.endDate,this.itemName);
       },
       /**
        * 用户标签列表接口
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
-       * @param data3 标签名称
-       * @param data4 分类名称
+       * @param data3 姓名
+       * @param data4 手机号
+       * @param data5 开始时间
+       * @param data6 结束时间
+       * @param data7 类型
        */
-      getProductList(data1,data2,data3,data4,data5,data6){
+      getProductList(data1,data2,data3,data4,data5,data6,data7){
         axios({
           method:"GET",
           url:"http://"+this.baseUrl+"/risk/admin/flow_log/list",
@@ -160,6 +209,7 @@
             mobile: data4,
             startDate: data5,
             endDate: data6,
+            itemName: data7,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -267,6 +317,7 @@
         electValue:null,
         cusName: '',
         mobile: '',
+        itemName: '',
         value7: '',
         startDate: null,
         endDate: null,

@@ -240,10 +240,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
             this.productList.unshift({productId: null, productName: '全部产品'});
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res);
           }
         })
@@ -260,10 +263,13 @@
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList1=res.data.body;
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res);
           }
         })
@@ -378,7 +384,9 @@
             path: `/marketingMessage`,
           });
         } else if (command == 'd') {
-
+          this.$router.push({
+            path: `/techMessage`,
+          });
         }
       },
       //日志列表
@@ -397,7 +405,7 @@
         } else if (row.type ==2) {
           this.$router.push({path: `/editMarketingMessage/${id}`});
         } else if (row.type ==3) {
-          this.$router.push({path: `/messageRecord/${id}`});
+          this.$router.push({path: `/editTechMessage/${id}`});
         }
       },
       //全选

@@ -64,8 +64,8 @@
         </template>
       </el-col>
       <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
-      <el-button type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>
-      <el-button type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>
+      <el-button v-if="hasPermissionCustom('order:audit:batchApproval')" type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>
+      <el-button v-if="hasPermissionCustom('order:audit:batchApprovalMachine ')" type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>
     </div>
     <template>
       <el-table
@@ -145,8 +145,8 @@
           label="操作"
           width="150">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">审核</el-button>
-            <el-button @click="jsProduct(scope.row)" type="text" size="medium">机审</el-button>
+            <el-button v-if="hasPermissionCustom('order:audit:customer:find')" @click="detailProduct(scope.row)" type="text" size="medium">审核</el-button>
+            <el-button v-if="hasPermissionCustom('order:audit:machine ')" @click="jsProduct(scope.row)" type="text" size="medium">机审</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -279,10 +279,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
             this.productList.unshift({productId: null, productName: '全部产品'});
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res);
           }
         })

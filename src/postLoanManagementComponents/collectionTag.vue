@@ -4,7 +4,7 @@
       <el-breadcrumb-item>催收标签</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
-      <el-button class="upLoadBtn" @click="toTag()" type="primary">添加催收标签<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+      <el-button v-if="hasPermissionCustom('order:label:save')" class="upLoadBtn" @click="toTag()" type="primary">添加催收标签<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
     </div>
     <template>
       <el-table
@@ -27,8 +27,8 @@
           label="操作"
           width="100">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
-            <el-button @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>
+            <el-button v-if="hasPermissionCustom('order:label:update')" @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button v-if="hasPermissionCustom('order:label:delete')" @click="deleteProduct(scope.row)" type="text" size="medium">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

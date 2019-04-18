@@ -43,21 +43,27 @@
     </table>
     </div>
     <el-button-group v-if="this.borrowingForm.partial" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button v-if="this.borrowingForm.partial" class="la" type="danger" @click="partialTip()">部分还款</el-button>
+      <el-button v-if="this.borrowingForm.partial && hasPermissionCustom('order:assigned:partial')" class="la" type="danger" @click="partialTip()">部分还款</el-button>
       <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
     </el-button-group>
     <div v-if="!this.borrowingForm.partial" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
       <el-button-group v-if="this.borrowingForm.defer" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
-        <el-button v-if="this.borrowingForm.defer" class="la" type="danger" @click="lineDefferTip()">展期</el-button>
+        <el-button v-if="this.borrowingForm.defer && hasPermissionCustom('order:assigned:deffer')" class="la" type="danger" @click="lineDefferTip()">展期</el-button>
         <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
       </el-button-group>
       <el-button-group v-if="!this.borrowingForm.defer" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
-        <el-button class="la" type="danger" @click="offlineRepaymentTip()">线下还款</el-button>
-        <el-button class="la" style="margin-left: 10px" type="danger" @click="onlineReliefTip()">线上减免</el-button>
-        <el-button class="la" style="margin-left: 10px" type="danger" @click="separateDeductionTip()">单独扣款</el-button>
-        <el-button v-if="this.borrowingForm.enableDefer" class="la" style="margin-left: 10px" type="danger" @click="lineDefferTip()">展期还款</el-button>
-        <el-button v-if="!this.borrowingForm.enableDefer" class="la" style="margin-left: 10px" type="danger" @click="lineDefferTip()">特例展期</el-button>
-        <el-button class="la" style="margin-left: 10px" type="danger" @click="partialTip()">部分还款</el-button>
+        <el-button v-if="hasPermissionCustom('order:assigned:offlineRepayment') || hasPermissionCustom('order:collectionTask:offlineRepayment') || hasPermissionCustom('order:orderAll:offlineRepayment')"
+                   class="la" type="danger" @click="offlineRepaymentTip()">线下还款</el-button>
+        <el-button v-if="hasPermissionCustom('order:assigned:onlineRelief') || hasPermissionCustom('order:collectionTask:onlineRelief') || hasPermissionCustom('order:orderAll:onlineRelief')"
+                   class="la" style="margin-left: 10px" type="danger" @click="onlineReliefTip()">线上减免</el-button>
+        <el-button v-if="hasPermissionCustom('order:assigned:separateDeduction') || hasPermissionCustom('order:collectionTask:separateDeduction') || hasPermissionCustom('order:orderAll:separateDeduction')"
+                   class="la" style="margin-left: 10px" type="danger" @click="separateDeductionTip()">单独扣款</el-button>
+        <el-button v-if="this.borrowingForm.enableDefer && hasPermissionCustom('order:assigned:deffer') || hasPermissionCustom('order:collectionTask:deffer') || hasPermissionCustom('order:orderAll:deffer')"
+                   class="la" style="margin-left: 10px" type="danger" @click="lineDefferTip()">展期还款</el-button>
+        <el-button v-if="!this.borrowingForm.enableDefer && hasPermissionCustom('order:assigned:deffer') || hasPermissionCustom('order:collectionTask:deffer') || hasPermissionCustom('order:orderAll:deffer')"
+                   class="la" style="margin-left: 10px" type="danger" @click="lineDefferTip()">特例展期</el-button>
+        <el-button v-if="hasPermissionCustom('order:assigned:partial') || hasPermissionCustom('order:collectionTask:partial') || hasPermissionCustom('order:orderAll:partial')"
+                   class="la" style="margin-left: 10px" type="danger" @click="partialTip()">部分还款</el-button>
         <el-button class="la" style="margin-left: 10px" type="danger" @click="resetForm()">关闭</el-button>
       </el-button-group>
     </div>

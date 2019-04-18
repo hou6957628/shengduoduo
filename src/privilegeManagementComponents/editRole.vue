@@ -147,7 +147,7 @@
               this.electData2=null;
             } else {
               this.ruleForm.authorities.forEach(function (item,index) {
-                if (item.type == 1) {
+                if (item.type == 3) {
                   _this.electData2.push(item.id);
                 }
               })

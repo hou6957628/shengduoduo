@@ -431,7 +431,7 @@
           }]
         },
         value8:'',
-        pageNum: null,
+        pageNum: 1,
         proTotal:null,
         pageSize:null,
         pageSizes:[20,30,50],

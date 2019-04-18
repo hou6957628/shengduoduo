@@ -86,19 +86,19 @@
                 <span>贷后管理</span>
               </template>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:getOrderList')" index="/afterLoanManagement">逾期订单管理</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:overdue:find')" index="/afterLoanManagement">逾期订单管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:getOrderList')" index="/afterLoanNoRepay">逾期未还订单</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:overdue:noRepayOrderList')" index="/afterLoanNoRepay">逾期未还订单</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:getOrderList')" index="/afterLoanRepayed">逾期已还订单</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:overdue:repayedOrderList')" index="/afterLoanRepayed">逾期已还订单</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:getOrderList')" index="/outsourcingOrderList">委外订单</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:outsourcing:orderList')" index="/outsourcingOrderList">委外订单</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:getOrderList')" index="/outsourcingOrderRepayedList">委外已还</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:outsourcing:repayedOrderList')" index="/outsourcingOrderRepayedList">委外已还</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item v-if="this.hasPermissionCustom('order:label:list')" index="/collectionTag">催收标签</el-menu-item>
@@ -113,7 +113,7 @@
                 <el-menu-item v-if="this.hasPermissionCustom('operate:group:list')" index="/collectionGroupManagement">催收群组管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:find')" index="/collectionOrder">催收分单</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:distribution:find')" index="/collectionOrder">催收分单</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:findAssignedOrder')" index="/collectionOrderList">催收已分订单</el-menu-item>
@@ -167,7 +167,7 @@
                 <el-menu-item v-if="this.hasPermissionCustom('order:pending:list')" index="/pendingLoan">待放款列表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:list')" index="/loanMade">已放款列表</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:payment:list')" index="/loanMade">已放款列表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item v-if="this.hasPermissionCustom('order:borrowing:list')" index="/orderList">订单管理</el-menu-item>
@@ -176,7 +176,7 @@
                 <el-menu-item v-if="this.hasPermissionCustom('order:repayment:list')" index="/paymentHistory">还款记录列表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:payment:list')" index="/loanRecord">放款记录列表</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:paymentLog:list')" index="/loanRecord">放款记录列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu v-if="this.hasPermissionCustom('quota:admin')" index="10" style="padding-left:0 ;">
@@ -194,7 +194,7 @@
                 <el-menu-item v-if="this.hasPermissionCustom('quota:amountFlow:list')" index="/amountFlowList">流程管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('quota:amountFlow:list')" index="/amountFlowLogList">命中列表</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('quota:flowLog:list')" index="/amountFlowLogList">命中列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu v-if="this.hasPermissionCustom('order:flowField')" index="11" style="padding-left:0 ;">
@@ -221,16 +221,16 @@
                 <el-menu-item v-if="this.hasPermissionCustom('message:message_classify:find')" index="/messageClassify">分类列表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('message:message:find')" index="/smsMessage">短信消息</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('message:message:smsMessage')" index="/smsMessage">短信消息</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('message:message:find')" index="/reminderMessage">提醒消息</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('message:message:reminderMessage')" index="/reminderMessage">提醒消息</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('message:message:find')" index="/popUpMessage">弹窗消息</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('message:message:popUpMessage')" index="/popUpMessage">弹窗消息</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('message:message:find')" index="/pushMessage">推送消息</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('message:message:pushMessage')" index="/pushMessage">推送消息</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu v-if="this.hasPermissionCustom('message:message')" index="13" style="padding-left:0 ;">
@@ -239,7 +239,7 @@
                 <span>消息配置</span>
               </template>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('message:message:find')" index="/messageConfigurationList">任务列表</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('message:task:list')" index="/messageConfigurationList">任务列表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item v-if="this.hasPermissionCustom('message:messagelog:list')" index="/messageRecord">日志列表</el-menu-item>

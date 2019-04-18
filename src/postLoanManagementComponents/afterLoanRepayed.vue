@@ -326,7 +326,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productListData=res.data.body;
             this.productListData.unshift({productId: null, productName: '全部产品'});
-          }else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res.data.msgInfo);
           }
         })

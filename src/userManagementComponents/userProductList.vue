@@ -3,7 +3,7 @@
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-button type="primary" @click="batchUnlock()" slot="append">批量解锁</el-button>
+    <el-button v-if="this.hasPermissionCustom('user:customer:batchUnlock')" type="primary" @click="batchUnlock()" slot="append">批量解锁</el-button>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
         产品：
@@ -177,8 +177,8 @@
           label="操作"
           width="120">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
-            <el-button @click="editProduct(scope.row)" type="text" size="medium">修改</el-button>
+            <el-button v-if="hasPermissionCustom('user:customer:find')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            <el-button v-if="hasPermissionCustom('user:customer:get')" @click="editProduct(scope.row)" type="text" size="medium">修改</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -303,7 +303,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productListData=res.data.body;
             this.productListData.unshift({productId: null, productName: '全部产品'});
-          }else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res.data.msgInfo);
           }
         })

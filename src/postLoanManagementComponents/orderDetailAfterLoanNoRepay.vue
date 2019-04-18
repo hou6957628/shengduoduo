@@ -49,11 +49,16 @@
         <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
       </el-button-group>
       <el-button-group v-if="!this.borrowingForm.defer" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
-        <el-button class="la" type="danger" @click="offlineRepaymentTip()">线下还款</el-button>
-        <el-button class="la" type="danger" @click="onlineReliefTip()">线上减免</el-button>
-        <el-button class="la" type="danger" @click="separateDeductionTip()">单独扣款</el-button>
-        <el-button v-if="this.borrowingForm.enableDefer" class="la" type="danger" @click="lineDefferTip()">展期</el-button>
-        <el-button class="la" type="danger" @click="partialTip()">部分还款</el-button>
+        <el-button v-if="hasPermissionCustom('order:overdue:offlineRepaymentCut') || hasPermissionCustom('order:overdue:offlineRepayment')"
+                   class="la" type="danger" @click="offlineRepaymentTip()">线下还款</el-button>
+        <el-button v-if="hasPermissionCustom('order:overdue:onlineReliefCut') || hasPermissionCustom('order:overdue:onlineRelief')"
+                   class="la" type="danger" @click="onlineReliefTip()">线上减免</el-button>
+        <el-button v-if="hasPermissionCustom('order:overdue:separateDeductionCut') || hasPermissionCustom('order:overdue:separateDeduction')"
+                   class="la" type="danger" @click="separateDeductionTip()">单独扣款</el-button>
+        <el-button v-if="this.borrowingForm.enableDefer && (hasPermissionCustom('order:overdue:deffer') || hasPermissionCustom('order:overdue:defferCut'))"
+                   class="la" type="danger" @click="lineDefferTip()">展期</el-button>
+        <el-button v-if="hasPermissionCustom('order:overdue:partialCut') || hasPermissionCustom('order:overdue:partial')"
+                   class="la" type="danger" @click="partialTip()">部分还款</el-button>
         <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
       </el-button-group>
     </div>
@@ -238,7 +243,7 @@
         <el-button @click="addDomain" size="medium">添加图片</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button v-if="hasPermissionCustom('order:overdue:collectsave')" type="primary" @click="submitForm('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
         <!--<el-button type="info" @click="resetForm('ruleForm2')">取消<i class="el-icon-close el-icon&#45;&#45;right"></i></el-button>-->
       </el-form-item>
     </el-form>

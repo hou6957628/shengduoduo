@@ -52,7 +52,7 @@
         </el-date-picker>
       </template>&nbsp;&nbsp;&nbsp;
       <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
-      <el-button type="primary" @click="batchDelTip()" slot="append" icon="el-icon-delete">批量删除</el-button>
+      <el-button v-if="this.hasPermissionCustom('credit:bank:deleteBatch')" type="primary" @click="batchDelTip()" slot="append" icon="el-icon-delete">批量删除</el-button>
     </div>
     <template>
       <el-table
@@ -146,8 +146,8 @@
           label="操作"
           width="120">
           <template slot-scope="scope">
-            <el-button @click="editProduct(scope.row)" type="text" size="medium">删除</el-button>
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            <el-button v-if="hasPermissionCustom('credit:bank:delete')" @click="editProduct(scope.row)" type="text" size="medium">删除</el-button>
+            <el-button v-if="hasPermissionCustom('credit:bank:getBankCardInfoById')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -387,7 +387,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productListData=res.data.body;
             this.productListData.unshift({productId: null, productName: '全部产品'});
-          }else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res.data.msgInfo);
           }
         })

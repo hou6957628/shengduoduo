@@ -22,7 +22,7 @@
       <h3>基本信息</h3>
       <table >
         <tr>
-          <td>用户ID：{{this.cusCustomer.id}}</td><td> 手机号：{{this.cusCustomer.mobile}}</td><td>  渠道：{{this.cusCustomer.channelName==null?'无':this.cusCustomer.channelName}}</td>
+          <td>用户ID：{{this.cusCustomer.id}}</td><td> 手机号：{{this.cusCustomer.mobile}}</td><td>  主渠道：{{this.cusCustomer.channelName==null?'无':this.cusCustomer.channelName}}</td>
           <td>新户老户：{{this.cusCustomer.reBorrow==1?'老户':'新户'}}</td>
           <td>注册时间：{{this.cusCustomer.createDate}}</td><td>所属平台：{{this.cusCustomer.productName}}</td>
         </tr>
@@ -34,15 +34,16 @@
           <td>西瓜分：{{this.tianjiReport==null?'--':this.tianjiReport.xgScore}}</td>
         </tr>
         <tr>
-          <td>性别：{{this.idCard.gender==false?'男':'女'}}</td><td>身份证有效期：{{this.idCard.validDate==null?'--':this.idCard.validDate}}</td>
+          <td>性别：{{this.idCard.gender | genderFalse}}</td><td>身份证有效期：{{this.idCard.validDate==null?'--':this.idCard.validDate}}</td>
           <td>身份证住址：{{this.idCard.address==null?'--':this.idCard.address}}</td><td>民族：{{this.idCard.race==null?'--':this.idCard.race}}</td>
         </tr>
       </table>
       <h3>设备信息</h3>
       <table >
         <tr>
-          <td> 手机型号：{{this.cusCustomer.device==null?'--':this.cusCustomer.device}}</td><td>系统版本号：</td><td>APP名称：{{this.cusCustomer.productName}}</td>
-          <td>APP版本：</td>
+          <td>手机型号：{{this.cusCustomer.device==null?'--':this.cusCustomer.device}}</td>
+          <td>手机系统版本号：{{this.cusCustomer.systemVersion==null?'--':this.cusCustomer.systemVersion}}</td>
+          <td>APP名称：{{this.cusCustomer.productName}}</td>
         </tr>
       </table>
       <h3>个人信息</h3>
@@ -263,6 +264,19 @@
       this.id=this.$route.params.id;
       this.orderId2=this.$route.params.orderId;
       this.getUserDetail(this.id);
+    },
+    filters:{
+      genderFalse:function(arg1){
+        if(arg1==true){
+          var result = "女";
+          return result;
+        }else if(arg1==false){
+          var result = "男";
+          return result;
+        } else {
+          return '--';
+        }
+      }
     }
   }
 </script>

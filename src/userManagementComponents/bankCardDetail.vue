@@ -21,7 +21,7 @@
       <p><span>注册手机号：</span>{{bankCard.registerMobile}}</p>
     </div>
     <el-button-group class="btGrop">
-      <el-button class="jie" type="primary" @click="editProduct()">解绑</el-button>
+      <el-button v-if="this.hasPermissionCustom('credit:bank:delete')" class="jie" type="primary" @click="editProduct()">解绑</el-button>
       <el-button @click="guan()" class="guan">关闭</el-button>
     </el-button-group>
   </div>
@@ -53,14 +53,14 @@
         })
       },
       //提示删除银行卡
-      editProduct(row){
+      editProduct(){
         this.$confirm('是否确认解绑此银行卡?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning',
           center: true
         }).then(() => {
-          this.deleteBankCard(row);
+          this.deleteBankCard();
         });
       },
       //确认删除银行卡接口
@@ -68,13 +68,12 @@
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/credit/admin/bank/deleteBankCardInfo",
-          // url:"http://localhost:9996/credit/admin/bank/deleteBankCardInfo",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
-            id:row.id,
+            id:this.bankCard.id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -82,7 +81,7 @@
               message: '删除成功',
               type: 'success'
             });
-            this.getProductList(1,30,null,null,null,null,null,null);
+            this.$route.go(-1);
           }else {
             this.$message.error(res.data.msgInfo);
           }

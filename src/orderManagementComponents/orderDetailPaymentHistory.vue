@@ -43,8 +43,8 @@
       </table>
     </div>
     <el-button-group style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button v-if="!this.cusCustomer.isBlackList" class="la" type="danger" @click="addBlack()">拉黑</el-button>
-      <el-button style="margin-left: 10px" v-if="this.cusCustomer.isBlackList" class="la" type="danger" @click="removeBlack()">移除黑名单</el-button>
+      <el-button v-if="!this.cusCustomer.isBlackList && (hasPermissionCustom('order:repayment:black') || hasPermissionCustom('order:orderAll:black'))" class="la" type="danger" @click="addBlack()">拉黑</el-button>
+      <el-button style="margin-left: 10px" v-if="this.cusCustomer.isBlackList  && (hasPermissionCustom('order:repayment:black') || hasPermissionCustom('order:orderAll:black'))" class="la" type="danger" @click="removeBlack()">移除黑名单</el-button>
       <el-button style="margin-left: 10px" class="la" type="danger" @click="resetForm()">关闭</el-button>
     </el-button-group>
     <div class="listContent">

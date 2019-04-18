@@ -11,7 +11,7 @@
       <el-form-item label="手机号:" prop="mobile">
         <el-input v-model="ruleForm.mobile"></el-input>
       </el-form-item>
-      <el-form-item label="修改密码:" prop="password">
+      <el-form-item label="修改密码:">
         <el-input v-model="ruleForm.password" placeholder="请输入修改的密码"></el-input>
       </el-form-item>
       <el-form-item style="margin-top: 20px" label="角色名称:" prop="roleId">

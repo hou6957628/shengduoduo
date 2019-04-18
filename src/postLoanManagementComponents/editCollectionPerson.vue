@@ -26,7 +26,7 @@
             :value="item.id">
           </el-option>
         </el-select>
-        <el-button @click="addGroup()" style="margin-left: 50px">创建群组</el-button>
+        <el-button v-if="hasPermissionCustom('operate:collection:addGroup')" @click="addGroup()" style="margin-left: 50px">创建群组</el-button>
       </el-form-item>
       <el-form-item label="角色" prop="roleId">
         <el-select v-model="ruleForm.roleId" value-key="id" placeholder="请选择">

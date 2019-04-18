@@ -189,7 +189,7 @@
           label="操作"
           width="100">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            <el-button v-if="hasPermissionCustom('order:repayment:detail')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -226,10 +226,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
             this.productList.unshift({productId: null, productName: '全部产品'});
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res);
           }
         })

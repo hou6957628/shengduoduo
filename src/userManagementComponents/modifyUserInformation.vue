@@ -34,7 +34,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">修改<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button v-if="hasPermissionCustom('user:customer:update')" type="primary" @click="submitForm('ruleForm')">修改<i class="el-icon-check el-icon--right"></i></el-button>
           <el-button type="info" @click="resetForm('ruleForm')">关闭<i class="el-icon-close el-icon--right"></i></el-button>
         </el-form-item>
       </el-form>

@@ -39,10 +39,11 @@
       </tr>
     </table>
     </div>
-    <el-button-group style="margin: 0 auto;width: 600px;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button class="la" type="danger" @click="batchAuditOrderTip('0')">同意</el-button>
-      <el-button style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrderTip('1')">拒绝</el-button>
-      <el-button style="margin-left: 10px" class="la" type="danger" @click="cancelAuditOrder()">取消</el-button>
+    <el-button-group style="margin: 0 auto;width: 800px;display: block;margin-top: 40px;margin-bottom: 40px">
+      <el-button v-if="hasPermissionCustom('order:audit:agree')" class="la" type="danger" @click="batchAuditOrderTip('0')">同意</el-button>
+      <el-button v-if="hasPermissionCustom('order:audit:refuse')" style="margin-left: 10px" class="la" type="danger" @click="batchAuditOrderTip('1')">拒绝</el-button>
+      <el-button v-if="hasPermissionCustom('order:audit:cancel')" style="margin-left: 10px" class="la" type="danger" @click="cancelAuditOrder()">取消</el-button>
+      <el-button v-if="!this.cusCustomer.isBlackList && hasPermissionCustom('order:audit:black')" style="margin-left: 10px" class="la" type="danger" @click="addBlack()">拉黑</el-button>
       <el-button style="margin-left: 10px" class="la" type="danger" @click="resetForm()">关闭</el-button>
     </el-button-group>
     <div class="listContent">
@@ -161,6 +162,54 @@
               });
               this.$router.go(-1);
             }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        });
+      },
+      //拉黑
+      addBlack() {
+        this.$confirm('是否确定拉黑?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          axios({
+            method: "POST",
+            url:"http://"+this.baseUrl+"/user_center/admin/black/setBlack",
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params: {
+              customerId: this.id,
+              description: '后台系统手动拉黑',
+            }
+          }).then((res) => {
+            if (res.data.msgCd == 'ZYCASH-200') {
+              axios({
+                method:"POST",
+                url:"http://"+this.baseUrl+"/order/admin/borrowing/cancel",
+                headers:{
+                  'Content-Type':'application/x-www-form-urlencoded',
+                  'Authorization': localStorage.token
+                },
+                params:{
+                  orderId: this.orderId2,
+                }
+              }).then((res)=>{
+                if(res.data.msgCd=='ZYCASH-200'){
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                  });
+                  this.$router.go(-1);
+                }else {
+                  this.$message.error(res.data.msgInfo);
+                }
+              })
+            } else {
               this.$message.error(res.data.msgInfo);
             }
           })

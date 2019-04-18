@@ -36,11 +36,6 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="period"
-          label="借款期限"
-          width="120">
-        </el-table-column>
-        <el-table-column
           prop="type"
           label="类型"
           :formatter="typeFormatter"
@@ -95,7 +90,7 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="200">
+          width="250">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
             <el-button @click="openWarningDelete(scope.row)" type="text" size="medium">删除</el-button>
@@ -143,10 +138,12 @@
 
 <script>
   import axios from 'axios'
+  import { Loading } from 'element-ui'
   export default {
     methods: {
       //查询金融产品
       searchContent(data){
+        Loading.service();
         this.getProductList(1,20,this.finProduct);
       },
       //每页显示多少条
@@ -190,6 +187,10 @@
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
             this.pageNum=res.data.body.pageNum;
+            let loadingInstance = Loading.service();
+            this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+              loadingInstance.close();
+            });
           }else {
             this.$message.error(res.data.msgInfo);
           }

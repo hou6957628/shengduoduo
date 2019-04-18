@@ -58,8 +58,8 @@
         </template>
     </div>
     <div style="margin-bottom: 20px">
-      <el-button style="float: left;" id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
-      <el-button style="min-width: 50px;" type="primary" id="blackBtn" @click="blackBtn()" slot="append" icon="">添加黑名单</el-button>
+      <el-button style="float: left;margin-bottom: 10px" id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button v-if="this.hasPermissionCustom('user:black:add')" style="min-width: 50px;" type="primary" id="blackBtn" @click="blackBtn()" slot="append" icon="">添加黑名单</el-button>
     </div>
     <template>
       <el-table
@@ -129,7 +129,7 @@
           label="操作"
           width="120">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            <el-button v-if="hasPermissionCustom('user::black:find')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -320,7 +320,13 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.productListData=res.data.body;
             this.productListData.unshift({productId: null, productName: '全部产品'});
-          }else {
+          } else if (res.data.msgCd=='ZYCASH-1005') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else if (res.data.msgCd=='SYS00001') {
+            this.$message.error('登陆信息失效，请重新登陆');
+            this.$router.push({path: `/login`,});
+          } else {
             this.$message.error(res.data.msgInfo);
           }
         })
