@@ -10,9 +10,9 @@
     <div class="line" ></div>
     <div class="listContent">
       <router-link :to="'/jiben/'+this.id" tag="li">基本信息</router-link>
-      <router-link :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
+      <router-link v-if="hasPermissionCustom('user:black:hitList')" :to="'/fenxian/' + this.id" tag="li">风险命中列表</router-link>
       <router-link :to="'/yunying/' + this.id" tag="li">运营商通讯录比对</router-link>
-      <template v-if="this.tianjiReport">
+      <template v-if="this.tianjiReport && hasPermissionCustom('user:black:tiji')">
       <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
       </template>
       <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>

@@ -932,7 +932,6 @@
       //详情
       detailProduct(row){
         let status=row.status;
-        console.log(status);
         let id=row.customerId;
         let orderId=row.orderId;
         if (status == 0 || status == 1 || status == 3) {

@@ -218,6 +218,7 @@
           {key:1,Id:'启用'},
         ],
         operationRoleList: [],
+        operationRoleList1: [],
         operationGroupList: [],
         operationMerchantProductList: [],
         operationMerchantProductList1: [],
@@ -332,7 +333,12 @@
           params:{}
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.operationRoleList=res.data.body.operationRoleList;
+            this.operationRoleList1=res.data.body.operationRoleList;
+            for(var i=0;i<this.operationRoleList1.length;i++){
+              if (this.operationRoleList1[i].roleName.substr(0,2) == '催收') {
+                this.operationRoleList.push(this.operationRoleList1[i]);
+              }
+            }
             this.operationGroupList=res.data.body.operationGroupList;
             this.operationMerchantProductList1=res.data.body.operationMerchantProductList;
             for(var i=0;i<this.operationMerchantProductList1.length;i++){

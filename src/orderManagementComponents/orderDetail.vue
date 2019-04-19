@@ -48,9 +48,11 @@
     </el-button-group>
     <div class="listContent">
       <router-link :to="'/jibenOrder/'+this.id+'/'+this.orderId2" tag="li">基本信息</router-link>
-      <router-link :to="'/fenxianOrder/' + this.id" tag="li">风险命中列表</router-link>
+      <router-link v-if="hasPermissionCustom('order:orderAll:hitList')" :to="'/fenxianOrder/' + this.id" tag="li">风险命中列表</router-link>
       <router-link :to="'/yunyingOrder/' + this.id" tag="li">运营商通讯录比对</router-link>
-      <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
+      <template v-if="hasPermissionCustom('order:orderAll:tianji')">
+        <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
+      </template>
       <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>
       <router-link :to="'/yonghuOrder/' + this.id" tag="li">用户催收记录</router-link>
       <router-link :to="'/dingdanOrder/' + this.id" tag="li">订单记录</router-link>

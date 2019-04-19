@@ -117,6 +117,14 @@ import collectionOrder from '@/postLoanManagementComponents/collectionOrder'
 import collectionOrderList from '@/postLoanManagementComponents/collectionOrderList'
 import collectionTaskList from '@/postLoanManagementComponents/collectionTaskList'
 import collectionTaskFinishList from '@/postLoanManagementComponents/collectionTaskFinishList'
+import orderDetailCollectionFinish from '@/postLoanManagementComponents/orderDetailCollectionFinish'
+import jibenOrder9 from '@/orderManagementComponents/jibenOrder'
+import fenxianOrder9 from '@/orderManagementComponents/fenxianOrder'
+import yunyingOrder9 from '@/orderManagementComponents/yunyingOrder'
+import yonghuOrder9 from '@/orderManagementComponents/yonghuOrder'
+import dingdanOrder9 from '@/orderManagementComponents/dingdanOrder'
+import fangkuanOrder9 from '@/orderManagementComponents/fangkuanOrder'
+import huankuanOrder9 from '@/orderManagementComponents/huankuanOrder'
 //通讯录、紧急联系人
 import addressList from '@/postLoanManagementComponents/addressList'
 import addressList1 from '@/postLoanManagementComponents/addressList1'
@@ -801,6 +809,46 @@ const vueRouter = new Router({
       //重定向
       redirect: '/jibenOrder8/:id/:orderId',
       component: orderDetailOutsourcing
+    },
+    {
+      path: '/orderDetailCollectionFinish/:id/:orderId',
+      name: 'orderDetailCollectionFinish',
+      meta: {
+        requireAuth: true
+      },
+      children:[
+        {
+          path:"/jibenOrder9/:id/:orderId",
+          component:jibenOrder9
+        },
+        {
+          path:"/fenxianOrder9/:id",
+          component:fenxianOrder9
+        },
+        {
+          path:"/yunyingOrder9/:id",
+          component:yunyingOrder9
+        },
+        {
+          path:"/yonghuOrder9/:id",
+          component:yonghuOrder9
+        },
+        {
+          path:"/dingdanOrder9/:id",
+          component:dingdanOrder9
+        },
+        {
+          path:"/fangkuanOrder9/:id",
+          component:fangkuanOrder9
+        },
+        {
+          path:"/huankuanOrder9/:id",
+          component:huankuanOrder9
+        },
+      ],
+      //重定向
+      redirect: '/jibenOrder9/:id/:orderId',
+      component: orderDetailCollectionFinish
     },
     {
       path: '/outsourcingOrderList',

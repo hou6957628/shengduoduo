@@ -102,13 +102,13 @@
             //左侧列表权限
             let arrV1 = ["operate:productlist","operate:merchantlist","operate:productManage:list","user:customer:list","user:black:list","credit:bank:getBankCardInfoByParams",
               "risk:field:list","risk:tag:list","risk:rule:list","risk:rule_collection:list","risk:collection_flow:list","risk:parent_flow:list","risk:flow_log:list",
-              "order:borrowing:getOrderList","order:borrowing:getOrderList","order:borrowing:getOrderList","order:borrowing:getOrderList","order:borrowing:getOrderList",
-              "order:label:list","order:callType:list","operate:collection:list","operate:group:list","order:borrowing:find","order:borrowing:findAssignedOrder",
+              "order:overdue:orderList","order:overdue:noRepayOrderList","order:overdue:repayedOrderList","order:outsourcing:orderList","order:outsourcing:repayedOrderList",
+              "order:label:list","order:callType:list","operate:collection:list","operate:group:list","order:distribution:find","order:borrowing:findAssignedOrder",
               "order:borrowing:findCollectionOrder","order:borrowing:findCollectionOrder","operate:role:list","operate:account:list","channel:channel:list","channel:channel_statistics:list",
               "channel:account:list","order:audit:list","order:pending:list","order:borrowing:list","order:borrowing:list","order:repayment:list","order:payment:list",
               "quota:amountField:list","quota:amountTag:list","quota:amountFlow:list","quota:amountFlow:list","order:flowField:getFieldList","order:flowField:list",
-              "order:ordertTag:hitList","message:message_classify:find","message:message:find","message:message:find","message:message:find","message:message:find",
-              "message:message:find","message:messagelog:list"];
+              "order:ordertTag:hitList","message:message_classify:find","message:message:smsMessage","message:message:reminderMessage","message:message:popUpMessage","message:message:pushMessage",
+              "message:task:list","message:messagelog:list"];
             let arrV2 = ["financeProductList","merchantProductList","productProductList","userProductList","blackList","bankCardManagement","fieldList","tagList","ruleList",
               "collectionList","flowList","flowHeadList","flowLogList","afterLoanManagement","afterLoanNoRepay","afterLoanRepayed","outsourcingOrderList","outsourcingOrderRepayedList",
               "collectionTag","callTypeTag","collectionPersonManagement","collectionGroupManagement","collectionOrder","collectionOrderList","collectionTaskList","collectionTaskFinishList",

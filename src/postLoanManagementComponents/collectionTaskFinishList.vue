@@ -213,11 +213,9 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="220">
+          width="100">
           <template slot-scope="scope">
             <el-button v-if="hasPermissionCustom('order:reclaim:detail')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
-            <el-button v-if="hasPermissionCustom('order:reclaim:addressList')" @click="mailList(scope.row)" type="text" size="medium">通讯录</el-button>
-            <el-button v-if="hasPermissionCustom('order:reclaim:emergencyLinkman')" @click="Contacts(scope.row)" type="text" size="medium">紧急联系人</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -431,7 +429,7 @@
         let id=row.customerId;
         let orderId=row.orderId;
         this.$router.push({
-          path: `/orderDetailLoanMade/${id}/${orderId}`,
+          path: `/orderDetailCollectionFinish/${id}/${orderId}`,
         });
       },
       //紧急联系人

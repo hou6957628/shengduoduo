@@ -86,7 +86,7 @@
                 <span>贷后管理</span>
               </template>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item v-if="this.hasPermissionCustom('order:overdue:find')" index="/afterLoanManagement">逾期订单管理</el-menu-item>
+                <el-menu-item v-if="this.hasPermissionCustom('order:overdue:orderList')" index="/afterLoanManagement">逾期订单管理</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item v-if="this.hasPermissionCustom('order:overdue:noRepayOrderList')" index="/afterLoanNoRepay">逾期未还订单</el-menu-item>

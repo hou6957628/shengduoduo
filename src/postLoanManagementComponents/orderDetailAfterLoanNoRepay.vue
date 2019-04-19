@@ -40,12 +40,14 @@
     </table>
     </div>
     <el-button-group v-if="this.borrowingForm.partial" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
-      <el-button v-if="this.borrowingForm.partial" class="la" type="danger" @click="partialTip()">部分还款</el-button>
+      <el-button v-if="this.borrowingForm.partial && (hasPermissionCustom('order:overdue:partialCut') || hasPermissionCustom('order:overdue:partial'))"
+                 class="la" type="danger" @click="partialTip()">部分还款</el-button>
       <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
     </el-button-group>
     <div v-if="!this.borrowingForm.partial" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
       <el-button-group v-if="this.borrowingForm.defer" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
-        <el-button v-if="this.borrowingForm.defer" class="la" type="danger" @click="lineDefferTip()">展期</el-button>
+        <el-button v-if="this.borrowingForm.defer && (hasPermissionCustom('order:overdue:deffer') || hasPermissionCustom('order:overdue:defferCut'))"
+                   class="la" type="danger" @click="lineDefferTip()">展期</el-button>
         <el-button class="la" type="danger" @click="resetForm()">关闭</el-button>
       </el-button-group>
       <el-button-group v-if="!this.borrowingForm.defer" style="margin: 0 auto;width: auto;display: block;margin-top: 40px;margin-bottom: 40px">
@@ -64,9 +66,11 @@
     </div>
     <div class="listContent">
       <router-link :to="'/jibenOrder6/'+this.id+'/'+this.orderId2" tag="li">基本信息</router-link>
-      <router-link :to="'/fenxianOrder6/' + this.id" tag="li">风险命中列表</router-link>
+      <router-link v-if="hasPermissionCustom('order:overdue:hitList') || hasPermissionCustom('order:overdue:hitListNopay')" :to="'/fenxianOrder6/' + this.id" tag="li">风险命中列表</router-link>
       <router-link :to="'/yunyingOrder6/' + this.id" tag="li">运营商通讯录比对</router-link>
-      <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
+      <template v-if="hasPermissionCustom('order:overdue:tianji') || hasPermissionCustom('order:overdue:tianjiNopay')">
+        <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
+      </template>
       <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>
       <router-link :to="'/yonghuOrder6/' + this.id" tag="li">用户催收记录</router-link>
       <router-link :to="'/dingdanOrder6/' + this.id" tag="li">订单记录</router-link>
@@ -243,7 +247,7 @@
         <el-button @click="addDomain" size="medium">添加图片</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button v-if="hasPermissionCustom('order:overdue:collectsave')" type="primary" @click="submitForm('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
+        <el-button v-if="hasPermissionCustom('order:overdue:collectsave') || hasPermissionCustom('order:overdue:save')" type="primary" @click="submitForm('ruleForm2')">保存<i class="el-icon-check el-icon--right"></i></el-button>
         <!--<el-button type="info" @click="resetForm('ruleForm2')">取消<i class="el-icon-close el-icon&#45;&#45;right"></i></el-button>-->
       </el-form-item>
     </el-form>

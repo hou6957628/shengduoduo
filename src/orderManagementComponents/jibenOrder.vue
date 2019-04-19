@@ -83,15 +83,21 @@
         </template>
       </table>
     </div>
+    <!--添加群组结构-->
+    <el-dialog
+      :visible.sync="centerDialogVisible1"
+      width="25%"
+      center>
+        <iframe src="https://xmdd.qxykjz.com/dist1/demo.html?phone=150752575" style="width: 100%;height: 70vh;overflow: auto;"></iframe>
+    </el-dialog>
   </div>
 </template>
-
 <script>
   import axios from 'axios'
-
   export default {
     data() {
       return {
+        centerDialogVisible1:false,
         productList:[],
         zhimaFen:{},
         bankCard:[],
@@ -123,7 +129,17 @@
     methods: {
       //打电话
       toPhone(){
-
+        // this.centerDialogVisible1=true;
+        var a = document.createElement('a');
+        a.setAttribute('href', 'https://xmdd.qxykjz.com/dist1/demo.html?phone=' + this.cusCustomer.mobile);
+        a.setAttribute('target', '_blank');
+        a.setAttribute('id', 'startTelMedicine');
+        // 防止反复添加
+        if(document.getElementById('startTelMedicine')) {
+          document.body.removeChild(document.getElementById('startTelMedicine'));
+        }
+        document.body.appendChild(a);
+        a.click();
       },
       //添加催收记录
       addRecord(){

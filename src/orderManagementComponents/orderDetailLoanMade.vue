@@ -69,9 +69,12 @@
     </div>
     <div class="listContent">
       <router-link :to="'/jibenOrder2/'+this.id+'/'+this.orderId2" tag="li">基本信息</router-link>
-      <router-link :to="'/fenxianOrder2/' + this.id" tag="li">风险命中列表</router-link>
+      <router-link v-if="hasPermissionCustom('order:assigned:hitList') || hasPermissionCustom('order:collectionTask:hitList') || hasPermissionCustom('order:orderAll:hitList')"
+                   :to="'/fenxianOrder2/' + this.id" tag="li">风险命中列表</router-link>
       <router-link :to="'/yunyingOrder2/' + this.id" tag="li">运营商通讯录比对</router-link>
-      <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
+      <template v-if="hasPermissionCustom('order:assigned:tianji') || hasPermissionCustom('order:collectionTask:tianji') || hasPermissionCustom('order:orderAll:tianji')">
+        <a :href="this.tianjiReport.tianjiUrl | htmlFalse" target="_blank" class="ddd">天机报告</a>
+      </template>
       <a href="http://www.baidu.com" target="_blank" class="ddd">支付宝报告</a>
       <router-link :to="'/yonghuOrder2/' + this.id" tag="li">用户催收记录</router-link>
       <router-link :to="'/dingdanOrder2/' + this.id" tag="li">订单记录</router-link>
