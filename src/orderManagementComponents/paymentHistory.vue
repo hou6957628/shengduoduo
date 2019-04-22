@@ -50,9 +50,17 @@
           </el-date-picker>
         </template>
       </el-col>
-      <!--<el-col :span="6" style="height: 55px;">-->
-        <!--催收员：<el-input class="searchContent" placeholder="催收员姓名" v-model="cusName" clearable></el-input>-->
-      <!--</el-col>-->
+      <el-col :span="6" style="height: 55px;">
+        还款状态：
+        <el-select v-model="status" placeholder="请选择">
+          <el-option
+            v-for="item in statusList"
+            :key="item.classifyId"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
       <el-button style="margin-right: 250px" type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
@@ -239,16 +247,16 @@
       },
       //条件查询列表
       searchContent(data){
-        this.getProductList(this.pageNum,this.pageSize,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method);
+        this.getProductList(this.pageNum,this.pageSize,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method,this.status);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
-        this.getProductList(this.pageNum,val,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method);
+        this.getProductList(this.pageNum,val,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method,this.status);
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method);
+        this.getProductList(val,this.nowPageSizes,this.productId,this.mobile,this.startDate,this.endDate,this.cusName,this.method,this.status);
       },
       /**
        * 获取还款记录列表
@@ -260,8 +268,9 @@
        * @param data6 结束时间
        * @param data7 用户姓名
        * @param data8 还款方式
+       * @param data9 还款状态
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/repayment/list",
@@ -278,6 +287,7 @@
             endDate: data6,
             name: data7,
             method: data8,
+            status: data9,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -372,7 +382,7 @@
       this.endDate=this.dateFormatCustom(new Date());
       this.value5=[this.startDate,this.endDate];
       this.getProduct();
-      this.getProductList(1,30,null,null,this.startDate,this.endDate,null);
+      this.getProductList(1,30,null,null,this.startDate,this.endDate,null,null,null);
     },
     data() {
       return {
@@ -429,6 +439,15 @@
         startDate:null,
         endDate:null,
         method:null,
+        status:null,
+        statusList: [
+          {classifyId:null,classifyName:"全部状态"},
+          {classifyId:0,classifyName:"订单生成"},
+          {classifyId:1,classifyName:"付款交易进行中"},
+          {classifyId:2,classifyName:"已完成"},
+          {classifyId:3,classifyName:"已取消"},
+          {classifyId:4,classifyName:"失败"},
+        ],
       }
     }
   }

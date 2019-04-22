@@ -482,8 +482,6 @@
           var endTime=this.value5[1];
           this.startTime=startTime;
           this.endTime=endTime;
-          console.log("开始时间 : "+this.startTime+"结束时间 : "+this.endTime);
-          // this.getProductList(this.pageNum,this.nowPageSizes,this.value8,this.startTime,this.endTime);
         }
       },
       //详情接口

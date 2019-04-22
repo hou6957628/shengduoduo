@@ -38,6 +38,16 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="组长或组员" prop="groupRole">
+        <el-select v-model="ruleForm.groupRole" value-key="id" placeholder="请选择">
+          <el-option
+            v-for="item in groupRoleList"
+            :key="item.key"
+            :label="item.Id"
+            :value="item.key">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="催收产品" prop="productIds">
         <el-select v-model="ruleForm.productIds" value-key="productId" multiple placeholder="请选择" @change="selectChange">
           <el-option
@@ -217,6 +227,10 @@
           {key:0,Id:'不启用'},
           {key:1,Id:'启用'},
         ],
+        groupRoleList:[
+          {key:1,Id:'组长'},
+          {key:2,Id:'组员'},
+        ],
         operationRoleList: [],
         operationRoleList1: [],
         operationGroupList: [],
@@ -229,6 +243,7 @@
           rePassword: '',
           groupId: '',
           roleId: '',
+          groupRole: '',
           productIds:[],
           enabled: 1
         },
@@ -250,6 +265,9 @@
           ],
           roleId: [
             {  required: true, message: '请选择角色', trigger: 'change' }
+          ],
+          groupRole: [
+            {  required: true, message: '请选择组长或组员', trigger: 'change' }
           ],
           productIds: [
             {  required: true, message: '请选择催收产品', trigger: 'change' }
@@ -335,7 +353,7 @@
           if(res.data.msgCd=='ZYCASH-200'){
             this.operationRoleList1=res.data.body.operationRoleList;
             for(var i=0;i<this.operationRoleList1.length;i++){
-              if (this.operationRoleList1[i].roleName.substr(0,2) == '催收') {
+              if (this.operationRoleList1[i].roleName.substr(0,2) == '催收' || this.operationRoleList1[i].roleName.substr(0,2) == '贷后') {
                 this.operationRoleList.push(this.operationRoleList1[i]);
               }
             }

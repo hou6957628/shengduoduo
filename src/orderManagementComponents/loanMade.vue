@@ -95,6 +95,24 @@
           </el-date-picker>
         </template>
       </el-col>
+      <el-col :span="10" style="height: 55px;">
+        <template>
+          到期时间：
+          <el-date-picker style="margin-left: 0px"
+                          v-model="value6"
+                          type="datetimerange"
+                          align="right"
+                          unlink-panels
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          :picker-options="pickerOptions2"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          @change="logTimeChange2()">
+          </el-date-picker>
+        </template>
+      </el-col>
       <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
@@ -485,7 +503,7 @@
       },
       //条件查询列表
       searchContent(data){
-        if (status == null) {
+        if (this.status == null) {
           this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
             this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
         } else {
@@ -496,7 +514,7 @@
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
-        if (status == null) {
+        if (this.status == null) {
           this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
             this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
         } else {
@@ -506,7 +524,7 @@
       },
       //翻页
       handleCurrentChange(val) {
-        if (status == null) {
+        if (this.status == null) {
           this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
             this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
         } else {
@@ -1180,6 +1198,7 @@
         cusName:null,
         value4:'',
         value5:'',
+        value6:'',
         startDate:null,
         endDate:null,
         startDateLoan:null,

@@ -38,6 +38,16 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="组长或组员" prop="groupRole">
+        <el-select v-model="ruleForm.groupRole" value-key="id" placeholder="请选择">
+          <el-option
+            v-for="item in groupRoleList"
+            :key="item.key"
+            :label="item.Id"
+            :value="item.key">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="催收产品" prop="productIds">
         <el-select v-model="ruleForm.productIds" value-key="productId" multiple placeholder="请选择" @change="selectChange">
           <el-option
@@ -178,6 +188,10 @@
           {key:true,Id:'启用'},
         ],
         operationRoleList: [],
+        groupRoleList:[
+          {key:1,Id:'组长'},
+          {key:2,Id:'组员'},
+        ],
         operationGroupList: [],
         operationMerchantProductList: [],
         operationMerchantProductList1: [],
@@ -189,6 +203,7 @@
           rePassword: null,
           groupId: '',
           roleId: '',
+          groupRole: '',
           productIds:[],
           enabled: ''
         },
@@ -210,6 +225,9 @@
           ],
           roleId: [
             {  required: true, message: '请选择角色', trigger: 'change' }
+          ],
+          groupRole: [
+            {  required: true, message: '请选择组长或组员', trigger: 'change' }
           ],
           productIds: [
             {  required: true, message: '请选择催收产品', trigger: 'change' }
@@ -238,7 +256,6 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            console.log(this.ruleForm + "33333333333");
             axios({
               method:"POST",
               url:"http://"+this.baseUrl+"/operate/admin/collection/save",
@@ -331,7 +348,7 @@
             products.forEach(function (item,index) {
               _this.ruleForm.productIds.push(item.id);
             });
-            console.log(this.ruleForm.productIds);
+            console.log(this.ruleForm.groupRole);
           }else {
             this.$message.error(res.data.msgInfo);
           }

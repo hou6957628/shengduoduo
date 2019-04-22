@@ -942,7 +942,7 @@
           this.$router.push({
             path: `/orderDetailPendingLoan/${id}/${orderId}`,
           });
-        } else if (status == 8) {
+        } else if (status == 8 || status == 9 || status == 11 || status == 12) {
           this.$router.push({
             path: `/orderDetailLoanMade/${id}/${orderId}`,
           });

@@ -24,7 +24,7 @@
           label="操作"
           min-width="80">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" icon="el-icon-phone-outline" plain @click="toPhone()"></el-button>
+            <el-button type="primary" size="mini" icon="el-icon-phone-outline" plain @click="toPhone(scope.row)"></el-button>
             <el-button type="primary" size="mini" icon="el-icon-edit" plain @click="addRecord()"></el-button>
             <el-button type="primary" size="mini" icon="el-icon-document" plain @click="recordList()"></el-button>
           </template>
@@ -40,8 +40,19 @@
   export default {
     methods: {
       //打电话
-      toPhone(){
-
+      toPhone(row){
+        let phone = row.mobile;
+        let cc = this.EncryptCustom(phone);
+        var a = document.createElement('a');
+        a.setAttribute('href', 'https://xmdd.qxykjz.com/dist1/demo.html?phone=' + cc);
+        a.setAttribute('target', '_blank');
+        a.setAttribute('id', 'startTelMedicine');
+        // 防止反复添加
+        if(document.getElementById('startTelMedicine')) {
+          document.body.removeChild(document.getElementById('startTelMedicine'));
+        }
+        document.body.appendChild(a);
+        a.click();
       },
       //添加催收记录
       addRecord(){

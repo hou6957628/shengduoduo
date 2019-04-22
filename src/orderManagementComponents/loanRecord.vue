@@ -36,7 +36,18 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-col :span="6" style="height: 55px;">
+        放款状态：
+        <el-select v-model="status" placeholder="请选择">
+          <el-option
+            v-for="item in statusList"
+            :key="item.classifyId"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-button type="primary" style="margin-left: 30px" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
@@ -150,16 +161,16 @@
       },
       //条件查询列表
       searchContent(data){
-        this.getProductList(this.pageNum,this.pageSize,this.productId,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,this.pageSize,this.productId,this.mobile,this.startDate,this.endDate,this.status);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
-        this.getProductList(this.pageNum,val,this.productId,this.mobile,this.startDate,this.endDate);
+        this.getProductList(this.pageNum,val,this.productId,this.mobile,this.startDate,this.endDate,this.status);
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.productId,this.mobile,this.startDate,this.endDate);
+        this.getProductList(val,this.nowPageSizes,this.productId,this.mobile,this.startDate,this.endDate,this.status);
       },
       /**
        * 获取放款记录列表
@@ -169,8 +180,9 @@
        * @param data4 手机号
        * @param data5 开始时间
        * @param data6 结束时间
+       * @param data7 放款状态
        */
-      getProductList(data1,data2,data3,data4,data5,data6){
+      getProductList(data1,data2,data3,data4,data5,data6,data7){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/payment/list",
@@ -185,6 +197,7 @@
             mobile: data4,
             startDate: data5,
             endDate: data6,
+            status: data7,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -281,6 +294,15 @@
         value5:'',
         startDate:null,
         endDate:null,
+        status:null,
+        statusList: [
+          {classifyId:null,classifyName:"全部状态"},
+          {classifyId:0,classifyName:"订单生成"},
+          {classifyId:1,classifyName:"付款交易进行中"},
+          {classifyId:2,classifyName:"已完成"},
+          {classifyId:3,classifyName:"已取消"},
+          {classifyId:4,classifyName:"失败"},
+        ],
       }
     }
   }

@@ -490,10 +490,16 @@
       detailProduct(row){
         let id=row.customerId;
         let orderId=row.orderId;
-        this.$router.push({
-          path: `/orderDetailAfterLoanNoRepay/${id}/${orderId}`,
+        let routeData = this.$router.resolve({
+          path: `/orderDetailAfterLoanNoRepay/${id}/${orderId}`
         });
-      }
+        window.open(routeData.href, '_blank');
+        // let id=row.customerId;
+        // let orderId=row.orderId;
+        // this.$router.push({
+        //   path: `/orderDetailAfterLoanNoRepay/${id}/${orderId}`,
+        // });
+      },
     },
     mounted:function () {
       this.getOrderList(null,11,null,null,null,null,null,null,1,30,null);

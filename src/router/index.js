@@ -125,6 +125,7 @@ import yonghuOrder9 from '@/orderManagementComponents/yonghuOrder'
 import dingdanOrder9 from '@/orderManagementComponents/dingdanOrder'
 import fangkuanOrder9 from '@/orderManagementComponents/fangkuanOrder'
 import huankuanOrder9 from '@/orderManagementComponents/huankuanOrder'
+import collectionLog from '@/postLoanManagementComponents/collectionLog'
 //通讯录、紧急联系人
 import addressList from '@/postLoanManagementComponents/addressList'
 import addressList1 from '@/postLoanManagementComponents/addressList1'
@@ -1407,6 +1408,14 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: loanMade
+    },
+    {
+      path: '/collectionLog/:id',
+      name: 'collectionLog',
+      meta: {
+        requireAuth: true
+      },
+      component: collectionLog
     },
     {
       path: '/orderDetailLoanMade/:id/:orderId',
