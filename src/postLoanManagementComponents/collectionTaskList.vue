@@ -219,11 +219,12 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="200">
+          width="250">
           <template slot-scope="scope">
             <el-button v-if="hasPermissionCustom('order:collectionTask:detail')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
             <el-button v-if="hasPermissionCustom('order:collectionTask:addressList')" @click="mailList(scope.row)" type="text" size="medium">通讯录</el-button>
             <el-button v-if="hasPermissionCustom('order:collectionTask:emergencyLinkman')" @click="Contacts(scope.row)" type="text" size="medium">紧急联系人</el-button>
+            <el-button @click="collectionLog(scope.row)" type="text" size="medium">催记</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -316,6 +317,7 @@
       //二级联动：选择群组后加载对应催收员
       selectChange2(){
         this.productId=null;
+        this.collectionList=[];
         this.getCollectionList();
       },
       //查询所有催收员
@@ -337,7 +339,6 @@
             if (groupRole == 1) {
               this.collectionList.unshift({id:null,userName:"全部"});
             } else if (groupRole == 2) {
-              console.log(this.collectionList);
               //将整个组中的催收员与本账号匹配一下
               let obj = {};
               obj = this.collectionList.find((item)=>{
@@ -538,7 +539,15 @@
         this.$router.push({
           path: `/addressList/${id}/${orderId}`,
         });
-      }
+      },
+      //催记
+      collectionLog(row){
+        let id=row.customerId;
+        let routeData = this.$router.resolve({
+          path: `/collectionLog/${id}`,
+        });
+        window.open(routeData.href, '_blank');
+      },
     },
     mounted:function () {
       this.getProduct();
@@ -572,9 +581,9 @@
         value6:'',
         pageNum: null,
         proTotal:null,
-        pageSize:null,
+        pageSize:30,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',

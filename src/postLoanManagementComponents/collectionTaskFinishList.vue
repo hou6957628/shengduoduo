@@ -72,6 +72,17 @@
         </el-select>
       </el-col>
       <el-col :span="6" style="height: 55px;">
+        群组：
+        <el-select v-model="groupId" placeholder="请选择" @change="selectChange2">
+          <el-option
+            v-for="item in groupList"
+            :key="item.id"
+            :label="item.groupName"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
         催收员：
         <el-select v-model="adminId" placeholder="请选择">
           <el-option
@@ -264,27 +275,83 @@
           }
         })
       },
+      //查询所有群组
+      getGroupList() {
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/operate/admin/collection/getGroup",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.groupList=res.data.body.operationGroupList;
+            this.operationAdminGroup=res.data.body.operationAdminGroup;
+            if (this.operationAdminGroup.groupRole == 1) {
+              this.groupId = this.operationAdminGroup.groupId;
+              this.getCollectionList(this.operationAdminGroup.groupRole,this.operationAdminGroup.adminId);
+              this.getProductList(1,30,this.status,null,null,null,null,null,null,null,this.groupId,this.adminId);
+            } else if (this.operationAdminGroup.groupRole == 2) {
+              this.groupId = this.operationAdminGroup.groupId;
+              this.adminId = this.operationAdminGroup.adminId;
+              this.getCollectionList(this.operationAdminGroup.groupRole,this.operationAdminGroup.adminId);
+              this.getProductList(1,30,this.status,null,null,null,null,null,null,null,this.groupId,this.adminId);
+            } else {
+              this.groupList.unshift({id: null, groupName: '全部群组'});
+              this.getProductList(1,30,this.status,null,null,null,null,null,null,null,this.groupId,this.adminId);
+            }
+          }else if(res.data.msgCd=='ZYCASH-1009'){
+            this.$message.error(res.data.msgInfo);
+          }
+          else {
+            this.$message.error(res);
+          }
+        })
+      },
       //二级联动：选择平台后加载对应催收员
       selectChange(){
-        this.adminId=null;
+        if (this.operationAdminGroup.groupRole != 1 && this.operationAdminGroup.groupRole != 2) {
+          this.groupId=null;
+          this.getCollectionList();
+        }
+      },
+      //二级联动：选择群组后加载对应催收员
+      selectChange2(){
+        this.productId=null;
+        this.collectionList=[];
         this.getCollectionList();
       },
       //查询所有催收员
-      getCollectionList() {
+      getCollectionList(groupRole,adminId) {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/getCollection",
+          url:"http://"+this.baseUrl+"/operate/admin/collection/getCollectionRole",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
             productId: this.productId,
+            groupId: this.groupId,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.collectionList=res.data.body;
-            this.collectionList.unshift({id:null,userName:"全部"});
+            if (groupRole == 1) {
+              this.collectionList.unshift({id:null,userName:"全部"});
+            } else if (groupRole == 2) {
+              //将整个组中的催收员与本账号匹配一下
+              let obj = {};
+              obj = this.collectionList.find((item)=>{
+                return item.id === adminId;
+              });
+              this.collectionList = [];
+              this.collectionList.push(obj);
+              // this.adminId=adminId;
+            } else {
+              this.collectionList.unshift({id:null,userName:"全部"});
+            }
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -296,18 +363,18 @@
       //条件查询
       searchContent(data){
         this.getProductList(this.pageNum,this.pageSize,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
-          this.repaymentPaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId);
+          this.repaymentPaymentEndDate,this.repaymentOverdueDay,this.productId,this.groupId,this.adminId);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.getProductList(this.pageNum,val,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
-          this.repaymentPaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId);
+          this.repaymentPaymentEndDate,this.repaymentOverdueDay,this.productId,this.groupId,this.adminId);
         this.nowPageSizes=val;
       },
       //翻页
       handleCurrentChange(val) {
         this.getProductList(val,this.pageSize,this.status,this.mobile,this.orderStartDate,this.orderEndDate,this.repaymentPaymentStartDate,
-          this.repaymentPaymentEndDate,this.repaymentOverdueDay,this.productId,this.adminId);
+          this.repaymentPaymentEndDate,this.repaymentOverdueDay,this.productId,this.groupId,this.adminId);
       },
       /**
        * 催收已分订单列表
@@ -321,9 +388,10 @@
        * @param data8 放款结束时间
        * @param data9 逾期天数
        * @param data10 所属平台
-       * @param data11 催收员
+       * @param data11 群组id
+       * @param data12 催收员
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/findCollectionOrder",
@@ -342,7 +410,8 @@
             repaymentPaymentEndDate: data8,
             repaymentOverdueDay: data9,
             productId: data10,
-            adminId: data11,
+            groupId: data11,
+            adminId: data12,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -449,12 +518,14 @@
     },
     mounted:function () {
       this.getProduct();
-      this.getProductList(1,30,this.status,null,null,null,null,null,null,null,null);
+      this.getGroupList();
+      // this.getProductList(1,30,this.status,null,null,null,null,null,null,null,null);
     },
     data() {
       return {
         productList:[],
         groupList:[],
+        operationAdminGroup:'',
         collectionList:[],
         statusList: [
           {classifyId:13,classifyName:"逾期已还"},
@@ -474,9 +545,9 @@
         value6:'',
         pageNum: null,
         proTotal:null,
-        pageSize:null,
+        pageSize:30,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
