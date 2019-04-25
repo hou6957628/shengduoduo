@@ -109,11 +109,11 @@
                           :picker-options="pickerOptions2"
                           format="yyyy-MM-dd HH:mm:ss"
                           value-format="yyyy-MM-dd HH:mm:ss"
-                          @change="logTimeChange2()">
+                          @change="logTimeChange3()">
           </el-date-picker>
         </template>
       </el-col>
-      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button type="primary" style="margin-right: 130px" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
@@ -135,7 +135,6 @@
           min-width="80">
         </el-table-column>
         <el-table-column
-          fixed
           prop="gender"
           label="性别"
           :formatter="genderFormatter"
@@ -505,10 +504,10 @@
       searchContent(data){
         if (this.status == null) {
           this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
         } else {
           this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
         }
       },
       //每页显示多少条
@@ -516,20 +515,20 @@
         this.nowPageSizes=val;
         if (this.status == null) {
           this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
         } else {
           this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
         }
       },
       //翻页
       handleCurrentChange(val) {
         if (this.status == null) {
           this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
         } else {
           this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName);
+            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
         }
       },
       /**
@@ -549,8 +548,10 @@
        * @param data13 订单具体状态
        * @param data14 放款状态
        * @param data15 用户姓名
+       * @param data16 到期开始时间
+       * @param data17 到期结束时间
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14,data15){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14,data15,data16,data17){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/list",
@@ -574,6 +575,8 @@
             endDateLoan: data12,
             status: data13,
             statusGeq:data14,
+            rePaymentStartDate:data16,
+            rePaymentEndDate:data17,
             sortColumn: 'create_date',
             direction: 'desc',
           }
@@ -687,6 +690,18 @@
           var endTime=this.value5[1];
           this.startDateLoan=startTime;
           this.endDateLoan=endTime;
+        }
+      },
+      //到期时间筛选
+      logTimeChange3(){
+        if(this.value6==''||this.value6==null){
+          this.rePaymentStartDate=null;
+          this.rePaymentEndDate=null;
+        }else {
+          var startTime=this.value6[0];
+          var endTime=this.value6[1];
+          this.rePaymentStartDate=startTime;
+          this.rePaymentEndDate=endTime;
         }
       },
       //线下还款弹窗
@@ -1158,9 +1173,9 @@
         tableData:[],
         pageNum: null,
         proTotal:null,
-        pageSize:null,
+        pageSize:30,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -1203,6 +1218,8 @@
         endDate:null,
         startDateLoan:null,
         endDateLoan:null,
+        rePaymentStartDate:null,
+        rePaymentEndDate:null,
         centerDialogVisible1:false,
         centerDialogVisible2:false,
         centerDialogVisible3:false,

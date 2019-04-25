@@ -250,6 +250,13 @@
       },
       //批量审核订单
       batchAuditOrder(status){
+        const loadingObj = this.$loading({
+          lock: true,
+          text: '提交中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)',
+          target: document.querySelector('.div')
+        });
         let orderIdsStr = this.orderIds.join(',');
         axios({
           method:"POST",
@@ -265,6 +272,7 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            loadingObj.close();
             this.centerDialogVisible1=false;
             this.$message({
               message: '操作成功',

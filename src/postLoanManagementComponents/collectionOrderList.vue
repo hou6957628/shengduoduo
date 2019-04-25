@@ -491,7 +491,6 @@
       },
       //取消分单
       cancelContent(){
-        console.log(this.orderIds);
         if (this.orderIds.length==0) {
           this.$message({
             showClose: true,
@@ -618,9 +617,9 @@
         orderIds:[],
         pageNum: null,
         proTotal:null,
-        pageSize:null,
+        pageSize:30,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',

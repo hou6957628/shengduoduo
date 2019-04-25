@@ -319,7 +319,6 @@
           return
         }
         let url = window.URL.createObjectURL(new Blob([data]));
-        console.log(url + '-----');
         let link = document.createElement('a');
         link.style.display = 'none';
         link.href = url;

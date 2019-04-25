@@ -193,6 +193,13 @@
       },
       //批量审核订单
       batchAuditOrder(status){
+        const loadingObj = this.$loading({
+          lock: true,
+          text: '提交中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)',
+          target: document.querySelector('.div')
+        });
         let orderIdsStr = this.orderIds.join(',');
         axios({
           method:"POST",
@@ -208,6 +215,7 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            loadingObj.close();
             this.centerDialogVisible1=false;
             this.$message({
               message: '操作成功',
@@ -247,18 +255,18 @@
       //条件查询列表
       searchContent(data){
         this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+          this.sex,this.mobile,this.startDate,this.endDate,this.status);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
         this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+          this.sex,this.mobile,this.startDate,this.endDate,this.status);
       },
       //翻页
       handleCurrentChange(val) {
         this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+          this.sex,this.mobile,this.startDate,this.endDate,this.status);
       },
       /**
        * 获取待放款订单列表
@@ -272,8 +280,9 @@
        * @param data8 手机号
        * @param data9 开始时间
        * @param data10 结束时间
+       * @param data11 放款状态
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/pending/list",
@@ -294,6 +303,7 @@
             endDate: data10,
             sortColumn: 'create_date',
             direction: 'desc',
+            status: data11,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -397,7 +407,7 @@
       this.endDate=this.dateFormatCustom(new Date());
       this.value5=[this.startDate,this.endDate];
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate,this.status);
     },
     data() {
       return {
@@ -456,6 +466,7 @@
         value5:'',
         startDate:null,
         endDate:null,
+        status:4,
         centerDialogVisible1:false,
       }
     }
