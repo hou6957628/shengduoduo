@@ -523,6 +523,7 @@
           timeQuantum:'',
           date:'',
           days:'',
+          description:'',
         },
         rules: {
           productId: [

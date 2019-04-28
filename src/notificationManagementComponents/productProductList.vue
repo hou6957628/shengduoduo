@@ -212,12 +212,12 @@
             enabled: row.enabled,
           }
         }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-SUPERMARKET-200'){
+          if(res.data.msgCd=='ZYCASH-200'){
             this.$message({
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,10,this.finProduct,this.finProduct);
+            this.getProductList(1,20,this.finProduct,this.finProduct);
           }else {
             this.$message.error(res.data.msgInfo);
           }

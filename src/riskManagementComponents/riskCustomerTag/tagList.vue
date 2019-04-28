@@ -266,7 +266,7 @@
               message: '删除成功',
               type: 'success'
             });
-            this.getProductList(1,10,this.finProduct,null);
+            this.getProductList(1,this.nowPageSizes,this.finProduct,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }

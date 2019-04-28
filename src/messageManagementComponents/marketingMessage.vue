@@ -516,6 +516,7 @@
           days:'',
           file:null,
           fileName:null,
+          description:null,
         },
         rules: {
           productId: [

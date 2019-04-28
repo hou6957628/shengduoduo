@@ -474,6 +474,7 @@
           classifyId:'',
           classifyName:'',
           messageName:'',
+          description:'',
         },
         rules: {
           productId: [

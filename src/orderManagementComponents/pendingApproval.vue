@@ -45,7 +45,7 @@
       <el-col :span="6" style="height: 55px;">
       手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
       </el-col>
-      <el-col :span="6" style="height: 55px;">
+      <el-col :span="12" style="height: 55px;">
         订单状态：
         <el-select v-model="status" placeholder="请选择">
           <el-option
@@ -74,7 +74,12 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-button type="primary" style="margin-top: 110px;margin-left: -800px" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-col :span="7" style="height: 55px;">
+        狮子分：
+          <el-input class="searchContent" placeholder="最低分" v-model="childrenChannelName" clearable style="width: 100px"></el-input>
+          <el-input class="searchContent" placeholder="最高分" v-model="childrenChannelName" clearable style="width: 100px;margin-left: -30px"></el-input>
+      </el-col>
+      <el-button type="primary" style="margin-left: -40px" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
       <el-button v-if="hasPermissionCustom('order:audit:batchApproval')" type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>
       <el-button v-if="hasPermissionCustom('order:audit:batchApprovalMachine')" type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>
     </div>

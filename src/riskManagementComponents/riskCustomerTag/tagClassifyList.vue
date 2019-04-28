@@ -184,7 +184,7 @@
               message: '删除成功',
               type: 'success'
             });
-            this.getProductList(1,10,0,null);
+            this.getProductList(1,this.nowPageSizes,0,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }

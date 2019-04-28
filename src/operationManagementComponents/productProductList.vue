@@ -217,7 +217,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(1,10,this.finProduct,this.finProduct);
+            this.getProductList(1,20,this.finProduct,this.finProduct);
           }else {
             this.$message.error(res.data.msgInfo);
           }

@@ -107,8 +107,9 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="list[0].modeName"
+          prop="list"
           label="消息形式"
+          :formatter="listFormatter"
           width="150">
         </el-table-column>
         <el-table-column
@@ -618,6 +619,21 @@
         } else if (type == 3) {
           return '技术人员';
         }
+      },
+      //过滤消息形式字段
+      listFormatter(row){
+        let list = row.list;
+        let classFy = [];
+        list.forEach(function(item,index){
+          if (index == 0) {
+            classFy.push(item.modeName);
+          } else {
+            if (classFy.indexOf(item.modeName) == -1) {
+              classFy.push(item.modeName);
+            }
+          }
+        })
+        return classFy.join('，');
       },
       //过滤发送时间字段
       sendTimeFormatter(row){
