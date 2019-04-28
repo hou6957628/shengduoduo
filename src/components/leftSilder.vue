@@ -245,6 +245,18 @@
                 <el-menu-item v-if="this.hasPermissionCustom('message:messagelog:list')" index="/messageRecord">日志列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
+            <el-submenu  index="14" style="padding-left:0 ;">
+              <template style="padding-left: 5px" slot="title">
+                <i class="el-icon-menu"></i>
+                <span>导出报表</span>
+              </template>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item  index="/exportExcel">报表列表</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item  index="/addExcelSetting">新建导出</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
           </el-menu>
         </el-col>
       </el-row>

@@ -261,6 +261,10 @@ import editMarketingMessage from '@/messageManagementComponents/editMarketingMes
 import taskDetail from '@/messageManagementComponents/taskDetail'
 import techMessage from '@/messageManagementComponents/techMessage'
 import editTechMessage from '@/messageManagementComponents/editTechMessage'
+// 导出报表
+import exportExcel from '@/exportExcel/exportSettingList'
+import addExcelSetting from  '@/exportExcel/addExcelSetting'
+import editExportSetting from  '@/exportExcel/editExportSetting'
 
 
 Vue.use(Router);
@@ -299,7 +303,8 @@ axios.interceptors.response.use(
   });
 
 //测试环境
-Vue.prototype.baseUrl="47.93.234.167:31999";
+// Vue.prototype.baseUrl="47.93.234.167:31999";
+Vue.prototype.baseUrl="127.0.0.1:19999";
 //正式环境
 // Vue.prototype.baseUrl="60.205.216.141";
 //渠道管理
@@ -1835,6 +1840,30 @@ const vueRouter = new Router({
         requireAuth: true
       },
       component: editTechMessage
+    },
+    {
+      path: '/exportExcel',
+      name: 'exportExcel',
+      meta: {
+        requireAuth: true
+      },
+      component: exportExcel
+    },
+    {
+      path: '/addExcelSetting',
+      name: 'addExcelSetting',
+      meta: {
+        requireAuth: true
+      },
+      component: addExcelSetting
+    },
+    {
+      path: '/editExportSetting/:id',
+      name: 'editExportSetting',
+      meta: {
+        requireAuth: true
+      },
+      component: editExportSetting
     },
 ]
 
