@@ -95,7 +95,36 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-col :span="10" style="height: 55px;">
+        <template>
+          到期时间：
+          <el-date-picker style="margin-left: 0px"
+                          v-model="value6"
+                          type="datetimerange"
+                          align="right"
+                          unlink-panels
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          :picker-options="pickerOptions2"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          @change="logTimeChange3()">
+          </el-date-picker>
+        </template>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        展期：
+        <el-select v-model="defer" placeholder="请选择">
+          <el-option
+            v-for="item in deferList"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-button type="primary" style="margin-right: 130px" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
       <el-table
@@ -477,19 +506,19 @@
       },
       //条件查询列表
       searchContent(){
-        this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status);
+        this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,
+          this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
-        this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status);
+        this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,
+          this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status);
+        this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,
+          this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.cusName,this.status,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
       },
       /**
        * 获取待放款订单列表
@@ -507,8 +536,11 @@
        * @param data12 放款结束时间
        * @param data13 用户姓名
        * @param data14 状态
+       * @param data15 到期开始时间
+       * @param data16 到期结束时间
+       * @param data17 是否展期
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14,data15,data16,data17){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/list",
@@ -531,6 +563,9 @@
             startDateLoan: data11,
             endDateLoan: data12,
             status: data14,
+            rePaymentStartDate:data15,
+            rePaymentEndDate:data16,
+            defer:data17,
             sortColumn: 'create_date',
             direction: 'desc',
           }
@@ -942,7 +977,7 @@
           this.$router.push({
             path: `/orderDetailPendingLoan/${id}/${orderId}`,
           });
-        } else if (status == 8) {
+        } else if (status == 8 || status == 9 || status == 11 || status == 12) {
           this.$router.push({
             path: `/orderDetailLoanMade/${id}/${orderId}`,
           });
@@ -1038,10 +1073,22 @@
           this.endDateLoan=endTime;
         }
       },
+      //到期时间筛选
+      logTimeChange3(){
+        if(this.value6==''||this.value6==null){
+          this.rePaymentStartDate=null;
+          this.rePaymentEndDate=null;
+        }else {
+          var startTime=this.value6[0];
+          var endTime=this.value6[1];
+          this.rePaymentStartDate=startTime;
+          this.rePaymentEndDate=endTime;
+        }
+      },
     },
     mounted:function () {
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,null,null,null,null,null);
+      this.getProductList(1,30,null,null,null,null,null,null,null,null,null,null,null,null,null,null);
     },
     data() {
       //正常减免金额
@@ -1121,6 +1168,10 @@
           {classifyId:0,classifyName:"新户"},
           {classifyId:1,classifyName:"老户"},
         ],
+        deferList: [
+          {classifyId:null,classifyName:"全部状态"},
+          {classifyId:1,classifyName:"已展期"},
+        ],
         sexList: [
           {classifyId:null,classifyName:"全部"},
           {classifyId:0,classifyName:"男"},
@@ -1129,9 +1180,9 @@
         tableData:[],
         pageNum: null,
         proTotal:null,
-        pageSize:null,
+        pageSize:30,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -1169,10 +1220,14 @@
         cusName:null,
         value4:'',
         value5:'',
+        value6:'',
+        defer:null,
         startDate:null,
         endDate:null,
         startDateLoan:null,
         endDateLoan:null,
+        rePaymentStartDate:null,
+        rePaymentEndDate:null,
         centerDialogVisible1:false,
         centerDialogVisible2:false,
         centerDialogVisible3:false,

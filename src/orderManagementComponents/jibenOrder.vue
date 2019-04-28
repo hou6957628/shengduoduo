@@ -1,3 +1,4 @@
+
 <template>
   <div>
     <div style="width: 1000px;margin: 0 auto;">
@@ -22,7 +23,11 @@
       <h3>基本信息</h3>
       <table >
         <tr>
-          <td>用户ID：{{this.cusCustomer.id}}</td><td> 手机号：{{this.cusCustomer.mobile}}</td><td>  主渠道：{{this.cusCustomer.channelName==null?'无':this.cusCustomer.channelName}}</td>
+          <td>用户ID：{{this.cusCustomer.id}}</td>
+          <td>手机号：{{this.cusCustomer.mobile}}
+            <el-button type="primary" size="mini" icon="el-icon-phone-outline" plain @click="toPhone(cusCustomer.mobile)"></el-button>
+          </td>
+          <td>主渠道：{{this.cusCustomer.channelName==null?'无':this.cusCustomer.channelName}}</td>
           <td>新户老户：{{this.cusCustomer.reBorrow==1?'老户':'新户'}}</td>
           <td>注册时间：{{this.cusCustomer.createDate}}</td><td>所属平台：{{this.cusCustomer.productName}}</td>
         </tr>
@@ -59,7 +64,7 @@
             <td>联系人{{index}}：{{item.name}}</td><td>联系人借款关系：{{item.relation}}</td>
             <td>
               手机号：{{item.phoneNum}}&nbsp;&nbsp;&nbsp;&nbsp;
-              <el-button type="primary" size="mini" icon="el-icon-phone-outline" plain @click="toPhone()"></el-button>
+              <el-button type="primary" size="mini" icon="el-icon-phone-outline" plain @click="toPhone(item.phoneNum)"></el-button>
               <el-button type="primary" size="mini" icon="el-icon-edit" plain @click="addRecord()"></el-button>
             </td>
             <td rowspan="2" v-if="index==0"><el-button @click="addressList">手机通讯录</el-button></td>
@@ -75,11 +80,12 @@
       <h3>认证信息</h3>
       <table >
         <template v-for="(item,index) in this.authorizationStatus">
-          <tr v-if="index==0"><td>身份证：{{item.authorizationStatus}}</td><td>身份证认证时间：{{item.updateDate}}</td></tr>
-          <tr v-if="index==1"><td>人脸识别认证：{{item.authorizationStatus}}</td><td>人脸识别认证时间：{{item.updateDate}}</td></tr>
-          <tr v-if="index==2"><td>运营商手机认证：{{item.authorizationStatus}}</td><td>运营商手机认证时间：{{item.updateDate}}</td></tr>
-          <tr v-if="index==3"><td>芝麻分认证：{{item.authorizationStatus}}</td><td>芝麻分认证时间：{{item.updateDate}}</td></tr>
-          <tr v-if="index==4"><td>绑卡：{{item.authorizationStatus}}</td><td>绑卡时间：{{item.updateDate}}</td></tr>
+          <!--<tr v-if="index==0"><td>身份证：{{item.authorizationStatus}}</td><td>身份证认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <!--<tr v-if="index==1"><td>人脸识别认证：{{item.authorizationStatus}}</td><td>人脸识别认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <!--<tr v-if="index==2"><td>运营商手机认证：{{item.authorizationStatus}}</td><td>运营商手机认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <!--<tr v-if="index==3"><td>芝麻分认证：{{item.authorizationStatus}}</td><td>芝麻分认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <!--<tr v-if="index==4"><td>绑卡：{{item.authorizationStatus}}</td><td>绑卡时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <tr><td>{{item.templateName}}：{{item.authorizationStatus}}</td><td>认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>
         </template>
       </table>
     </div>
@@ -128,10 +134,10 @@
     },
     methods: {
       //打电话
-      toPhone(){
-        // this.centerDialogVisible1=true;
+      toPhone(phone){
+        let cc = this.EncryptCustom(phone);
         var a = document.createElement('a');
-        a.setAttribute('href', 'https://xmdd.qxykjz.com/dist1/demo.html?phone=' + this.cusCustomer.mobile);
+        a.setAttribute('href', 'https://xmdd.qxykjz.com/dist1/demo.html?phone=' + cc);
         a.setAttribute('target', '_blank');
         a.setAttribute('id', 'startTelMedicine');
         // 防止反复添加

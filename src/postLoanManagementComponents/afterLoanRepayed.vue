@@ -492,9 +492,15 @@
       detailProduct(row){
         let id=row.customerId;
         let orderId=row.orderId;
-        this.$router.push({
-          path: `/orderDetailAfterLoanRepayed/${id}/${orderId}`,
+        let routeData = this.$router.resolve({
+          path: `/orderDetailAfterLoanRepayed/${id}/${orderId}`
         });
+        window.open(routeData.href, '_blank');
+        // let id=row.customerId;
+        // let orderId=row.orderId;
+        // this.$router.push({
+        //   path: `/orderDetailAfterLoanRepayed/${id}/${orderId}`,
+        // });
       }
     },
     mounted:function () {

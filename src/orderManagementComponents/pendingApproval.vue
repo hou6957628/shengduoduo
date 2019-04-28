@@ -42,8 +42,19 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-col :span="8" style="height: 55px;">
+      <el-col :span="6" style="height: 55px;">
       手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        订单状态：
+        <el-select v-model="status" placeholder="请选择">
+          <el-option
+            v-for="item in statusList"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
       </el-col>
       <el-col :span="10" style="height: 55px;">
         <template>
@@ -63,9 +74,9 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button type="primary" style="margin-top: 110px;margin-left: -800px" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
       <el-button v-if="hasPermissionCustom('order:audit:batchApproval')" type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>
-      <el-button v-if="hasPermissionCustom('order:audit:batchApprovalMachine ')" type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>
+      <el-button v-if="hasPermissionCustom('order:audit:batchApprovalMachine')" type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>
     </div>
     <template>
       <el-table
@@ -146,7 +157,7 @@
           width="150">
           <template slot-scope="scope">
             <el-button v-if="hasPermissionCustom('order:audit:customer:find')" @click="detailProduct(scope.row)" type="text" size="medium">审核</el-button>
-            <el-button v-if="hasPermissionCustom('order:audit:machine ')" @click="jsProduct(scope.row)" type="text" size="medium">机审</el-button>
+            <el-button v-if="hasPermissionCustom('order:audit:machine')" @click="jsProduct(scope.row)" type="text" size="medium">机审</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -239,6 +250,13 @@
       },
       //批量审核订单
       batchAuditOrder(status){
+        const loadingObj = this.$loading({
+          lock: true,
+          text: '提交中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)',
+          target: document.querySelector('.div')
+        });
         let orderIdsStr = this.orderIds.join(',');
         axios({
           method:"POST",
@@ -254,6 +272,7 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            loadingObj.close();
             this.centerDialogVisible1=false;
             this.$message({
               message: '操作成功',
@@ -293,18 +312,18 @@
       //条件查询列表
       searchContent(data){
         this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+          this.sex,this.mobile,this.startDate,this.endDate,this.status);
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
         this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+          this.sex,this.mobile,this.startDate,this.endDate,this.status);
       },
       //翻页
       handleCurrentChange(val) {
         this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-          this.sex,this.mobile,this.startDate,this.endDate);
+          this.sex,this.mobile,this.startDate,this.endDate,this.status);
       },
       /**
        * 获取待审批订单列表
@@ -318,8 +337,9 @@
        * @param data8 手机号
        * @param data9 开始时间
        * @param data10 结束时间
+       * @param data11 订单状态
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/audit/list",
@@ -338,6 +358,7 @@
             mobile: data8,
             startDate: data9,
             endDate: data10,
+            status: data11,
             sortColumn: 'create_date',
             direction: 'desc',
           }
@@ -469,6 +490,12 @@
           {classifyId:false,classifyName:"男"},
           {classifyId:true,classifyName:"女"},
         ],
+        statusList: [
+          {classifyId:null,classifyName:"全部状态"},
+          {classifyId:0,classifyName:"待机审"},
+          {classifyId:1,classifyName:"机器审核中"},
+          {classifyId:3,classifyName:"人工审核"},
+        ],
         tableData:[],
         pageNum: null,
         proTotal:null,
@@ -508,6 +535,7 @@
         childrenChannelName:null,
         sex:null,
         mobile:null,
+        status:null,
         value5:'',
         startDate:null,
         endDate:null,

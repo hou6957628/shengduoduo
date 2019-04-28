@@ -107,6 +107,7 @@
       <el-table
         ref="multipleTable"
         :data="tableData"
+        @selection-change="handleSelectionChange"
         highlight-current-row
         border
         style="width: 98%">
@@ -253,9 +254,10 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="60">
+          width="100">
           <template slot-scope="scope">
             <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
+            <el-button @click="collectionLog(scope.row)" type="text" size="medium">催记</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -559,11 +561,28 @@
       },
       //详情
       detailProduct(row){
+        let status=row.status;
         let id=row.customerId;
         let orderId=row.orderId;
-        this.$router.push({
-          path: `/orderDetailLoanMade/${id}/${orderId}`,
+        if (status == 9 || status == 11) {
+          let routeData = this.$router.resolve({
+            path: `/orderDetailLoanMade/${id}/${orderId}`,
+          });
+          window.open(routeData.href, '_blank');
+        } else {
+          let routeData2 = this.$router.resolve({
+            path: `/orderDetailPaymentHistory/${id}/${orderId}`,
+          });
+          window.open(routeData2.href, '_blank');
+        }
+      },
+      //催记
+      collectionLog(row){
+        let id=row.customerId;
+        let routeData = this.$router.resolve({
+          path: `/collectionLog/${id}`,
         });
+        window.open(routeData.href, '_blank');
       },
     },
     mounted:function () {
@@ -598,9 +617,9 @@
         orderIds:[],
         pageNum: null,
         proTotal:null,
-        pageSize:null,
+        pageSize:30,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',

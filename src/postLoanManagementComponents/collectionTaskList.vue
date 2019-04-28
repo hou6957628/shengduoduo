@@ -73,7 +73,7 @@
       </el-col>
       <el-col :span="6" style="height: 55px;">
         群组：
-        <el-select v-model="groupId" placeholder="请选择">
+        <el-select v-model="groupId" placeholder="请选择" @change="selectChange2">
           <el-option
             v-for="item in groupList"
             :key="item.id"
@@ -219,11 +219,12 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="200">
+          width="250">
           <template slot-scope="scope">
             <el-button v-if="hasPermissionCustom('order:collectionTask:detail')" @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
             <el-button v-if="hasPermissionCustom('order:collectionTask:addressList')" @click="mailList(scope.row)" type="text" size="medium">通讯录</el-button>
             <el-button v-if="hasPermissionCustom('order:collectionTask:emergencyLinkman')" @click="Contacts(scope.row)" type="text" size="medium">紧急联系人</el-button>
+            <el-button @click="collectionLog(scope.row)" type="text" size="medium">催记</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -276,15 +277,28 @@
       getGroupList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/operate/admin/group/getGroupList",
+          url:"http://"+this.baseUrl+"/operate/admin/collection/getGroup",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.groupList=res.data.body;
-            this.groupList.unshift({id: null, groupName: '全部群组'});
+            this.groupList=res.data.body.operationGroupList;
+            this.operationAdminGroup=res.data.body.operationAdminGroup;
+            if (this.operationAdminGroup.groupRole == 1) {
+              this.groupId = this.operationAdminGroup.groupId;
+              this.getCollectionList(this.operationAdminGroup.groupRole,this.operationAdminGroup.adminId);
+              this.getProductList(1,30,null,null,null,null,null,null,null,null,this.groupId,this.adminId,1);
+            } else if (this.operationAdminGroup.groupRole == 2) {
+              this.groupId = this.operationAdminGroup.groupId;
+              this.adminId = this.operationAdminGroup.adminId;
+              this.getCollectionList(this.operationAdminGroup.groupRole,this.operationAdminGroup.adminId);
+              this.getProductList(1,30,null,null,null,null,null,null,null,null,this.groupId,this.adminId,1);
+            } else {
+              this.groupList.unshift({id: null, groupName: '全部群组'});
+              this.getProductList(1,30,null,null,null,null,null,null,null,null,this.groupId,this.adminId,1);
+            }
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -295,25 +309,47 @@
       },
       //二级联动：选择平台后加载对应催收员
       selectChange(){
-        this.adminId=null;
+        if (this.operationAdminGroup.groupRole != 1 && this.operationAdminGroup.groupRole != 2) {
+          this.groupId=null;
+          this.getCollectionList();
+        }
+      },
+      //二级联动：选择群组后加载对应催收员
+      selectChange2(){
+        this.productId=null;
+        this.collectionList=[];
         this.getCollectionList();
       },
       //查询所有催收员
-      getCollectionList() {
+      getCollectionList(groupRole,adminId) {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/getCollection",
+          url:"http://"+this.baseUrl+"/operate/admin/collection/getCollectionRole",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
           },
           params:{
             productId: this.productId,
+            groupId: this.groupId,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.collectionList=res.data.body;
-            this.collectionList.unshift({id:null,userName:"全部"});
+            if (groupRole == 1) {
+              this.collectionList.unshift({id:null,userName:"全部"});
+            } else if (groupRole == 2) {
+              //将整个组中的催收员与本账号匹配一下
+              let obj = {};
+              obj = this.collectionList.find((item)=>{
+                return item.id === adminId;
+              });
+              this.collectionList = [];
+              this.collectionList.push(obj);
+              // this.adminId=adminId;
+            } else {
+              this.collectionList.unshift({id:null,userName:"全部"});
+            }
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -474,11 +510,20 @@
       },
       //详情
       detailProduct(row){
+        let status=row.status;
         let id=row.customerId;
         let orderId=row.orderId;
-        this.$router.push({
-          path: `/orderDetailLoanMade/${id}/${orderId}`,
-        });
+        if (status == 9 || status == 11) {
+          let routeData = this.$router.resolve({
+            path: `/orderDetailLoanMade/${id}/${orderId}`,
+          });
+          window.open(routeData.href, '_blank');
+        } else {
+          let routeData2 = this.$router.resolve({
+            path: `/orderDetailPaymentHistory/${id}/${orderId}`,
+          });
+          window.open(routeData2.href, '_blank');
+        }
       },
       //紧急联系人
       Contacts(row){
@@ -494,17 +539,26 @@
         this.$router.push({
           path: `/addressList/${id}/${orderId}`,
         });
-      }
+      },
+      //催记
+      collectionLog(row){
+        let id=row.customerId;
+        let routeData = this.$router.resolve({
+          path: `/collectionLog/${id}`,
+        });
+        window.open(routeData.href, '_blank');
+      },
     },
     mounted:function () {
       this.getProduct();
       this.getGroupList();
-      this.getProductList(1,30,null,null,null,null,null,null,null,null,null,null,1);
+      // this.getProductList(1,30,null,null,null,null,null,null,null,null,this.groupId,this.adminId,1);
     },
     data() {
       return {
         productList:[],
         groupList:[],
+        operationAdminGroup:'',
         collectionList:[],
         statusList: [
           {classifyId:null,classifyName:"全部状态"},
@@ -527,9 +581,9 @@
         value6:'',
         pageNum: null,
         proTotal:null,
-        pageSize:null,
+        pageSize:30,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',

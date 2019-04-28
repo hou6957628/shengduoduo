@@ -62,11 +62,12 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="120">
+          width="200">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
             <el-button v-if="scope.row.enable" @click="obtainedProductTip(scope.row)" type="text" size="medium">停用</el-button>
             <el-button v-if="!scope.row.enable" @click="obtainedProduct(scope.row)" type="text" size="medium">启用</el-button>
+            <el-button @click="reUpload(scope.row)" type="text" size="medium">重新上传链接</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -199,6 +200,29 @@
               type: 'success'
             });
             this.getProductList(1,10,this.channel,this.ruleForm.productId);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
+      //重新上传链接
+      reUpload(row){
+        axios({
+          method:"post",
+          url:"http://"+this.baseUrl+"/channel/admin/channel/retryGenerateUrl",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id: row.id,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
           }else {
             this.$message.error(res.data.msgInfo);
           }

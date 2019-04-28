@@ -507,13 +507,15 @@
         let orderId=row.orderId;
         let status=row.status;
         if (status == 11) {
-          this.$router.push({
+          let routeData = this.$router.resolve({
             path: `/orderDetailAfterLoanNoRepay/${id}/${orderId}`,
           });
+          window.open(routeData.href, '_blank');
         } else if (status == 13) {
-          this.$router.push({
+          let routeData2 = this.$router.resolve({
             path: `/orderDetailAfterLoanRepayed/${id}/${orderId}`,
           });
+          window.open(routeData2.href, '_blank');
         }
       }
     },
@@ -546,9 +548,9 @@
         reBorrow:'',
         pageNum: null,
         proTotal:null,
-        pageSize:null,
+        pageSize:30,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',

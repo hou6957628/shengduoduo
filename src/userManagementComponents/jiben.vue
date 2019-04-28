@@ -70,11 +70,12 @@
       <h3>认证信息</h3>
       <table >
         <template v-for="(item,index) in this.authorizationStatus">
-          <tr v-if="index==0"><td>身份证：{{item.authorizationStatus}}</td><td>身份证认证时间：{{item.updateDate}}</td></tr>
-          <tr v-if="index==1"><td>人脸识别认证：{{item.authorizationStatus}}</td><td>人脸识别认证时间：{{item.updateDate}}</td></tr>
-          <tr v-if="index==2"><td>运营商手机认证：{{item.authorizationStatus}}</td><td>运营商手机认证时间：{{item.updateDate}}</td></tr>
-          <tr v-if="index==3"><td>芝麻分认证：{{item.authorizationStatus}}</td><td>芝麻分认证时间：{{item.updateDate}}</td></tr>
-          <tr v-if="index==4"><td>绑卡：{{item.authorizationStatus}}</td><td>绑卡时间：{{item.updateDate}}</td></tr>
+          <!--<tr v-if="index==0"><td>身份证：{{item.authorizationStatus}}</td><td>身份证认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <!--<tr v-if="index==1"><td>人脸识别认证：{{item.authorizationStatus}}</td><td>人脸识别认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <!--<tr v-if="index==2"><td>运营商手机认证：{{item.authorizationStatus}}</td><td>运营商手机认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <!--<tr v-if="index==3"><td>芝麻分认证：{{item.authorizationStatus}}</td><td>芝麻分认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <!--<tr v-if="index==4"><td>绑卡：{{item.authorizationStatus}}</td><td>绑卡时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>-->
+          <tr><td>{{item.templateName}}：{{item.authorizationStatus}}</td><td>认证时间：{{item.authorizationStatus=='已认证'?item.updateDate:''}}</td></tr>
         </template>
       </table>
       <el-button-group style="margin: 0 auto;width: 500px;display: block;margin-top: 40px;">
