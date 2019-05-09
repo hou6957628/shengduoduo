@@ -1,18 +1,27 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/flowList' }">额度流程管理</el-breadcrumb-item>
-      <el-breadcrumb-item>编辑额度流程</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/exportExcel' }">导出设置</el-breadcrumb-item>
+      <el-breadcrumb-item>编辑</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="流程名称:" prop="flowName">
-        <el-input v-model="ruleForm.flowName"></el-input>
+      <el-form-item label="excel名称:" prop="excelName" :rules="[ruleForm.excelName,{validator:checkName, required: true, trigger:'blur'}]">
+        <el-input v-model="ruleForm.excelName"></el-input>
       </el-form-item>
-      <el-form-item label="流程说明:">
-        <el-input v-model="ruleForm.flowDetail"></el-input>
+      <el-form-item label="对象列名:" prop="colomnNames">
+        <el-input v-model="ruleForm.colomnNames"></el-input>
       </el-form-item>
-      <el-form-item label="是否启用:" prop="enabled">
-        <el-select v-model="ruleForm.enabled" placeholder="请选择">
+      <el-form-item label="excel列名:" prop="excelColomnNames">
+        <el-input  type="textarea" :autosize="{ minRows: 6, maxRows: 24}"
+                   placeholder="请输入内容"  v-model="ruleForm.excelColomnNames"></el-input>
+      </el-form-item>
+      <el-form-item label="sql语句:" prop="sqlStr">
+        <el-input  type="textarea" :autosize="{ minRows: 6, maxRows: 24}"
+                   placeholder="请输入内容"  v-model="ruleForm.sqlStr"></el-input>
+      </el-form-item>
+
+      <el-form-item label="是否启用:" prop="enable">
+        <el-select v-model="ruleForm.enable" placeholder="请选择">
           <el-option
             v-for="item in electData"
             :key="item.key"
@@ -40,41 +49,48 @@
         ],
         electValue:'',
         ruleForm: {
-          id:'',
-          flowName: '',
-          flowDetail: '',
-          enabled: '',
+          id: '',
+          excelName: '',
+          colomnNames: '',
+          excelColomnNames: '',
+          sqlStr: '',
+          enable: '',
         },
         rules: {
-          flowName: [
-            { required: true, message: '请输入流程名称', trigger: 'blur' },
-          ],
-          enabled: [
+          enable: [
             { required: true, message: '请选择是否启用', trigger: 'change' }
           ]
         }
       };
     },
     methods: {
-      //根据id查询流程
-      getFlowById(ruleId){
-        axios({
-          method:"get",
-          url:"http://"+this.baseUrl+"/export/admin/setting/id",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          },
-          params:{
-            id: id,
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.ruleForm = res.data.body.amountFlow;
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
+      //验证名称是否重名
+      checkName(rule, value, callback) {
+        if (!value) {
+          callback(new Error('请输入名称'));
+        } else {
+          axios({
+            method:"GET",
+            url:"http://"+this.baseUrl+"/export/admin/setting/checkName",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              name: value
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              if (res.data.body != 0) {
+                callback(new Error('名称重复'));
+              } else {
+                callback();
+              }
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
+        }
       },
       //提交按钮
       submitForm(formName) {
@@ -82,12 +98,14 @@
           if (valid) {
             var param = new FormData();  // 创建form对象
             param.append('id', this.ruleForm.id);
-            param.append('flowName', this.ruleForm.flowName);
-            param.append('flowDetail', this.ruleForm.flowDetail);
-            param.append('enabled', this.ruleForm.enabled);
+            param.append('excelName', this.ruleForm.excelName);
+            param.append('colomnNames', this.ruleForm.colomnNames); // 通过append向form对象添加数据
+            param.append('excelColomnNames', this.ruleForm.excelColomnNames); // 通过append向form对象添加数据
+            param.append('sqlStr', this.ruleForm.sqlStr); // 通过append向form对象添加数据
+            param.append('enable', this.ruleForm.enable);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/quota/admin/amountFlow/update",
+              url:"http://"+this.baseUrl+"/export/admin/setting/update",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -96,10 +114,10 @@
             }).then((res)=>{
               if(res.data.msgCd=='ZYCASH-200'){
                 this.$message({
-                  message: '修改成功',
+                  message: '操作成功',
                   type: 'success'
                 });
-                this.$router.push('/amountFlowList');
+                this.$router.push('/exportExcel');
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }
@@ -116,11 +134,31 @@
       //取消按钮
       resetForm(formName) {
         this.$router.go(-1);
-      }
+      },
+      //获取详情
+      getExportById(data) {
+        axios({
+          method: "GET",
+          url: "http://"+this.baseUrl+"/export/admin/setting/id",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            id:data
+          }
+        }).then((res) => {
+          if (res.data.msgCd == 'ZYCASH-200') {
+            this.ruleForm = res.data.body;
+          } else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted:function () {
       this.id=this.$route.params.id;
-      this.getFlowById(this.id);
+      this.getExportById(this.id);
     }
   }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/flowList' }">导出设置</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/exportExcel' }">导出设置</el-breadcrumb-item>
       <el-breadcrumb-item>创建导出设置</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -20,8 +20,8 @@
                    placeholder="请输入内容"  v-model="ruleForm.sqlStr"></el-input>
       </el-form-item>
 
-      <el-form-item label="是否启用:" prop="enabled">
-        <el-select v-model="ruleForm.enabled" placeholder="请选择">
+      <el-form-item label="是否启用:" prop="enable">
+        <el-select v-model="ruleForm.enable" placeholder="请选择">
           <el-option
             v-for="item in electData"
             :key="item.key"
@@ -53,7 +53,7 @@
           colomnNames: '',
           excelColomnNames: '',
           sqlStr: '',
-          enabled: 1,
+          enable: 1,
         },
         rules: {
           enabled: [
@@ -100,7 +100,7 @@
             param.append('colomnNames', this.ruleForm.colomnNames); // 通过append向form对象添加数据
             param.append('excelColomnNames', this.ruleForm.excelColomnNames); // 通过append向form对象添加数据
             param.append('sqlStr', this.ruleForm.sqlStr); // 通过append向form对象添加数据
-            param.append('enabled', this.ruleForm.enabled);
+            param.append('enable', this.ruleForm.enable);
             axios({
               method:"POST",
               url:"http://"+this.baseUrl+"/export/admin/setting/add",
@@ -115,7 +115,7 @@
                   message: '添加成功',
                   type: 'success'
                 });
-                // this.$router.push('/amountFlowList');
+                this.$router.push('/exportExcel');
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
               }

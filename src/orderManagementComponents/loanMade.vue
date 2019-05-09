@@ -113,6 +113,17 @@
           </el-date-picker>
         </template>
       </el-col>
+      <el-col :span="6" style="height: 55px;">
+        展期：
+        <el-select v-model="defer" placeholder="请选择">
+          <el-option
+            v-for="item in deferList"
+            :key="item.id"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
       <el-button type="primary" style="margin-right: 130px" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
     </div>
     <template>
@@ -503,32 +514,33 @@
       //条件查询列表
       searchContent(data){
         if (this.status == null) {
-          this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
+          console.log(this.defer);
+          this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,this.startDate,
+            this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
         } else {
-          this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
+          this.getProductList(this.pageNum,this.pageSize,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,this.startDate,
+            this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
         }
       },
       //每页显示多少条
       handleSizeChange(val) {
         this.nowPageSizes=val;
         if (this.status == null) {
-          this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
+          this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,this.startDate,
+            this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
         } else {
-          this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
+          this.getProductList(this.pageNum,val,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,this.startDate,
+            this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
         }
       },
       //翻页
       handleCurrentChange(val) {
         if (this.status == null) {
-          this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
+          this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,this.startDate,
+            this.endDate,this.startDateLoan,this.endDateLoan,this.status,8,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
         } else {
-          this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,
-            this.sex,this.mobile,this.startDate,this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate);
+          this.getProductList(val,this.nowPageSizes,this.productId,this.reBorrow,this.parentChannelName,this.childrenChannelName,this.sex,this.mobile,this.startDate,
+            this.endDate,this.startDateLoan,this.endDateLoan,this.status,null,this.cusName,this.rePaymentStartDate,this.rePaymentEndDate,this.defer);
         }
       },
       /**
@@ -550,8 +562,9 @@
        * @param data15 用户姓名
        * @param data16 到期开始时间
        * @param data17 到期结束时间
+       * @param data18 是否展期
        */
-      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14,data15,data16,data17){
+      getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11,data12,data13,data14,data15,data16,data17,data18){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/order/admin/borrowing/list",
@@ -577,6 +590,7 @@
             statusGeq:data14,
             rePaymentStartDate:data16,
             rePaymentEndDate:data17,
+            defer:data18,
             sortColumn: 'create_date',
             direction: 'desc',
           }
@@ -1165,6 +1179,10 @@
           {classifyId:0,classifyName:"新户"},
           {classifyId:1,classifyName:"老户"},
         ],
+        deferList: [
+          {classifyId:null,classifyName:"全部状态"},
+          {classifyId:1,classifyName:"已展期"},
+        ],
         sexList: [
           {classifyId:null,classifyName:"全部"},
           {classifyId:0,classifyName:"男"},
@@ -1214,6 +1232,7 @@
         value4:'',
         value5:'',
         value6:'',
+        defer:null,
         startDate:null,
         endDate:null,
         startDateLoan:null,

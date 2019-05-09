@@ -51,22 +51,19 @@
           width="80">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.enabled == true ? 'primary' : 'danger'"
-              disable-transitions>{{scope.row.enabled == true ? '启用' : '禁用'}}
+              :type="scope.row.enable == true ? 'primary' : 'danger'"
+              disable-transitions>{{scope.row.enable == true ? '启用' : '禁用'}}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column
           label="操作"
-          width="250">
+          width="200">
           <template slot-scope="scope">
             <el-button @click="editProduct(scope.row)" type="text" size="medium">编辑</el-button>
-            <el-button v-if="scope.row.enabled" @click="obtainedProduct(scope.row)" type="text" size="medium">停用
-            </el-button>
-            <el-button v-if="!scope.row.enabled" @click="obtainedCustomerTag(scope.row)" type="text" size="medium">启用
-            </el-button>
-            <el-button v-if="!scope.row.enabled" @click="exportExcel(scope.row)" type="text" size="medium">导出excel
-            </el-button>
+            <el-button @click="exportExcel(scope.row)" type="text" size="medium">导出excel</el-button>
+            <!--<el-button v-if="scope.row.enable" @click="obtainedProduct(scope.row)" type="text" size="medium">停用</el-button>-->
+            <!--<el-button v-if="!scope.row.enable" @click="obtainedCustomerTag(scope.row)" type="text" size="medium">启用</el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -83,38 +80,6 @@
                      :total="proTotal">
       </el-pagination>
     </div>
-    <!--复制风控流程结构-->
-    <!--<el-dialog-->
-      <!--title="修改导出设置"-->
-      <!--:visible.sync="centerDialogVisible"-->
-      <!--width="40%"-->
-      <!--center>-->
-      <!--<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">-->
-        <!--<el-form-item label="流程名称:" prop="ruleName"-->
-                      <!--:rules="[ruleForm.ruleName,{validator:checkName2, required: true, trigger:'blur'}]">-->
-          <!--<el-input v-model="ruleForm.ruleName"></el-input>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="流程说明:">-->
-          <!--<el-input v-model="ruleForm.ruleDetail"></el-input>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="是否启用:" prop="enabled">-->
-          <!--<el-select v-model="ruleForm.enabled" placeholder="请选择">-->
-            <!--<el-option-->
-              <!--v-for="item in electDataEnabled"-->
-              <!--:key="item.key"-->
-              <!--:label="item.Id"-->
-              <!--:value="item.key">-->
-            <!--</el-option>-->
-          <!--</el-select>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item>-->
-          <!--<el-button type="primary" @click="copyCustomerTag('ruleForm')">保存<i class="el-icon-check el-icon&#45;&#45;right"></i>-->
-          <!--</el-button>-->
-          <!--<el-button type="info" @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon&#45;&#45;right"></i>-->
-          <!--</el-button>-->
-        <!--</el-form-item>-->
-      <!--</el-form>-->
-    <!--</el-dialog>-->
   </div>
 </template>
 
@@ -135,8 +100,6 @@
       },
       //翻页
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        console.log(this.nowPageSizes);
         this.getProductList(val, this.nowPageSizes, this.finProduct, this.finProduct);
       },
       //创建额度流程
@@ -180,19 +143,11 @@
       searchProduct() {
         this.getProductList(1, 20, this.finProduct, this.finProduct, null);
       },
-
-
       //查询产品接口
       exportExcel(row) {
        var url = "http://" + this.baseUrl + "/export/admin/excel/export?id="+row.id;
-
        window.location.href = url;
-
-
       },
-
-
-
       //编辑产品接口
       editProduct(row) {
         var id = row.id;

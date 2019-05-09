@@ -506,7 +506,7 @@
         proTotal:null,
         pageSize:null,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
