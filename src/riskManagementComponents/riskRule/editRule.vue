@@ -225,6 +225,10 @@
       <div v-for="(item,index) in tableData" v-if="item.fieldType=='face++'" style="display: inline-block;padding: 2px 3px;width: 17%;">
         <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
       </div>
+      <p style="text-align: center;margin: 5px 0">----新颜运营商字段----</p>
+      <div v-for="(item,index) in tableData" v-if="item.fieldType=='新颜运营商字段'" style="display: inline-block;padding: 2px 3px;width: 17%;">
+        <el-radio :dataType="item.id" class="radioType" v-model="radio" @change="changeHandler(item.fieldName,item.id)" border size="medium" :label="item.id">{{item.fieldName}}</el-radio>
+      </div>
     </div>
     <!--添加规则分类结构-->
     <el-dialog
