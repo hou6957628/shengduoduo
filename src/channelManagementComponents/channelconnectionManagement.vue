@@ -5,6 +5,15 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">添加渠道&nbsp;&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+        产品：
+        <el-select v-model="productId" placeholder="请选择">
+          <el-option
+            v-for="item in productList"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productId">
+          </el-option>
+        </el-select>
       <el-input class="searchContent" placeholder="主渠道名称或子渠道名称" v-model="channel" clearable></el-input>
       <el-input class="searchContent" placeholder="渠道链接" v-model="longUrl" clearable style="margin-left: 0px"></el-input>
       <el-button id="searchBtn" @click="searchContent()" icon="el-icon-search" type="primary">查询</el-button>
@@ -103,7 +112,8 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.electData=res.data.body;
+            this.productList=res.data.body;
+            this.productList.unshift({productId:'',productName:'全部'});
           }else if(res.data.msgCd=='ZYCASH-1009'){
             this.$message.error(res.data.msgInfo);
           }
@@ -114,15 +124,16 @@
       },
       //查询金融产品
       searchContent(){
-        this.getProductList(1,30,this.channel,this.longUrl);
+        this.getProductList(1,this.nowPageSizes,this.channel,this.longUrl,this.productId);
       },
       //每页显示多少条
       handleSizeChange(val) {
-        this.getProductList(this.pageNum,val,this.channel,this.longUrl);
+        this.nowPageSizes=val;
+        this.getProductList(this.pageNum,val,this.channel,this.longUrl,this.productId);
       },
       //翻页
       handleCurrentChange(val) {
-        this.getProductList(val,this.nowPageSizes,this.channel,this.longUrl);
+        this.getProductList(val,this.nowPageSizes,this.channel,this.longUrl,this.productId);
       },
       //添加渠道
       toAddProduct(){
@@ -136,8 +147,9 @@
        * @param data2 每页显示多少条数据
        * @param data3 主渠道名称或者子渠道名称
        * @param data4 渠道链接
+       * @param data5 产品id
        */
-      getProductList(data1,data2,data3,data4){
+      getProductList(data1,data2,data3,data4,data5){
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/channel/admin/channel/list",
@@ -150,6 +162,7 @@
             pageSize: data2,
             channelName: data3,
             longUrl: data4,
+            productId: data5,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -235,14 +248,22 @@
       //过去长链接字段
       longUrlFormatter(row){
         let longUrl = row.longUrl;
+        let productCode = row.productCode;
         var index=longUrl.indexOf("\/");
         let obj=longUrl.substring(index);
-        return 'http://jmyq.wzgeek.com' + obj;
+        if (productCode == 'merchantProduct20190315161059') {
+          return 'http://jmyq.wzgeek.com' + obj;
+        } else if (productCode == 'merchantProduct20190516135809'){
+          return 'http://axh.qxykjz.com' + obj;
+        } else if (productCode == 'merchantProduct20190520182102'){
+          return 'http://anxh.qxykjz.com' + obj;
+        }
+        return longUrl;
       }
     },
     mounted:function () {
        this.getProductList(1,30,null,null);
-       // this.getFenList();
+       this.getFenList();
     },
     data() {
       return {
@@ -265,6 +286,8 @@
           productId: '',
           productCode: '',
         },
+        productList:[],
+        productId:''
       }
     }
   }

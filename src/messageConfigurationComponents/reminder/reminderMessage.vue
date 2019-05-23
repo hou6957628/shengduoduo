@@ -60,6 +60,12 @@
         </el-table-column>
         <el-table-column
           fixed
+          prop="productName"
+          label="APP"
+          width="110">
+        </el-table-column>
+        <el-table-column
+          fixed
           prop="name"
           label="名称"
           width="160">

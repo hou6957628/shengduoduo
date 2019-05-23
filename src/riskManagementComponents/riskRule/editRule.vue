@@ -647,17 +647,17 @@
       //只能输入数字
       numberCheck1(index) {
         var data = this.electDataList.domains[index].fieldValue1;
-        let boo = new RegExp("^[0-9][0-9]*$").test(data);
+        let boo = new RegExp("^-?[1-9]*(.d*)?$|^-?0(.d*)?$").test(data);
         if (!boo) {
-          this.$message.error("请输入正整数");
+          this.$message.error("请输入整数");
           this.electDataList.domains[index].fieldValue1=data.replace(/[^\d]/g,'');
         }
       },
       numberCheck2(index) {
         var data = this.electDataList.domains[index].fieldValue2;
-        let boo = new RegExp("^[0-9][0-9]*$").test(data);
+        let boo = new RegExp("^-?[1-9]*(.d*)?$|^-?0(.d*)?$").test(data);
         if (!boo) {
-          this.$message.error("请输入正整数");
+          this.$message.error("请输入整数");
           this.electDataList.domains[index].fieldValue2=data.replace(/[^\d]/g,'');
         }
       }

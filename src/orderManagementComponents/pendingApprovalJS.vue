@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item>待放款列表</el-breadcrumb-item>
+      <el-breadcrumb-item>待机审列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="operationContent">
       <el-col :span="6" style="height: 55px;">
@@ -32,20 +32,31 @@
       <el-col :span="6" style="height: 55px;">
         子渠道：<el-input class="searchContent" placeholder="子渠道" v-model="childrenChannelName" clearable></el-input>
       </el-col>
-      <el-col :span="6" style="height: 55px;">
+      <el-col :span="5" style="height: 55px;">
         性别：<el-select v-model="sex" placeholder="请选择">
           <el-option
             v-for="item in sexList"
+            :key="item.classifyId"
+            :label="item.classifyName"
+            :value="item.classifyId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+      手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
+      </el-col>
+      <el-col :span="12" style="height: 55px;">
+      订单状态：
+        <el-select v-model="status" placeholder="请选择">
+          <el-option
+            v-for="item in statusList"
             :key="item.id"
             :label="item.classifyName"
             :value="item.classifyId">
           </el-option>
         </el-select>
       </el-col>
-      <el-col :span="8" style="height: 55px;">
-      手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
-      </el-col>
-      <el-col :span="10" style="height: 55px;">
+      <el-col :span="9" style="height: 55px;">
         <template>
           申请时间：
           <el-date-picker style="margin-left: 0px"
@@ -63,8 +74,9 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-button type="primary" id="searchBtn" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
-      <el-button v-if="hasPermissionCustom('order:audit:customer:find')" type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>
+      <el-button type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <!--<el-button v-if="hasPermissionCustom('order:audit:batchApproval')" type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>-->
+      <el-button v-if="hasPermissionCustom('order:auditJS:machine')" type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>
     </div>
     <template>
       <el-table
@@ -139,11 +151,17 @@
           width="120">
         </el-table-column>
         <el-table-column
+          prop="createDate"
+          label="申请时间"
+          width="180">
+        </el-table-column>
+        <el-table-column
           fixed="right"
           label="操作"
           width="100">
           <template slot-scope="scope">
-            <el-button v-if="hasPermissionCustom('order:pending:customer:find')" @click="detailProduct(scope.row)" type="text" size="medium">审核</el-button>
+            <!--<el-button v-if="hasPermissionCustom('order:audit:customer:find')" @click="detailProduct(scope.row)" type="text" size="medium">审核</el-button>-->
+            <el-button v-if="hasPermissionCustom('order:auditJS:machine')" @click="jsProduct(scope.row)" type="text" size="medium">机审</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -167,8 +185,8 @@
       width="40%"
       center>
       <center><el-button type="primary" @click="batchAuditOrder('0')" size="medium">同意</el-button>
-        <el-button type="danger" @click="batchAuditOrder('1')">拒绝</el-button>
-        <el-button type="info"  @click="centerDialogVisible1 = false">取消</el-button></center>
+      <el-button type="danger" @click="batchAuditOrder('1')">拒绝</el-button>
+      <el-button type="info"  @click="centerDialogVisible1 = false">取消</el-button></center>
     </el-dialog>
   </div>
 </template>
@@ -190,6 +208,50 @@
           this.centerDialogVisible1=true;
         }
       },
+      //批量机审弹窗
+      batchjsOrderTip(){
+        if (this.orderIds.length==0) {
+          this.$message({
+            showClose: true,
+            message: '请选择至少一个订单',
+            type: 'warning'
+          });
+        } else {
+          this.$confirm('是否确定批量机审?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+          }).then(() => {
+            this.batchjsOrder();
+          });
+        }
+      },
+      //批量机审
+      batchjsOrder(){
+        let orderIdsStr = this.orderIds.join(',');
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/order/admin/audit/machineTrial",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          },
+          params:{
+            orderIds: orderIdsStr,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+            this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
       //批量审核订单
       batchAuditOrder(status){
         const loadingObj = this.$loading({
@@ -202,7 +264,7 @@
         let orderIdsStr = this.orderIds.join(',');
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/pending/batchLoanOrder",
+          url:"http://"+this.baseUrl+"/order/admin/audit/batchAuditOrder",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -268,7 +330,7 @@
           this.sex,this.mobile,this.startDate,this.endDate,this.status);
       },
       /**
-       * 获取待放款订单列表
+       * 获取待审批订单列表
        * @param data1 查询第几页
        * @param data2 每页显示多少条数据
        * @param data3 产品id
@@ -279,12 +341,12 @@
        * @param data8 手机号
        * @param data9 开始时间
        * @param data10 结束时间
-       * @param data11 放款状态
+       * @param data11 订单状态
        */
       getProductList(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10,data11){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/pending/list",
+          url:"http://"+this.baseUrl+"/order/admin/audit/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -300,17 +362,17 @@
             mobile: data8,
             startDate: data9,
             endDate: data10,
+            status: data11,
             sortColumn: 'create_date',
             direction: 'desc',
-            status: data11,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
+            this.$forceUpdate();
             this.tableData=res.data.body.list;
             this.proTotal=res.data.body.total;
             this.pageSize=res.data.body.pageSize;
             this.pageNum=res.data.body.pageNum;
-            this.$forceUpdate();
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -321,7 +383,38 @@
         let id=row.customerId;
         let orderId=row.orderId;
         this.$router.push({
-          path: `/orderDetailPendingLoan/${id}/${orderId}`,
+          path: `/orderDetail/${id}/${orderId}`,
+        });
+      },
+      //机审
+      jsProduct(row){
+        this.$confirm('是否确定机审?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          axios({
+            method:"POST",
+            url:"http://"+this.baseUrl+"/order/admin/audit/machineTrial",
+            headers:{
+              'Content-Type':'application/x-www-form-urlencoded',
+              'Authorization': localStorage.token
+            },
+            params:{
+              orderIds: row.orderId,
+            }
+          }).then((res)=>{
+            if(res.data.msgCd=='ZYCASH-200'){
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              });
+              this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+            }else {
+              this.$message.error(res.data.msgInfo);
+            }
+          })
         });
       },
       //全选
@@ -351,38 +444,16 @@
           return '待机审 '
         } else if (status === 1){
           return '机器审核中'
-        } else if (status === 2){
-          return '审核拒绝'
         } else if (status === 3){
           return '人工审核'
-        } else if (status === 4){
-          return '待放款'
-        } else if (status === 5){
-          return '放款中'
-        } else if (status === 6){
-          return '放款失败'
-        } else if (status === 7){
-          return '取消'
-        } else if (status === 8){
-          return '放款成功'
-        } else if (status === 9){
-          return '还款确认中'
-        } else if (status === 10){
-          return '正常还款 '
-        } else if (status === 11){
-          return '逾期未还'
-        } else if (status === 12){
-          return '坏账'
-        } else if (status === 13){
-          return '逾期还款'
         }
       },
       //过滤用户标识字段
       reBorrowFormatter(row){
         let reBorrow = row.reBorrow;
-        if(reBorrow == false){
+        if(reBorrow === false){
           return '新户'
-        } else if (reBorrow == true){
+        } else if (reBorrow === true){
           return '老户'
         } else{
           return '---'
@@ -420,15 +491,19 @@
         ],
         sexList: [
           {classifyId:null,classifyName:"全部"},
-          {classifyId:0,classifyName:"男"},
-          {classifyId:1,classifyName:"女"},
+          {classifyId:false,classifyName:"男"},
+          {classifyId:true,classifyName:"女"},
+        ],
+        statusList: [
+          {classifyId:0,classifyName:"待机审"},
+          {classifyId:1,classifyName:"机器审核中"},
         ],
         tableData:[],
         pageNum: null,
         proTotal:null,
         pageSize:null,
         pageSizes:[20,30,50],
-        nowPageSizes:20,
+        nowPageSizes:30,
         pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -462,10 +537,10 @@
         childrenChannelName:null,
         sex:null,
         mobile:null,
+        status:0,
         value5:'',
         startDate:null,
         endDate:null,
-        status:4,
         centerDialogVisible1:false,
       }
     }

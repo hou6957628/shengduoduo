@@ -161,6 +161,9 @@
                 <el-menu-item index="/approvalCenter">审批中心</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item v-if="this.hasPermissionCustom('order:auditJS:list')" index="/pendingApprovalJS">待机审列表</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item v-if="this.hasPermissionCustom('order:audit:list')" index="/pendingApproval">待审批列表</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group style="padding-left: 5px">

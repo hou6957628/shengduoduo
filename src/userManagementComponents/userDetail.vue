@@ -77,6 +77,7 @@
             this.linkMan = res.data.body.linkMan;
             this.authorizationStatus = res.data.body.authorizationStatus;
             this.basicInfo = res.data.body.basicInfo;
+            this.selectProduct(this.id,this.productList);
           } else {
             this.$message.error(res.data.msgInfo);
           }
@@ -88,6 +89,20 @@
         this.id=item.id;
         let id=this.id;
         this.getUserDetail(this.id);
+        this.$router.push({
+          name: 'jiben', params: { id }
+        });
+      },
+      //默认选择产品
+      selectProduct(customerId,productList){
+        if (productList != null && productList.size > 0) {
+          for(var i=0;i<productList.length;i++){
+            var pro = productList[i];
+            if (pro.id == customerId) {
+              this.isactive = i;
+            }
+          }
+        }
       },
     },
     mounted: function () {
@@ -143,7 +158,6 @@
         }
       },
       htmlFalse:function(arg1){
-        console.log(arg1 + "--");
         var result = arg1.substring(13);
         return 'http://39.96.195.239' + result;
       }

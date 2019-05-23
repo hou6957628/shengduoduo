@@ -32,7 +32,7 @@
       <el-col :span="6" style="height: 55px;">
         子渠道：<el-input class="searchContent" placeholder="子渠道" v-model="childrenChannelName" clearable></el-input>
       </el-col>
-      <el-col :span="6" style="height: 55px;">
+      <el-col :span="5" style="height: 55px;">
         性别：<el-select v-model="sex" placeholder="请选择">
           <el-option
             v-for="item in sexList"
@@ -45,18 +45,18 @@
       <el-col :span="6" style="height: 55px;">
       手机号：<el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
       </el-col>
-      <el-col :span="12" style="height: 55px;">
-        订单状态：
-        <el-select v-model="status" placeholder="请选择">
-          <el-option
-            v-for="item in statusList"
-            :key="item.id"
-            :label="item.classifyName"
-            :value="item.classifyId">
-          </el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="10" style="height: 55px;">
+      <!--<el-col :span="12" style="height: 55px;">-->
+        <!--订单状态：-->
+        <!--<el-select v-model="status" placeholder="请选择">-->
+          <!--<el-option-->
+            <!--v-for="item in statusList"-->
+            <!--:key="item.id"-->
+            <!--:label="item.classifyName"-->
+            <!--:value="item.classifyId">-->
+          <!--</el-option>-->
+        <!--</el-select>-->
+      <!--</el-col>-->
+      <el-col :span="9" style="height: 55px;">
         <template>
           申请时间：
           <el-date-picker style="margin-left: 0px"
@@ -74,14 +74,9 @@
           </el-date-picker>
         </template>
       </el-col>
-      <el-col :span="7" style="height: 55px;">
-        狮子分：
-          <el-input class="searchContent" placeholder="最低分" v-model="childrenChannelName" clearable style="width: 100px"></el-input>
-          <el-input class="searchContent" placeholder="最高分" v-model="childrenChannelName" clearable style="width: 100px;margin-left: -30px"></el-input>
-      </el-col>
-      <el-button type="primary" style="margin-left: -40px" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <el-button type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
       <el-button v-if="hasPermissionCustom('order:audit:batchApproval')" type="primary" id="cancelBtn" @click="batchAuditOrderTip()" slot="append">批量审批</el-button>
-      <el-button v-if="hasPermissionCustom('order:audit:batchApprovalMachine')" type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>
+      <!--<el-button v-if="hasPermissionCustom('order:audit:batchApprovalMachine')" type="primary" @click="batchjsOrderTip()" slot="append">批量机审</el-button>-->
     </div>
     <template>
       <el-table
@@ -108,7 +103,6 @@
           min-width="80">
         </el-table-column>
         <el-table-column
-          fixed
           prop="gender"
           label="性别"
           :formatter="genderFormatter"
@@ -159,10 +153,10 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="150">
+          width="100">
           <template slot-scope="scope">
             <el-button v-if="hasPermissionCustom('order:audit:customer:find')" @click="detailProduct(scope.row)" type="text" size="medium">审核</el-button>
-            <el-button v-if="hasPermissionCustom('order:audit:machine')" @click="jsProduct(scope.row)" type="text" size="medium">机审</el-button>
+            <!--<el-button v-if="hasPermissionCustom('order:audit:machine')" @click="jsProduct(scope.row)" type="text" size="medium">机审</el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -478,7 +472,7 @@
       this.endDate=this.dateFormatCustom(new Date());
       this.value5=[this.startDate,this.endDate];
       this.getProduct();
-      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate);
+      this.getProductList(1,30,null,null,null,null,null,null,this.startDate,this.endDate,this.status);
     },
     data() {
       return {
@@ -497,8 +491,8 @@
         ],
         statusList: [
           {classifyId:null,classifyName:"全部状态"},
-          {classifyId:0,classifyName:"待机审"},
-          {classifyId:1,classifyName:"机器审核中"},
+          // {classifyId:0,classifyName:"待机审"},
+          // {classifyId:1,classifyName:"机器审核中"},
           {classifyId:3,classifyName:"人工审核"},
         ],
         tableData:[],
@@ -540,7 +534,7 @@
         childrenChannelName:null,
         sex:null,
         mobile:null,
-        status:null,
+        status:3,
         value5:'',
         startDate:null,
         endDate:null,
