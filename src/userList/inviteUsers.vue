@@ -63,12 +63,6 @@
           width="180">
         </el-table-column>
         <el-table-column
-          prop="recommendMobile"
-          label="邀请方式"
-          align="center"
-          width="120">
-        </el-table-column>
-        <el-table-column
           prop="loginDate"
           label="最近登录应用时间"
           align="center"
@@ -84,18 +78,6 @@
               :type="scope.row.isActiveApp == true ? 'primary' : 'danger'"
               disable-transitions>{{scope.row.isActiveApp == true ? '是' : '否'}}</el-tag>
           </template>
-        </el-table-column>
-        <el-table-column
-          prop="redEnvelopesBalance"
-          label="红包账户"
-          align="center"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="goldBalance"
-          label="金币账户"
-          align="center"
-          width="100">
         </el-table-column>
       </el-table>
     </template>
@@ -217,7 +199,7 @@
             id:this.$store.state.userId,
             pageNum:data1,
             pageSize:data2,
-            realName: data3,
+            username: data3,
             mobile: data4,
             channelName: data5,
             subChannelName: data6,
@@ -227,10 +209,10 @@
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
-            this.tableData=res.data.body.list;
-            this.proTotal=res.data.body.total;
-            this.pageSize=res.data.body.pageSize;
-            this.pageNum=res.data.body.pageNum;
+            this.tableData=res.data.body;
+            // this.proTotal=res.data.body.total;
+            // this.pageSize=res.data.body.pageSize;
+            // this.pageNum=res.data.body.pageNum;
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -344,7 +326,7 @@
           }]
         },
         centerDialogVisible1:false,
-        realName:'',
+        username:'',
         mobile:'',
         channelName:'',
         subChannelName:'',
