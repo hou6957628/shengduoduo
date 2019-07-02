@@ -10,27 +10,27 @@
         <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">分类列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
       </div>
       类型：<el-select v-model="classifyId" placeholder="请选择">
-        <el-option
-          v-for="item in messageClassifyList"
-          :key="item.id"
-          :label="item.classifyName"
-          :value="item.id">
-        </el-option>
-      </el-select>&nbsp;&nbsp;
-        时间：
-        <el-date-picker style="margin-left: 0px;margin-right: 15px;"
-                        v-model="value5"
-                        type="datetimerange"
-                        align="right"
-                        unlink-panels
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        :picker-options="pickerOptions2"
-                        format="yyyy-MM-dd HH:mm:ss"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        @change="logTimeChange()">
-        </el-date-picker>
+      <el-option
+        v-for="item in messageClassifyList"
+        :key="item.id"
+        :label="item.classifyName"
+        :value="item.id">
+      </el-option>
+    </el-select>&nbsp;&nbsp;
+      时间：
+      <el-date-picker style="margin-left: 0px;margin-right: 15px;"
+                      v-model="value5"
+                      type="datetimerange"
+                      align="right"
+                      unlink-panels
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      :picker-options="pickerOptions2"
+                      format="yyyy-MM-dd HH:mm:ss"
+                      value-format="yyyy-MM-dd HH:mm:ss"
+                      @change="logTimeChange()">
+      </el-date-picker>
       <el-input style="width: 350px;" class="searchContent"
                 placeholder="输入名称或ID"
                 v-model="condition"
@@ -153,7 +153,7 @@
       getMessageClassifyList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -194,7 +194,7 @@
         } else {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/message/admin/message/checkMessage",
+            url:"http://"+this.baseUrl+"/flowPool/admin/message/checkMessage",
             headers:{
               'Content-Type':'application/json',
               'Authorization': localStorage.token
@@ -235,7 +235,7 @@
       getProductList(data1,data2,data3,data4,data5,data6,data7){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message/find",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message/find",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -319,7 +319,7 @@
         id.push(row.id);
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message/checkMessage",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message/checkMessage",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -350,7 +350,7 @@
       deleteClassification(ids){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message/delete",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message/delete",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -377,7 +377,7 @@
             param.append('name', this.ruleForm2.name);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/message/copy",
+              url:"http://"+this.baseUrl+"/flowPool/admin/message/copy",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token

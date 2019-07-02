@@ -89,9 +89,9 @@
           <el-select v-model="ruleForm.productId" placeholder="请选择应用" @change="selectChange1($event,productList)">
             <el-option
               v-for="item in productList"
-              :key="item.productId"
+              :key="item.id"
               :label="item.productName"
-              :value="item.productId">
+              :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -108,7 +108,7 @@
     <el-dialog title="编辑账户" :visible.sync="dialogFormVisible1" width="40%" center>
       <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="80px" class="demo-ruleForm">
         <el-form-item label="账号：" prop="account">
-          <el-input v-model="ruleForm2.account" autocomplete="off" placeholder="请填写账号"></el-input>
+          <el-input v-model="ruleForm2.account" disabled="disabled" autocomplete="off" placeholder="请填写账号"></el-input>
         </el-form-item>
         <el-form-item label="密码：" prop="passwd">
           <el-input v-model="ruleForm2.passwd" autocomplete="off" placeholder="请填写密码"></el-input>
@@ -126,23 +126,25 @@
   import axios from 'axios'
   export default {
     methods: {
-      //获取所有产品
+      //调用产品列表
       getFenList(){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/operate/admin/productManage/productMerchantInfo",
+          url:"http://"+this.baseUrl+"/flowPool/admin/productManage/productMerchantInfo",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
-            this.$message.error(res);
+            this.productList.productId=res.data.body.productId|1;
+          }else {
+            this.$message.error(res.data.body.msgInfo);
           }
         })
       },
@@ -163,7 +165,7 @@
       selectChange1(vId,list){
         let obj1 = {};
         obj1 = list.find((item)=>{
-          return item.productId ===vId;
+          return item.id ===vId;
         });
         this.ruleForm.productName=obj1.productName;
         this.ruleForm.productCode=obj1.productCode;
@@ -177,10 +179,10 @@
       getProductList(data1,data2,data3){
         axios({
           method:"GET",
-          url:"http://"+this.baseUrl+"/channel/admin/account/list",
+          url:"http://"+this.baseUrl+"/flowPool/admin/account/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
           },
           params:{
             pageNum: data1,
@@ -202,12 +204,12 @@
       addProductTip(){
         this.dialogFormVisible=true;
         this.ruleForm.parentChannelName='',
-        this.ruleForm.account='',
-        this.ruleForm.passwd='',
-        this.ruleForm.productId='',
-        this.ruleForm.productName='',
-        this.ruleForm.productCode='',
-        this.ruleForm.description=''
+          this.ruleForm.account='',
+          this.ruleForm.passwd='',
+          this.ruleForm.productId='',
+          this.ruleForm.productName='',
+          this.ruleForm.productCode='',
+          this.ruleForm.description=''
       },
       //添加账户
       addProduct(formName){
@@ -215,10 +217,10 @@
           if (valid) {
             axios({
               method: "post",
-              url: "http://" + this.baseUrl + "/channel/admin/account/add",
+              url: "http://" + this.baseUrl + "/flowPool/admin/account/add",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': localStorage.token
+                'Authorization': this.$store.state.userToken
               },
               params: {
                 parentChannelName: this.ruleForm.parentChannelName,
@@ -254,10 +256,10 @@
         this.dialogFormVisible1=true;
         axios({
           method:"GET",
-          url:"http://"+this.baseUrl+"/channel/admin/account/getByChannelCode",
+          url:"http://"+this.baseUrl+"/flowPool/admin/account/getByChannelCode",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
           },
           params:{
             channelCode: row.parentChannelCode,
@@ -276,10 +278,10 @@
           if (valid) {
             axios({
               method: "post",
-              url: "http://" + this.baseUrl + "/channel/admin/account/updatePassWd",
+              url: "http://" + this.baseUrl + "/flowPool/admin/account/updatePassWd",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': localStorage.token
+                'Authorization': this.$store.state.userToken
               },
               params: {
                 id: this.ruleForm2.id,
@@ -323,10 +325,10 @@
         } else {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/channel/admin/account/checkRepetition",
+            url:"http://"+this.baseUrl+"/flowPool/admin/account/checkRepetition",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
-              'Authorization': localStorage.token
+              'Authorization': this.$store.state.userToken
             },
             params:{
               parentChannelName: value
@@ -351,10 +353,10 @@
         } else {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/channel/admin/account/checkRepetition",
+            url:"http://"+this.baseUrl+"/flowPool/admin/account/checkRepetition",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
-              'Authorization': localStorage.token
+              'Authorization': this.$store.state.userToken
             },
             params:{
               accout: value

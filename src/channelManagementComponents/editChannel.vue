@@ -29,7 +29,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="密码:" prop="password">
-        <el-input v-model="ruleForm.password" maxlength="10" placeholder="请输入子渠道数"></el-input>
+        <el-input v-model="ruleForm.password" placeholder="请输入子渠道数"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
@@ -84,7 +84,7 @@
       getAccountList() {
         axios({
           method: "GET",
-          url: "http://"+this.baseUrl+"/channel/admin/account/list",
+          url: "http://"+this.baseUrl+"/flowPool/admin/account/list",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -107,7 +107,7 @@
           if (valid) {
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/channel/admin/channel/updateById",
+              url: "http://"+this.baseUrl+"/flowPool/admin/channel/updateById",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -165,7 +165,7 @@
       getChannelById(data) {
         axios({
           method: "POST",
-          url: "http://"+this.baseUrl+"/channel/admin/channel/getById",
+          url: "http://"+this.baseUrl+"/flowPool/admin/channel/getById",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -184,9 +184,9 @@
     },
     mounted: function () {
       this.id=this.$route.params.id;
-      this.getFenList();
+      // this.getFenList();
       this.getChannelById(this.id);
-      this.getAccountList();
+      // this.getAccountList();
     }
   }
 </script>

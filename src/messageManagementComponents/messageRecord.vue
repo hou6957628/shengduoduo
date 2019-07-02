@@ -147,7 +147,7 @@
       getMessageClassifyList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -168,7 +168,7 @@
       getModeList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_mode/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_mode/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -210,7 +210,7 @@
       getProductList(data1,data2,data3,data4,data5,data6){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/messagelog/list",
+          url:"http://"+this.baseUrl+"/flowPool/admin/messagelog/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -236,7 +236,7 @@
       },
     },
     mounted:function () {
-      this.getProduct();
+      // this.getProduct();
       this.getModeList();
       this.getMessageClassifyList();
       this.getProductList(1,20,null,null,null,null);

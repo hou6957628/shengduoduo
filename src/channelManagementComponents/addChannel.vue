@@ -23,9 +23,9 @@
         <el-select v-model="ruleForm.productId" disabled="disabled" placeholder="请选择">
           <el-option
             v-for="item in productList"
-            :key="item.productId"
+            :key="item.id"
             :label="item.productName"
-            :value="item.productId">
+            :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -60,38 +60,38 @@
     </el-form>
     <!--创建主渠道结构-->
     <el-form :model="ruleForm1" :key="2" :rules="rulesList" ref="ruleForm1" label-width="100px" class="demo-ruleForm">
-    <el-dialog
-      title="创建主渠道"
-      :visible.sync="centerDialogVisible"
-      width="40%"
-      center>
-      <el-form-item label="主渠道名称:" prop="parentChannelName1">
-        <el-input v-model="ruleForm1.parentChannelName1" placeholder="主渠道名称"></el-input>
-      </el-form-item>
-      <el-form-item label="账号:" prop="account">
-        <el-input v-model="ruleForm1.account" placeholder="主渠道账号"></el-input>
-      </el-form-item>
-      <el-form-item label="密码:" prop="passwd">
-        <el-input v-model="ruleForm1.passwd" placeholder="主渠道密码"></el-input>
-      </el-form-item>
-      <el-form-item label="所属应用:" prop="productId1">
-        <el-select v-model="ruleForm1.productId1" placeholder="请选择" @change="selectChange4($event,productList)">
-          <el-option
-            v-for="item in productList"
-            :key="item.productId"
-            :label="item.productName"
-            :value="item.productId">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="备注:" prop="description">
-        <el-input v-model="ruleForm1.description" placeholder="备注"></el-input>
-      </el-form-item>
-      <span slot="footer" class="dialog-footer">
+      <el-dialog
+        title="创建主渠道"
+        :visible.sync="centerDialogVisible"
+        width="40%"
+        center>
+        <el-form-item label="主渠道名称:" prop="parentChannelName1">
+          <el-input v-model="ruleForm1.parentChannelName1" placeholder="主渠道名称"></el-input>
+        </el-form-item>
+        <el-form-item label="账号:" prop="account">
+          <el-input v-model="ruleForm1.account" placeholder="主渠道账号"></el-input>
+        </el-form-item>
+        <el-form-item label="密码:" prop="passwd">
+          <el-input v-model="ruleForm1.passwd" placeholder="主渠道密码"></el-input>
+        </el-form-item>
+        <el-form-item label="所属应用:" prop="productId1">
+          <el-select v-model="ruleForm1.productId1" placeholder="请选择" @change="selectChange4($event,productList)">
+            <el-option
+              v-for="item in productList"
+              :key="item.id"
+              :label="item.productName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注:" prop="description">
+          <el-input v-model="ruleForm1.description" placeholder="备注"></el-input>
+        </el-form-item>
+        <span slot="footer" class="dialog-footer">
     <el-button @click="centerDialogVisible=false">取 消</el-button>
     <el-button type="primary" @click="submitForm1('ruleForm1')">确 定</el-button>
   </span>
-    </el-dialog>
+      </el-dialog>
     </el-form>
   </div>
 </template>
@@ -234,27 +234,29 @@
           {key:1,name:'CPA'},
           {key:2,name:'CPS'},
           {key:3,name:'UV'},
-        ]
+        ],
       };
     },
     methods: {
-      //获取所有产品
+      //调用产品列表
       getFenList(){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/operate/admin/productManage/productMerchantInfo",
+          url:"http://"+this.baseUrl+"/flowPool/admin/productManage/productMerchantInfo",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
             this.productList=res.data.body;
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
-            this.$message.error(res);
+            this.productList.productId=1;
+          }else {
+            this.$message.error(res.data.body.msgInfo);
           }
         })
       },
@@ -264,7 +266,7 @@
           if (valid) {
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/channel/admin/channel/add",
+              url: "http://"+this.baseUrl+"/flowPool/admin/channel/add",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -310,7 +312,7 @@
           if (valid) {
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/channel/admin/account/add",
+              url: "http://"+this.baseUrl+"/flowPool/admin/account/add",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -373,8 +375,9 @@
       selectChange4(vId,list){
         let obj1 = {};
         obj1 = list.find((item)=>{
-          return item.productId ===vId;
+          return item.id ===vId;
         });
+        console.log(vId);
         this.ruleForm1.productName1=obj1.productName;
         this.ruleForm1.productCode1=obj1.productCode;
       },
@@ -395,10 +398,10 @@
       getAccountList() {
         axios({
           method: "GET",
-          url: "http://"+this.baseUrl+"/channel/admin/account/list",
+          url: "http://"+this.baseUrl+"/flowPool/admin/account/list",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
           },
           params:{
             pageNum: 1,

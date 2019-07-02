@@ -19,8 +19,11 @@
             <el-button class="btn" type="primary" @click="submitForm('ruleForm')">登录</el-button>
           </el-form-item>
         </el-form>
+        <div style="clear: both;overflow: hidden;zoom: 1"></div>
       </div>
+
     </div>
+
   </div>
 </template>
 
@@ -56,7 +59,8 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             axios({
-              url:"http://"+this.baseUrl+"/operate/admin/user/login",
+              // url:"http://"+this.baseUrl+"/operate/admin/user/login",
+              url:"http://"+this.baseUrl+"/flowPool/admin/user/login",
               method:"post",
               data:data,
               headers:{
@@ -64,12 +68,16 @@
               }
             }).then((res)=>{
               if(res.data.msgCd=='ZYCASH-200'){
+                let token=res.data.body.token;
                 localStorage.token=res.data.body.token;
                 this.$message({
                   message: '登录成功',
                   type: 'success'
                 });
-                this.getPermissionByUserId();
+                this.$store.dispatch('setToken',token);
+                this.$router.push({
+                  path: `/userProductList`,
+                });
                 this.$forceUpdate();
               }else {
                 this.$message.error(res.data.msgInfo);
@@ -85,54 +93,6 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       },
-      goHome(url){
-        this.$router.push('/'+url);
-      },
-      //获取登录用户的权限
-      getPermissionByUserId(){
-        axios({
-          method:"post",
-          url:"http://"+this.baseUrl+"/operate/admin/getAuthoryByUser",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            //左侧列表权限
-            let arrV1 = ["operate:productlist","operate:merchantlist","operate:productManage:list","user:customer:list","user:black:list","credit:bank:getBankCardInfoByParams",
-              "risk:field:list","risk:tag:list","risk:rule:list","risk:rule_collection:list","risk:collection_flow:list","risk:parent_flow:list","risk:flow_log:list",
-              "order:overdue:orderList","order:overdue:noRepayOrderList","order:overdue:repayedOrderList","order:outsourcing:orderList","order:outsourcing:repayedOrderList",
-              "order:label:list","order:callType:list","operate:collection:list","operate:group:list","order:distribution:find","order:borrowing:findAssignedOrder",
-              "order:borrowing:findCollectionOrder","order:borrowing:findCollectionOrder","operate:role:list","operate:account:list","channel:channel:list","channel:channel_statistics:list",
-              "channel:account:list","order:audit:list","order:pending:list","order:borrowing:list","order:borrowing:list","order:repayment:list","order:payment:list",
-              "quota:amountField:list","quota:amountTag:list","quota:amountFlow:list","quota:amountFlow:list","order:flowField:getFieldList","order:flowField:list",
-              "order:ordertTag:hitList","message:message_classify:find","message:message:smsMessage","message:message:reminderMessage","message:message:popUpMessage","message:message:pushMessage",
-              "message:task:list","message:messagelog:list"];
-            let arrV2 = ["financeProductList","merchantProductList","productProductList","userProductList","blackList","bankCardManagement","fieldList","tagList","ruleList",
-              "collectionList","flowList","flowHeadList","flowLogList","afterLoanManagement","afterLoanNoRepay","afterLoanRepayed","outsourcingOrderList","outsourcingOrderRepayedList",
-              "collectionTag","callTypeTag","collectionPersonManagement","collectionGroupManagement","collectionOrder","collectionOrderList","collectionTaskList","collectionTaskFinishList",
-              "roleList","accountManagement","channelconnectionManagement","channelCount","accountCenter","pendingApproval","pendingLoan","loanMade","orderList",
-              "paymentHistory","loanRecord","amountFieldList","amountTagList","amountFlowList","amountFlowLogList","orderFieldList","orderFlowList","orderFlowLogList",
-              "messageClassify","smsMessage","reminderMessage","popUpMessage","pushMessage","messageConfigurationList","messageRecord"];
-            let arr = res.data.body;
-            let flag = '';
-            for(var i=0;i<arr.length;i++) {
-              flag = arrV1.indexOf(arr[i]);
-              if (flag != -1) {
-                console.log(flag);
-                break;
-              }
-            }
-            localStorage.authorities=res.data.body;
-            if(localStorage.authorities.length){
-              this.goHome(arrV2[flag]);
-            }
-          }else {
-            this.$message.error(res.data.msgInfo);
-          }
-        })
-      },
     },
   }
 </script>
@@ -142,15 +102,21 @@
     margin: 0;
     padding: 0;
   }
-
+  /*清除浮动 解决父级塌陷问题*/
+  .container:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
   .container {
-    height: 100%;
+    height: 960px;
     width: 100%;
     max-height: 100%;
-    overflow: hidden;
+    overflow-y: hidden;
     background-color: #0a93f7;
-    /*background: url("http://www.zytech360.com/images/banner2.jpg");*/
+    background: url("http://jmyq.wzgeek.com/images/banner2.jpg") no-repeat no-repeat;
     background-size: cover;
+    clear: both;
   }
 
   .container .topClass {

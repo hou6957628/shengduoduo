@@ -589,7 +589,7 @@
       getMessageClassifyList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -640,7 +640,7 @@
       getShortMessageList(data1,data2,data3,data4,data5){
         axios({
           method: "POST",
-          url: "http://"+this.baseUrl+"/message/admin/getMessageByType",
+          url: "http://"+this.baseUrl+"/flowPool/admin/getMessageByType",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -852,7 +852,7 @@
             param.append('type', 2);
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/message/admin/save/task",
+              url: "http://"+this.baseUrl+"/flowPool/admin/save/task",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -900,7 +900,7 @@
         }
         axios({
           method: "POST",
-          url: "http://"+this.baseUrl+"/message/admin/message/get",
+          url: "http://"+this.baseUrl+"/flowPool/admin/message/get",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -920,7 +920,7 @@
       getTaskById(data){
         axios({
           method: "POST",
-          url: "http://"+this.baseUrl+"/message/admin/edit/task",
+          url: "http://"+this.baseUrl+"/flowPool/admin/edit/task",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -951,7 +951,7 @@
     mounted: function () {
       this.id=this.$route.params.id;
       this.getTaskById(this.id);
-      this.getProduct();
+      // this.getProduct();
       this.getMessageClassifyList();
     },
   }

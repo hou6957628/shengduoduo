@@ -34,7 +34,7 @@
       getMessageById(id) {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message/get",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message/get",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token

@@ -1,12 +1,11 @@
 <template>
   <div class="topbar">
     <h1 class="logo">
-      <a href="javascript:;" title="借点贷超管理系统">
-        <span>后台管理系统</span>
+      <a href="javascript:;" title="省多多管理后台">
+        <span>省多多管理后台</span>
       </a>
     </h1>
     <el-button @click="goOut()" class="goOut" type="info">退出登录</el-button>
-    <el-button @click="reload()" class="reload" type="warning" icon="el-icon-refresh">刷新</el-button>
   </div>
 </template>
 
@@ -22,9 +21,6 @@
         localStorage.clear();
         this.$router.push('/login');
       },
-      reload(){
-        window.location.reload();
-      }
     }
   }
 </script>
@@ -40,7 +36,7 @@
   }
   .logo{
     position: relative;
-    width: 165px;
+    width: 182px;
     height: 58px;
     line-height: 58px;
     float: left;

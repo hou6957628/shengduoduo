@@ -130,7 +130,7 @@
       getModeList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_mode/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_mode/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -182,7 +182,7 @@
             param.append('type', 3);
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/message/admin/save/task",
+              url: "http://"+this.baseUrl+"/flowPool/admin/save/task",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -211,7 +211,7 @@
       },
     },
     mounted: function () {
-      this.getProduct();
+      // this.getProduct();
       this.getModeList();
     },
   }

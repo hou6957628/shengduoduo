@@ -16,7 +16,6 @@
     methods: {},
     watch:{
       $route(e){
-        console.log(e.name);
         if(e.name=='login'){
           this.topBar=false;
           this.leftSilder=false;
@@ -28,7 +27,17 @@
     },
     mounted:function () {
       var test = window.location.href;
-      if(test=="http://39.96.195.239/dist1/index.html"){
+      if(test=="http://39.96.195.239/littleWhale/dist/index.html#/"){
+        this.topBar=false;
+        this.leftSilder=false;
+      }else if(test=="http://47.93.234.167/littleWhale/dist/index.html#/"){
+        this.topBar=false;
+        this.leftSilder=false;
+      }else if(test=="http://47.93.234.167/littleWhale/dist/index.html#/login"){
+        this.topBar=false;
+        this.leftSilder=false;
+      }
+      else if(test=="http://39.96.195.239/littleWhale/dist/index.html#/login"){
         this.topBar=false;
         this.leftSilder=false;
       }
@@ -50,7 +59,12 @@
     text-align: center;
     color: #2c3e50;
   }
-
+  /*清除浮动 解决父级塌陷问题*/
+  #app:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
   * {
     margin: 0;
     padding: 0;

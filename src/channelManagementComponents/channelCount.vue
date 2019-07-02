@@ -1,179 +1,180 @@
 <template>
-    <div class="content">
-      <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>渠道统计列表</el-breadcrumb-item>
-      </el-breadcrumb>
-      <div class="operationContent">
-        <el-col :span="9" style="height: 55px;">
-          <template>
-            时间：
-            <el-date-picker style="margin-left: 0px"
-                            v-model="value7"
-                            type="datetimerange"
-                            align="right"
-                            unlink-panels
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            :picker-options="pickerOptions2"
-                            format="yyyy-MM-dd HH:mm:ss"
-                            value-format="yyyy-MM-dd HH:mm:ss"
-                            @change="logTimeChange()">
-            </el-date-picker>
-          </template>
-        </el-col>
-        <el-col :span="6" style="height: 55px;">
-          产品：
-          <el-select v-model="productCodes" multiple placeholder="请选择" @change="selectChange1()">
-            <el-option
-              v-for="item in productList"
-              :key="item.productId"
-              :label="item.productName"
-              :value="item.productCode">
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="6" style="height: 55px;">
-          主渠道：
-          <el-select v-model="parentChannelCodes" multiple placeholder="请选择" @change="selectChange2()">
-            <el-option
-              v-for="item in parentChannelList"
-              :key="item.parentChannelCode"
-              :label="item.parentChannelName"
-              :value="item.parentChannelCode">
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="6" style="height: 55px;">
-          子渠道：
-          <el-select v-model="subChannelCodes" multiple placeholder="请选择">
-            <el-option
-              v-for="item in subChannelList"
-              :key="item.subChannelCode"
-              :label="item.subChannelName"
-              :value="item.subChannelCode">
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-button type="primary" icon="el-icon-search" @click="searchContent" style="margin-left: -800px;margin-top: 55px">搜索</el-button>
-        <el-button type="primary" @click="daoBtn">导出<i class="el-icon-download el-icon--right"></i></el-button>
-          <!--<a :href="http://192.168.20.216:9999/super/admin/productinfo/export?name="++'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+localStorage.token">导出</a>-->
-          <!--<a href="http://192.168.20.216:9999/super/admin/productinfo/export?name"+{{}}+>导出</a>-->
-          <!--<a v-bind:href="['http://192.168.20.216:9999/super/admin/productinfo/export?name'+this.value8+'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+localStorage.token]">导出</a>-->
-          <!--<a :href="'http://192.168.20.216:9999/super/admin/productinfo/export?name'+this.value8+'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+this.token">这是一个动态链接</a>-->
-      </div>
-      <template>
-        <el-table
-          :data="tableData"
-          border
-          highlight-current-row
-          style="width: 100%">
-          <el-table-column
-            fixed
-            prop="productName"
-            label="产品名称"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="parentChannelName"
-            label="主渠道名称"
-            width="150">
-          </el-table-column>
-          <el-table-column
-            prop="subChannelName"
-            label="子渠道名称"
-            width="150">
-          </el-table-column>
-          <el-table-column
-            prop="statisticsDate"
-            label="时间"
-            width="160">
-          </el-table-column>
-          <el-table-column
-            prop="uvPrice"
-            label="UV单价"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="uvNum"
-            label="UV渠道"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="viewNum"
-            label="UV我们"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="cpaPrice"
-            label="CPA单价"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="cpaNum"
-            label="CPA数量"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="cpaFactNum"
-            label="CPA实际"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="cpsPrice"
-            label="CPS单价"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="cpsNum"
-            label="CPS数量"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="cpsFactNum"
-            label="CPS实际"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="countType"
-            label="计价方式"
-            :formatter="countTypeFormatter"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="currentCost"
-            label="当日成本"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="remark"
-            label="备注"
-            width="300">
-          </el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="160">
-            <template slot-scope="scope">
-              <el-button @click="detailChannel(scope.row)" type="text" size="medium">详情</el-button>
-              <el-button @click="editChannel(scope.row)" type="text" size="medium">编辑</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </template>
-      <div class="block">
-        <el-pagination class="paginationBox"
-                       @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
-                       :unique-opened="true"
-                       :current-page="pageNum"
-                       :page-sizes="pageSizes"
-                       :page-size="pageSize"
-                       layout="total, sizes, prev, pager, next, jumper"
-                       :total="proTotal">
-        </el-pagination>
-      </div>
+  <div class="content">
+    <el-breadcrumb class="fs-16" separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item>渠道统计列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <div class="operationContent">
+      <el-col :span="9" style="height: 55px;">
+        <template>
+          时间：
+          <el-date-picker style="margin-left: 0px"
+                          v-model="value7"
+                          type="datetimerange"
+                          align="right"
+                          unlink-panels
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          :picker-options="pickerOptions2"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          @change="logTimeChange()">
+          </el-date-picker>
+        </template>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        产品：
+        <el-select v-model="productCodes" multiple placeholder="请选择" @change="selectChange1()">
+          <el-option
+            v-for="item in productList"
+            :key="item.productId"
+            :label="item.productName"
+            :value="item.productCode">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        主渠道：
+        <el-select v-model="parentChannelCodes" multiple placeholder="请选择" @change="selectChange2()">
+          <el-option
+            v-for="item in parentChannelList"
+            :key="item.parentChannelCode"
+            :label="item.parentChannelName"
+            :value="item.parentChannelCode">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="6" style="height: 55px;">
+        子渠道：
+        <el-select v-model="subChannelCodes" multiple placeholder="请选择">
+          <el-option
+            v-for="item in subChannelList"
+            :key="item.subChannelCode"
+            :label="item.subChannelName"
+            :value="item.subChannelCode">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-button type="primary" icon="el-icon-search" @click="searchContent" style="margin-left: -800px;margin-top: 55px">搜索</el-button>
+      <el-button type="primary" @click="daoBtn">导出<i class="el-icon-download el-icon--right"></i></el-button>
+      <el-button type="primary" @click="refresh">刷新<i class="el-icon-refresh el-icon--right"></i></el-button>
+      <!--<a :href="http://192.168.20.216:9999/super/admin/productinfo/export?name="++'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+localStorage.token">导出</a>-->
+      <!--<a href="http://192.168.20.216:9999/super/admin/productinfo/export?name"+{{}}+>导出</a>-->
+      <!--<a v-bind:href="['http://192.168.20.216:9999/super/admin/productinfo/export?name'+this.value8+'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+localStorage.token]">导出</a>-->
+      <!--<a :href="'http://192.168.20.216:9999/super/admin/productinfo/export?name'+this.value8+'&startDate='+this.startTime+'&endDate='+this.endTime+'&token='+this.token">这是一个动态链接</a>-->
     </div>
+    <template>
+      <el-table
+        :data="tableData"
+        border
+        highlight-current-row
+        style="width: 100%">
+        <el-table-column
+          fixed
+          prop="productName"
+          label="产品名称"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="parentChannelName"
+          label="主渠道名称"
+          width="150">
+        </el-table-column>
+        <el-table-column
+          prop="subChannelName"
+          label="子渠道名称"
+          width="150">
+        </el-table-column>
+        <el-table-column
+          prop="statisticsDate"
+          label="时间"
+          width="160">
+        </el-table-column>
+        <el-table-column
+          prop="uvPrice"
+          label="UV单价"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="uvNum"
+          label="UV渠道"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="viewNum"
+          label="UV我们"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="cpaPrice"
+          label="CPA单价"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="cpaNum"
+          label="CPA数量"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="cpaFactNum"
+          label="CPA实际"
+          width="80">
+        </el-table-column>
+        <!--<el-table-column-->
+          <!--prop="cpsPrice"-->
+          <!--label="CPS单价"-->
+          <!--width="80">-->
+        <!--</el-table-column>-->
+        <!--<el-table-column-->
+          <!--prop="cpsNum"-->
+          <!--label="CPS数量"-->
+          <!--width="80">-->
+        <!--</el-table-column>-->
+        <!--<el-table-column-->
+          <!--prop="cpsFactNum"-->
+          <!--label="CPS实际"-->
+          <!--width="80">-->
+        <!--</el-table-column>-->
+        <el-table-column
+          prop="countType"
+          label="计价方式"
+          :formatter="countTypeFormatter"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="currentCost"
+          label="当日成本"
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="remark"
+          label="备注"
+          width="300">
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          label="操作"
+          width="160">
+          <template slot-scope="scope">
+            <el-button @click="detailChannel(scope.row)" type="text" size="medium">详情</el-button>
+            <el-button @click="editChannel(scope.row)" type="text" size="medium">编辑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </template>
+    <div class="block">
+      <el-pagination class="paginationBox"
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :unique-opened="true"
+                     :current-page="pageNum"
+                     :page-sizes="pageSizes"
+                     :page-size="pageSize"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="proTotal">
+      </el-pagination>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -196,32 +197,12 @@
           this.getSubChannelList();
         }
       },
-      //获取所有产品
-      getFenList(){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/operate/admin/productManage/productMerchantInfo",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.productList=res.data.body;
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
-            this.$message.error(res);
-          }
-        })
-      },
       //通过产品code集合获取对应的主渠道
       getParentChannelList(){
         let productCodes = this.productCodes.join(',');
         axios({
           method:"GET",
-          url:"http://"+this.baseUrl+"/channel/admin/account/searchByProdCode",
+          url:"http://"+this.baseUrl+"/flowPool/admin/account/searchByProdCode",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -244,7 +225,7 @@
       getSubChannelList(){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel/getSubChannel",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel/getSubChannel",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -297,7 +278,7 @@
         };
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/export",
+          url:"http://"+this.baseUrl+"/flowPool/admin/export",
           headers:{
             "content-type":"application/octet-stream;charset=utf-8",
             "content-disposition":"attachment;filename=total.xls",
@@ -348,7 +329,7 @@
         };
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/list",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/list",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -393,11 +374,53 @@
         } else {
           return ''
         }
-      }
+      },
+      //调用产品列表
+      getFenList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/flowPool/admin/productManage/productMerchantInfo",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': this.$store.state.userToken
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productList=res.data.body;
+          }else {
+            this.$message.error(res.data.body.msgInfo);
+          }
+        })
+      },
+      //刷新UV
+      refresh(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/updateViewNumber",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': localStorage.token
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.getProductList(1,30,null,null,null,null,null);
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            });
+          }else {
+            this.$message.error(res.data.msgInfo);
+          }
+        })
+      },
     },
     mounted:function () {
-      this.getFenList();
       this.getProductList(1,30,null,null,null,null,null);
+      this.getFenList()
     },
     data() {
       return {

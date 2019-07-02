@@ -166,7 +166,7 @@
       getTaskById(id) {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/edit/task",
+          url:"http://"+this.baseUrl+"/flowPool/admin/edit/task",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token

@@ -5,25 +5,25 @@
     </el-breadcrumb>
     <div class="operationContent">
       <el-button class="upLoadBtn" @click="toAddProduct()" type="primary">添加渠道&nbsp;&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-        产品：
-        <el-select v-model="productId" placeholder="请选择">
-          <el-option
-            v-for="item in productList"
-            :key="item.productId"
-            :label="item.productName"
-            :value="item.productId">
-          </el-option>
-        </el-select>
+      产品：
+      <el-select v-model="productId" placeholder="请选择">
+        <el-option
+          v-for="item in productList"
+          :key="item.id"
+          :label="item.productName"
+          :value="item.id">
+        </el-option>
+      </el-select>
       <el-input class="searchContent" placeholder="主渠道名称或子渠道名称" v-model="channel" clearable></el-input>
       <el-input class="searchContent" placeholder="渠道链接" v-model="longUrl" clearable style="margin-left: 0px"></el-input>
       <el-button id="searchBtn" @click="searchContent()" icon="el-icon-search" type="primary">查询</el-button>
       <!--<el-select v-model="ruleForm.productId" placeholder="请选择产品" @change="selectChange()">-->
-        <!--<el-option-->
-          <!--v-for="item in electData"-->
-          <!--:key="item.productId"-->
-          <!--:label="item.productName"-->
-          <!--:value="item.productId">-->
-        <!--</el-option>-->
+      <!--<el-option-->
+      <!--v-for="item in electData"-->
+      <!--:key="item.productId"-->
+      <!--:label="item.productName"-->
+      <!--:value="item.productId">-->
+      <!--</el-option>-->
       <!--</el-select>-->
     </div>
     <template>
@@ -83,14 +83,14 @@
     </template>
     <div class="block">
       <el-pagination class="paginationBox"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :unique-opened="true"
-        :current-page="pageNum"
-        :page-sizes="pageSizes"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="proTotal">
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :unique-opened="true"
+                     :current-page="pageNum"
+                     :page-sizes="pageSizes"
+                     :page-size="pageSize"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="proTotal">
       </el-pagination>
     </div>
   </div>
@@ -101,27 +101,6 @@
   import axios from 'axios'
   export default {
     methods: {
-      //获取所有产品
-      getFenList(){
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/operate/admin/productManage/productMerchantInfo",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.productList=res.data.body;
-            this.productList.unshift({productId:'',productName:'全部'});
-          }else if(res.data.msgCd=='ZYCASH-1009'){
-            this.$message.error(res.data.msgInfo);
-          }
-          else {
-            this.$message.error(res);
-          }
-        })
-      },
       //查询金融产品
       searchContent(){
         this.getProductList(1,this.nowPageSizes,this.channel,this.longUrl,this.productId);
@@ -152,10 +131,10 @@
       getProductList(data1,data2,data3,data4,data5){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel/list",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
           },
           params:{
             pageNum: data1,
@@ -197,10 +176,10 @@
       obtainedProduct(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/channel/admin/channel/update",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel/update",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
           },
           params:{
             id: row.id,
@@ -212,7 +191,7 @@
               message: '操作成功',
               type: 'success'
             });
-            this.getProductList(this.pageNum,this.nowPageSizes,this.channel,this.ruleForm.productId);
+            this.getProductList(this.pageNum,this.nowPageSizes,this.channel,this.productId);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -222,10 +201,10 @@
       reUpload(row){
         axios({
           method:"post",
-          url:"http://"+this.baseUrl+"/channel/admin/channel/retryGenerateUrl",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel/retryGenerateUrl",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
           },
           params:{
             id: row.id,
@@ -243,7 +222,7 @@
       },
       //下拉选择
       selectChange(){
-        this.getProductList(1,30,this.channel,this.ruleForm.productId);
+        this.getProductList(1,30,this.channel,this.productId);
       },
       //过去长链接字段
       longUrlFormatter(row){
@@ -252,18 +231,40 @@
         var index=longUrl.indexOf("\/");
         let obj=longUrl.substring(index);
         if (productCode == 'merchantProduct20190315161059') {
-          return 'http://jmyq.wzgeek.com' + obj;
+          return 'http://xjl.qxykjz.com' + obj;
         } else if (productCode == 'merchantProduct20190516135809'){
           return 'http://axh.qxykjz.com' + obj;
         } else if (productCode == 'merchantProduct20190520182102'){
           return 'http://anxh.qxykjz.com' + obj;
         }
         return longUrl;
+      },
+      //调用产品列表
+      getFenList(){
+        axios({
+          method:"POST",
+          url:"http://"+this.baseUrl+"/flowPool/admin/productManage/productMerchantInfo",
+          headers:{
+            'Content-Type':'application/x-www-form-urlencoded',
+            'Authorization': this.$store.state.userToken
+          },
+          params:{
+            pageNum: 1,
+            pageSize: 100,
+          }
+        }).then((res)=>{
+          if(res.data.msgCd=='ZYCASH-200'){
+            this.productList=res.data.body;
+            this.productList.productId=res.data.body.productId|1;
+          }else {
+            this.$message.error(res.data.body.msgInfo);
+          }
+        })
       }
     },
     mounted:function () {
-       this.getProductList(1,30,null,null);
-       this.getFenList();
+      this.getProductList(1,30,null,null);
+      this.getFenList();
     },
     data() {
       return {
@@ -275,7 +276,10 @@
         pageSize:null,
         pageSizes:[30,50,100],
         nowPageSizes:30,
-        electData: [],
+        electData: [
+          {key:0,Id:"否"},
+          {key:1,Id:"是"},
+        ],
         ruleForm: {
           id: '',
           parentChannelName: '',

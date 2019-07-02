@@ -8,17 +8,17 @@
       <div class="block">
         <el-button type="primary" icon="el-icon-plus" @click="addCashTip">充值</el-button>
         <el-date-picker style="margin-left: 25px"
-          v-model="value7"
-          type="datetimerange"
-          align="right"
-          unlink-panels
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :picker-options="pickerOptions2"
-          format="yyyy-MM-dd HH:mm:ss"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          @change="logTimeChange()">
+                        v-model="value7"
+                        type="datetimerange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        :picker-options="pickerOptions2"
+                        format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        @change="logTimeChange()">
         </el-date-picker>&nbsp;&nbsp;&nbsp;&nbsp;
         <el-button type="primary" icon="el-icon-search" @click="searchContent">搜索</el-button>
       </div>
@@ -108,10 +108,10 @@
       getProductList(data1,data2,data3,data4,data5){
         axios({
           method:"get",
-          url:"http://"+this.baseUrl+"/channel/admin/account/recharge/list",
+          url:"http://"+this.baseUrl+"/flowPool/admin/recharge/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
+            'Authorization': this.$store.state.userToken
           },
           params:{
             pageNum: data1,
@@ -143,10 +143,10 @@
           if (valid) {
             axios({
               method: "post",
-              url: "http://" + this.baseUrl + "/channel/admin/account/recharge/add",
+              url: "http://" + this.baseUrl + "/flowPool/admin/recharge/add",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': localStorage.token
+                'Authorization': this.$store.state.userToken
               },
               params: {
                 accountId: this.accountId,

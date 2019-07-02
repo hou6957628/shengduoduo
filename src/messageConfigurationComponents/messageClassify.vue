@@ -10,20 +10,20 @@
       </div>
       <template>
         时间：
-          <el-date-picker style="margin-left: 0px;margin-right: 15px;"
-                          v-model="value5"
-                          type="datetimerange"
-                          align="right"
-                          unlink-panels
-                          range-separator="至"
-                          start-placeholder="开始日期"
-                          end-placeholder="结束日期"
-                          :picker-options="pickerOptions2"
-                          format="yyyy-MM-dd HH:mm:ss"
-                          value-format="yyyy-MM-dd HH:mm:ss"
-                          @change="logTimeChange()">
-          </el-date-picker>
-        </template>
+        <el-date-picker style="margin-left: 0px;margin-right: 15px;"
+                        v-model="value5"
+                        type="datetimerange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        :picker-options="pickerOptions2"
+                        format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        @change="logTimeChange()">
+        </el-date-picker>
+      </template>
       <el-input style="width: 350px;" class="searchContent"
                 placeholder="输入名称或ID"
                 v-model="finProduct"
@@ -169,7 +169,7 @@
       getProductList(data1,data2,data3,data4,data5){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/find",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/find",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -205,7 +205,7 @@
             param.append('description', this.ruleForm.description);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/message_classify/insert",
+              url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/insert",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -235,7 +235,7 @@
         this.ruleForm.id=row.id;
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/get",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/get",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -263,7 +263,7 @@
             param.append('id', this.ruleForm2.id);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/message_classify/update",
+              url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/update",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -307,7 +307,7 @@
         } else {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/message/admin/message_classify/checkClassify",
+            url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/checkClassify",
             headers:{
               'Content-Type':'application/json',
               'Authorization': localStorage.token
@@ -353,7 +353,7 @@
         id.push(row.id);
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/checkClassify",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/checkClassify",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -384,7 +384,7 @@
       deleteClassification(ids){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/delete",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/delete",
           headers:{
             'Content-Type':'application/json',
             'Authorization': localStorage.token
@@ -414,7 +414,7 @@
         } else {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/message/admin/message_classify/check",
+            url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/check",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token

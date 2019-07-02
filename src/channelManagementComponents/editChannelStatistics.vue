@@ -15,72 +15,72 @@
           </el-option>
         </el-select>
       </el-form-item>
-        <div class="jiegou" v-if="countType==1" label="cpa计价">
-          <p style="margin-bottom: 10px;text-align: center;font-size: 18px">CPA计价</p>
-          <el-form-item label="产品名称">
-            <el-input v-model="ruleForm.productName" disabled="disabled"></el-input>
-          </el-form-item>
-          <el-form-item label="对应日期">
-            <el-input v-model="ruleForm.statisticsDate" disabled="disabled"></el-input>
-          </el-form-item>
-          <el-form-item label="CPA单价" prop="cpaPrice">
-            <el-input v-model="ruleForm.cpaPrice"></el-input>
-          </el-form-item>
-          <el-form-item label="CPA数量" prop="cpaNum" >
-            <el-input v-model="ruleForm.cpaNum"></el-input>
-          </el-form-item>
-          <el-form-item label="备注" prop="remark">
-            <el-input v-model="ruleForm.remark"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="CPAForm(1,'ruleForm')">保存</el-button>
-            <el-button type="info" @click="cancel()">返回</el-button>
-          </el-form-item>
-        </div>
-        <div class="jiegou" v-if="countType==2" label="cps计价">
-          <p style="margin-bottom: 10px;text-align: center;font-size: 18px">CPS计价</p>
-          <el-form-item label="产品名称">
-            <el-input v-model="ruleForm.productName" disabled="disabled"></el-input>
-          </el-form-item>
-          <el-form-item label="对应日期">
-            <el-input v-model="ruleForm.statisticsDate" disabled="disabled"></el-input>
-          </el-form-item>
-          <el-form-item label="CPS单价" prop="cpsPrice">
-            <el-input v-model="ruleForm.cpsPrice"></el-input>
-          </el-form-item>
-          <el-form-item label="CPS数量" prop="cpsNum">
-            <el-input v-model="ruleForm.cpsNum"></el-input>
-          </el-form-item>
-          <el-form-item label="备注" prop="remark">
-            <el-input v-model="ruleForm.remark"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="CPSForm(2,'ruleForm')">保存</el-button>
-            <el-button type="info" @click="cancel()">返回</el-button>
-          </el-form-item>
-        </div>
-        <div class="jiegou" v-if="countType==3" label="uv计价">
-          <p style="margin-bottom: 10px;text-align: center;font-size: 18px">UV计价</p>
-          <el-form-item label="产品名称">
-            <el-input v-model="ruleForm.productName" disabled="disabled"></el-input>
-          </el-form-item>
-          <el-form-item label="对应日期">
-            <el-input v-model="ruleForm.statisticsDate" disabled="disabled"></el-input>
-          </el-form-item>
-          <el-form-item label="UV单价" prop="uvPrice">
-            <el-input v-model="ruleForm.uvPrice"></el-input>
-          </el-form-item>
-          <el-form-item label="UV数量" prop="uvNum">
-            <el-input v-model="ruleForm.uvNum"></el-input>
-          </el-form-item>
-          <el-form-item label="备注" prop="remark">
-            <el-input v-model="ruleForm.remark"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="UVForm(3,'ruleForm')">保存</el-button>
-            <el-button type="info" @click="cancel()">返回</el-button>
-          </el-form-item>
-        </div>
+      <div class="jiegou" v-if="countType==1" label="cpa计价">
+        <p style="margin-bottom: 10px;text-align: center;font-size: 18px">CPA计价</p>
+        <el-form-item label="产品名称">
+          <el-input v-model="ruleForm.productName" disabled="disabled"></el-input>
+        </el-form-item>
+        <el-form-item label="对应日期">
+          <el-input v-model="ruleForm.statisticsDate" disabled="disabled"></el-input>
+        </el-form-item>
+        <el-form-item label="CPA单价" prop="cpaPrice">
+          <el-input v-model="ruleForm.cpaPrice"></el-input>
+        </el-form-item>
+        <el-form-item label="CPA数量" prop="cpaNum" >
+          <el-input v-model="ruleForm.cpaNum"></el-input>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="ruleForm.remark"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="CPAForm(1,'ruleForm')">保存</el-button>
+          <el-button type="info" @click="cancel()">返回</el-button>
+        </el-form-item>
+      </div>
+      <div class="jiegou" v-if="countType==2" label="cps计价">
+        <p style="margin-bottom: 10px;text-align: center;font-size: 18px">CPS计价</p>
+        <el-form-item label="产品名称">
+          <el-input v-model="ruleForm.productName" disabled="disabled"></el-input>
+        </el-form-item>
+        <el-form-item label="对应日期">
+          <el-input v-model="ruleForm.statisticsDate" disabled="disabled"></el-input>
+        </el-form-item>
+        <el-form-item label="CPS单价" prop="cpsPrice">
+          <el-input v-model="ruleForm.cpsPrice"></el-input>
+        </el-form-item>
+        <el-form-item label="CPS数量" prop="cpsNum">
+          <el-input v-model="ruleForm.cpsNum"></el-input>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="ruleForm.remark"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="CPSForm(2,'ruleForm')">保存</el-button>
+          <el-button type="info" @click="cancel()">返回</el-button>
+        </el-form-item>
+      </div>
+      <div class="jiegou" v-if="countType==3" label="uv计价">
+        <p style="margin-bottom: 10px;text-align: center;font-size: 18px">UV计价</p>
+        <el-form-item label="产品名称">
+          <el-input v-model="ruleForm.productName" disabled="disabled"></el-input>
+        </el-form-item>
+        <el-form-item label="对应日期">
+          <el-input v-model="ruleForm.statisticsDate" disabled="disabled"></el-input>
+        </el-form-item>
+        <el-form-item label="UV单价" prop="uvPrice">
+          <el-input v-model="ruleForm.uvPrice"></el-input>
+        </el-form-item>
+        <el-form-item label="UV数量" prop="uvNum">
+          <el-input v-model="ruleForm.uvNum"></el-input>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="ruleForm.remark"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="UVForm(3,'ruleForm')">保存</el-button>
+          <el-button type="info" @click="cancel()">返回</el-button>
+        </el-form-item>
+      </div>
     </el-form>
   </div>
 </template>
@@ -135,7 +135,7 @@
       getProductList(data1){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/get",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/get",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -154,16 +154,16 @@
       },
       CPAForm(data,formName){
         this.$refs[formName].validate((valid) => {
-            if (valid) {
+          if (valid) {
 
-            } else {
-              console.log('error submit!!');
-              return false;
-            }
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
         });
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/update",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -199,7 +199,7 @@
 
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/update",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -235,7 +235,7 @@
 
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/update",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token

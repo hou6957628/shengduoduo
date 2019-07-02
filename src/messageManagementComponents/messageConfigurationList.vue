@@ -17,10 +17,10 @@
             <el-dropdown-item command="d">技术人员</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>&nbsp;&nbsp;&nbsp;&nbsp;
-      <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">日志列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
-      <el-button type="primary" id="cancelBtn" @click="batchDel()" slot="append">批量删除</el-button>
-      <el-button type="primary" id="cancelBtn1" @click="batchStop()" slot="append">批量停用</el-button>
-      <el-button type="primary" id="cancelBtn2" @click="batchExe()" slot="append">批量执行</el-button>
+        <el-button class="upLoadBtn" @click="toMessageClassify()" type="primary">日志列表&nbsp;<i class="el-icon-upload el-icon-circle-plus"></i></el-button>
+        <el-button type="primary" id="cancelBtn" @click="batchDel()" slot="append">批量删除</el-button>
+        <el-button type="primary" id="cancelBtn1" @click="batchStop()" slot="append">批量停用</el-button>
+        <el-button type="primary" id="cancelBtn2" @click="batchExe()" slot="append">批量执行</el-button>
       </div>
       <el-col :span="6" style="height: 55px;">
         产品：
@@ -229,57 +229,57 @@
   export default {
     methods: {
       //查询所有产品
-      getProduct() {
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.productList=res.data.body;
-            this.productList.unshift({productId: null, productName: '全部产品'});
-          } else if (res.data.msgCd=='ZYCASH-1005') {
-            this.$message.error('登陆信息失效，请重新登陆');
-            this.$router.push({path: `/login`,});
-          } else if (res.data.msgCd=='SYS00001') {
-            this.$message.error('登陆信息失效，请重新登陆');
-            this.$router.push({path: `/login`,});
-          } else {
-            this.$message.error(res);
-          }
-        })
-      },
+      // getProduct() {
+      //   axios({
+      //     method:"POST",
+      //     url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
+      //     headers:{
+      //       'Content-Type':'application/x-www-form-urlencoded',
+      //       'Authorization': localStorage.token
+      //     }
+      //   }).then((res)=>{
+      //     if(res.data.msgCd=='ZYCASH-200'){
+      //       this.productList=res.data.body;
+      //       this.productList.unshift({productId: null, productName: '全部产品'});
+      //     } else if (res.data.msgCd=='ZYCASH-1005') {
+      //       this.$message.error('登陆信息失效，请重新登陆');
+      //       this.$router.push({path: `/login`,});
+      //     } else if (res.data.msgCd=='SYS00001') {
+      //       this.$message.error('登陆信息失效，请重新登陆');
+      //       this.$router.push({path: `/login`,});
+      //     } else {
+      //       this.$message.error(res);
+      //     }
+      //   })
+      // },
       //查询所有产品
-      getProduct1() {
-        axios({
-          method:"POST",
-          url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
-          headers:{
-            'Content-Type':'application/x-www-form-urlencoded',
-            'Authorization': localStorage.token
-          }
-        }).then((res)=>{
-          if(res.data.msgCd=='ZYCASH-200'){
-            this.productList1=res.data.body;
-          } else if (res.data.msgCd=='ZYCASH-1005') {
-            this.$message.error('登陆信息失效，请重新登陆');
-            this.$router.push({path: `/login`,});
-          } else if (res.data.msgCd=='SYS00001') {
-            this.$message.error('登陆信息失效，请重新登陆');
-            this.$router.push({path: `/login`,});
-          } else {
-            this.$message.error(res);
-          }
-        })
-      },
+      // getProduct1() {
+      //   axios({
+      //     method:"POST",
+      //     url:"http://"+this.baseUrl+"/order/admin/borrowing/getProductList",
+      //     headers:{
+      //       'Content-Type':'application/x-www-form-urlencoded',
+      //       'Authorization': localStorage.token
+      //     }
+      //   }).then((res)=>{
+      //     if(res.data.msgCd=='ZYCASH-200'){
+      //       this.productList1=res.data.body;
+      //     } else if (res.data.msgCd=='ZYCASH-1005') {
+      //       this.$message.error('登陆信息失效，请重新登陆');
+      //       this.$router.push({path: `/login`,});
+      //     } else if (res.data.msgCd=='SYS00001') {
+      //       this.$message.error('登陆信息失效，请重新登陆');
+      //       this.$router.push({path: `/login`,});
+      //     } else {
+      //       this.$message.error(res);
+      //     }
+      //   })
+      // },
       //查询所有分类
       getMessageClassifyList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -300,7 +300,7 @@
       getModeList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_mode/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_mode/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -344,7 +344,7 @@
       getProductList(data1,data2,data3,data4,data5,data6,data7,data8){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/task/list",
+          url:"http://"+this.baseUrl+"/flowPool/admin/task/list",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -453,7 +453,7 @@
             });
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/batchDeleteOrStop",
+              url:"http://"+this.baseUrl+"/flowPool/admin/batchDeleteOrStop",
               headers:{
                 'Content-Type':'application/json',
                 'Authorization': localStorage.token
@@ -497,7 +497,7 @@
             });
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/batchDeleteOrStop",
+              url:"http://"+this.baseUrl+"/flowPool/admin/batchDeleteOrStop",
               headers:{
                 'Content-Type':'application/json',
                 'Authorization': localStorage.token
@@ -528,7 +528,7 @@
         }).then(() => {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/message/admin/delteOrStop/task",
+            url:"http://"+this.baseUrl+"/flowPool/admin/delteOrStop/task",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token
@@ -560,7 +560,7 @@
         }).then(() => {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/message/admin/delteOrStop/task",
+            url:"http://"+this.baseUrl+"/flowPool/admin/delteOrStop/task",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token
@@ -586,7 +586,7 @@
       startProduct(row){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/delteOrStop/task",
+          url:"http://"+this.baseUrl+"/flowPool/admin/delteOrStop/task",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -676,7 +676,7 @@
           }).then(() => {
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/messageBatchDeal",
+              url:"http://"+this.baseUrl+"/flowPool/admin/messageBatchDeal",
               headers:{
                 'Content-Type':'application/json',
                 'Authorization': localStorage.token
@@ -707,7 +707,7 @@
         }).then(() => {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/message/admin/messageDeal",
+            url:"http://"+this.baseUrl+"/flowPool/admin/messageDeal",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token
@@ -733,7 +733,7 @@
       copeProductTip(row){
         this.copyId=row.id;
         this.centerDialogVisible1=true;
-        this.getProduct1();
+        // this.getProduct1();
       },
       //复制任务
       copeProduct(formName){
@@ -748,7 +748,7 @@
             param.append('conditionName', this.ruleForm2.conditionName);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/copy/task",
+              url:"http://"+this.baseUrl+"/flowPool/admin/copy/task",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -787,7 +787,7 @@
         //后台查询条件
         axios({
           method: "POST",
-          url: "http://"+this.baseUrl+"/message/admin/message_condition/list",
+          url: "http://"+this.baseUrl+"/flowPool/admin/message_condition/list",
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -813,7 +813,7 @@
       },
     },
     mounted:function () {
-      this.getProduct();
+      // this.getProduct();
       this.getModeList();
       this.getMessageClassifyList();
       this.getProductList(1,30,null,null,null,null,null,null);

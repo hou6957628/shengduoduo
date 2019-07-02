@@ -80,7 +80,7 @@
         } else {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/message/admin/message_classify/check",
+            url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/check",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token
@@ -174,7 +174,7 @@
       getProductList1() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -208,7 +208,7 @@
             param.append('file', this.ruleForm.file);
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/message/admin/message/insert",
+              url: "http://"+this.baseUrl+"/flowPool/admin/message/insert",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -268,7 +268,7 @@
             param.append('description', this.ruleForm2.description);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/message_classify/insert",
+              url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/insert",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token

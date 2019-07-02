@@ -96,7 +96,7 @@
         } else {
           axios({
             method:"POST",
-            url:"http://"+this.baseUrl+"/message/admin/message_classify/check",
+            url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/check",
             headers:{
               'Content-Type':'application/x-www-form-urlencoded',
               'Authorization': localStorage.token
@@ -201,7 +201,7 @@
       getProductList1() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_classify/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -221,7 +221,7 @@
       getPositionList() {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message_position/findList",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message_position/findList",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -241,7 +241,7 @@
       getMessageById(id) {
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/message/admin/message/get",
+          url:"http://"+this.baseUrl+"/flowPool/admin/message/get",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -282,7 +282,7 @@
             param.append('popupCount', this.ruleForm.popupCount);
             axios({
               method: "POST",
-              url: "http://"+this.baseUrl+"/message/admin/message/update",
+              url: "http://"+this.baseUrl+"/flowPool/admin/message/update",
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -342,7 +342,7 @@
             param.append('description', this.ruleForm2.description);
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/message/admin/message_classify/insert",
+              url:"http://"+this.baseUrl+"/flowPool/admin/message_classify/insert",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token

@@ -136,7 +136,7 @@
       getProductList(data1){
         axios({
           method:"POST",
-          url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/get",
+          url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/get",
           headers:{
             'Content-Type':'application/x-www-form-urlencoded',
             'Authorization': localStorage.token
@@ -158,7 +158,7 @@
           if (valid) {
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+              url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/update",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -192,7 +192,7 @@
           if (valid) {
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+              url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/update",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
@@ -226,7 +226,7 @@
           if (valid) {
             axios({
               method:"POST",
-              url:"http://"+this.baseUrl+"/channel/admin/channel_statistics/update",
+              url:"http://"+this.baseUrl+"/flowPool/admin/channel_statistics/update",
               headers:{
                 'Content-Type':'application/x-www-form-urlencoded',
                 'Authorization': localStorage.token
