@@ -210,7 +210,7 @@
       },
       //过去长链接字段
       longUrlFormatter(row){
-        // 活动类型 0 红包墙 1 红包盛林 2 0元购 3签到 4 注册
+        //  0-红包墙 1-红包盛林 2-0元购 3-签到 4-注册  5-邀请 6-微信分享 7-游戏直播 8-美女直播 9-优惠券
         let status=row.activityType;
         if (status == 0) {
           return '红包墙';
@@ -222,6 +222,16 @@
           return '签到';
         } else if (status == 4){
           return '注册';
+        } else if (status == 5){
+          return '邀请';
+        } else if (status == 6){
+          return '微信分享';
+        } else if (status == 7){
+          return '游戏直播';
+        } else if (status == 8){
+          return '美女直播';
+        }else if (status == 9){
+          return '优惠券';
         }
         return status;
       }
