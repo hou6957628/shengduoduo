@@ -217,7 +217,7 @@
       //过去长链接字段
       longUrlFormatter(row){
         //  0-红包墙 1-红包盛林 2-0元购 3-签到 4-注册  5-邀请 6-微信分享 7-游戏直播 8-美女直播 9-优惠券
-        let status=row.status;
+        let status=row.activityType;
         if (status == 0) {
           return '红包墙';
         } else if (status == 1){
