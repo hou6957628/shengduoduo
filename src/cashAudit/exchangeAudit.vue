@@ -9,16 +9,16 @@
           <!--<el-input class="searchContent" placeholder="用户姓名" v-model="realName" clearable> </el-input>-->
         <!--</template>-->
       <!--</el-col>-->
-      <el-col :span="6" style="height: 55px;">
+      <el-col :span="5" style="height: 55px;">
         <template>手机号：
           <el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
         </template>
       </el-col>
-      <el-col :span="6" style="height: 55px;">
-        <template>奖品ID：
-          <el-input class="searchContent" placeholder="奖品ID" v-model="priceId" clearable></el-input>
-        </template>
-      </el-col>
+      <!--<el-col :span="6" style="height: 55px;">-->
+        <!--<template>奖品ID：-->
+          <!--<el-input class="searchContent" placeholder="奖品ID" v-model="priceId" clearable></el-input>-->
+        <!--</template>-->
+      <!--</el-col>-->
       <!--<el-col :span="6" style="height: 55px;">-->
         <!--<template>子渠道：-->
           <!--<el-input class="searchContent" placeholder="子渠道名称" v-model="subChannelName" clearable></el-input>-->

@@ -11,7 +11,7 @@
       <router-link @click.native="index(2)" :class="activeIndex==2?'active':''" to="goldCoinAccount" tag="li">金币账户</router-link>
       <router-link @click.native="index(3)" :class="activeIndex==3?'active':''" to="loanOperationRecord" tag="li">待超操作记录</router-link>
       <router-link @click.native="index(4)" :class="activeIndex==4?'active':''" to="withdrawalsRecord" tag="li">提现记录</router-link>
-      <router-link @click.native="index(5)" :class="activeIndex==5?'active':''" to="exchangeRecords" tag="li">兑换记录</router-link>
+      <!--<router-link @click.native="index(5)" :class="activeIndex==5?'active':''" to="exchangeRecords" tag="li">兑换记录</router-link>-->
       <router-link @click.native="index(6)" :class="activeIndex==6?'active':''" to="inviteUsers" tag="li">已邀请用户</router-link>
     </div>
     <router-view/>

@@ -27,7 +27,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
-        <el-button type="info">取消</el-button>
+        <el-button type="info" @click="resetForm">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -184,6 +184,10 @@
           this.startTime='';
           this.endTime='';
         }
+      },
+      //取消按钮
+      resetForm() {
+        this.$router.go(-1);
       },
     },
     mounted:function () {

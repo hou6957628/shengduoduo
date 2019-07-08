@@ -4,6 +4,7 @@ const state={
   bankCard:'',
   goldCoin:'',
   activeId:'',
+  prohobit:'',
 };
 export default({
   state

@@ -14,17 +14,7 @@
           <el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
         </template>
       </el-col>
-      <el-col :span="6" style="height: 55px;">
-        <template>主渠道：
-          <el-input class="searchContent" placeholder="主渠道名称" v-model="channelName" clearable></el-input>
-        </template>
-      </el-col>
-      <el-col :span="6" style="height: 55px;">
-        <template>子渠道：
-          <el-input class="searchContent" placeholder="子渠道名称" v-model="subChannelName" clearable></el-input>
-        </template>
-      </el-col>
-      <el-col :span="6" style="height: 55px;">
+      <el-col :span="12" style="height: 55px;">
         <template>状态：
           <el-select v-model="status" @change="selectChange1($event,electData)">
             <el-option
@@ -53,8 +43,8 @@
         </el-date-picker>
       </template>&nbsp;&nbsp;
       <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
-      <el-button id="batchDele" type="danger" @click="batchDeletion()" slot="append" icon="el-icon-delete">批量删除</el-button>
-      <el-button id="batchPass" type="success" @click="batchPass()" slot="append" icon="el-icon-check">批量通过</el-button>
+      <el-button id="batchDele" type="danger" @click="batchDelCancel()" slot="append" icon="el-icon-delete">批量取消</el-button>
+      <el-button id="batchPass" type="success" @click="batchDelPass()" slot="append" icon="el-icon-check">批量通过</el-button>
     </div>
     <template>
       <el-table
@@ -114,12 +104,6 @@
           width="180">
         </el-table-column>
         <el-table-column
-          prop="redPacketAccount"
-          label="红包账户"
-          align="center"
-          width="100">
-        </el-table-column>
-        <el-table-column
           prop="status"
           label="提现状态"
           align="center"
@@ -132,8 +116,8 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
-            <el-button @click="cancelBtn(scope.row)" type="text" size="medium">取消</el-button>
-            <el-button @click="passBtn(scope.row)" type="text" size="medium">通过</el-button>
+            <el-button v-if="scope.row.status!=5" @click="cancel(scope.row)" type="text" size="medium">取消</el-button>
+            <el-button v-if="scope.row.status!=5" @click="pass(scope.row)" type="text" size="medium">通过</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -150,6 +134,58 @@
                      :total="proTotal">
       </el-pagination>
     </div>
+    <!--取消-->
+    <el-dialog
+      title="是否取消提现？"
+      :visible.sync="centerDialogVisible"
+      width="20%"
+      center>
+      <el-form ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="cancelBtn">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!--通过-->
+    <el-dialog
+      title="是否同意提现？"
+      :visible.sync="centerDialogVisible1"
+      width="20%"
+      center>
+      <el-form ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="passBtn">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible1 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!--批量取消-->
+    <el-dialog
+      title="是否批量取消？"
+      :visible.sync="centerDialogVisible3"
+      width="20%"
+      center>
+      <el-form ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="batchDeletion()">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible3 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!--批量通过-->
+    <el-dialog
+      title="是否批量通过？"
+      :visible.sync="centerDialogVisible4"
+      width="20%"
+      center>
+      <el-form ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="batchPass">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible4 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -241,8 +277,19 @@
           path: `/cashDetail/${id}`,
         });
       },
+      //取消弹框
+      cancel(row){
+        this.centerDialogVisible=true;
+        this.$store.dispatch('setProhobit',row);
+      },
+      //通过弹窗
+      pass(row){
+        this.centerDialogVisible1=true;
+        this.$store.dispatch('setProhobit',row);
+      },
       //取消按钮
       cancelBtn(row){
+        let id=this.$store.state.prohobit.id;
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/flowPool/admin/casheAudit/batch",
@@ -252,7 +299,7 @@
           },
           params:{
             type:0,
-            ids:row.id,
+            ids:id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -261,6 +308,8 @@
               message: '操作成功',
               type: 'success'
             });
+            this.centerDialogVisible=false;
+            this.getProductList(1,20);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -268,6 +317,7 @@
       },
       //通过按钮
       passBtn(row){
+        let id=this.$store.state.prohobit.id;
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/flowPool/admin/casheAudit/batch",
@@ -277,7 +327,7 @@
           },
           params:{
             type:1,
-            ids:row.id,
+            ids:id,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -286,6 +336,8 @@
               message: '操作成功',
               type: 'success'
             });
+            this.centerDialogVisible1=false;
+            this.getProductList(1,20);
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -374,6 +426,7 @@
                 message: '操作成功',
                 type: 'success'
               });
+              this.centerDialogVisible3=false;
               this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
             }else {
               this.$message.error(res.data.msgInfo);
@@ -408,6 +461,7 @@
                 message: '操作成功',
                 type: 'success'
               });
+              this.centerDialogVisible4=false;
               this.getProductList(1,20,this.realName,this.mobile,this.channelName,this.subChannelName,this.startTime,this.endTime,this.productId);
             }else {
               this.$message.error(res.data.msgInfo);
@@ -442,7 +496,15 @@
           return '审核拒绝';
         }
         return status;
-      }
+      },
+      //批量取消
+      batchDelCancel(){
+        this.centerDialogVisible3=true;
+      },
+      //批量通过
+      batchDelPass(){
+        this.centerDialogVisible4=true;
+      },
     },
     mounted:function () {
       this.getProductList(1,20,null,null,null,null,null,null,null,null);
@@ -501,7 +563,11 @@
         startTime:'',
         endTime:'',
         ids:[],
-        multipleSelection:[]
+        multipleSelection:[],
+        centerDialogVisible:false,
+        centerDialogVisible1:false,
+        centerDialogVisible3:false,
+        centerDialogVisible4:false,
       }
     }
   }

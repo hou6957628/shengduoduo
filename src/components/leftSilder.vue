@@ -31,50 +31,14 @@
             </el-submenu>
             <el-submenu index="3" style="padding-left:0 ;">
               <template style="padding-left: 5px" slot="title">
-                <i class="el-icon-tickets"></i>
-                <span>兑换审核</span>
+                <i class="el-icon-picture"></i>
+                <span>银行卡管理</span>
               </template>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/exchangeAudit">兑换审核</el-menu-item>
+                <el-menu-item index="/bankCardManagement">银行卡管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="4" style="padding-left:0 ;">
-              <template style="padding-left: 5px" slot="title">
-                <i class="el-icon-bell"></i>
-                <span>兑换订单</span>
-              </template>
-              <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/exchangeAuditFinish">兑换订单</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="5" style="padding-left:0 ;">
-              <template style="padding-left: 5px" slot="title">
-                <i class="el-icon-goods"></i>
-                <span>活动管理</span>
-              </template>
-              <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/activityManagement">活动管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/activityBannerList">活动Banner管理</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/liveBroadcastList">直播管理</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="6" style="padding-left:0 ;">
-              <template style="padding-left: 5px" slot="title">
-                <i class="el-icon-setting"></i>
-                <span>产品配置</span>
-              </template>
-              <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/productConfiguration">产品配置</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/productConfiguration1">产品配置1</el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="7" style="padding-left:0 ;">
               <template style="padding-left: 5px" slot="title">
                 <i class="el-icon-share"></i>
                 <span>渠道管理</span>
@@ -89,22 +53,58 @@
                 <el-menu-item index="/accountCenter">账户中心</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="8" style="padding-left:0 ;">
+            <el-submenu index="5" style="padding-left:0 ;">
               <template style="padding-left: 5px" slot="title">
-                <i class="el-icon-picture"></i>
-                <span>银行卡管理</span>
+                <i class="el-icon-setting"></i>
+                <span>产品配置</span>
               </template>
               <el-menu-item-group style="padding-left: 5px">
-                <el-menu-item index="/bankCardManagement">银行卡管理</el-menu-item>
+                <el-menu-item index="/productConfiguration">产品配置</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/productConfiguration1">产品配置1</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="9" style="padding-left:0 ;">
+            <el-submenu index="6" style="padding-left:0 ;">
+              <template style="padding-left: 5px" slot="title">
+                <i class="el-icon-goods"></i>
+                <span>活动管理</span>
+              </template>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/activityManagement">活动管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/activityBannerList">活动Banner管理</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/liveBroadcastList">直播管理</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="7" style="padding-left:0 ;">
               <template style="padding-left: 5px" slot="title">
                 <i class="el-icon-tickets"></i>
                 <span>金币抽大奖</span>
               </template>
               <el-menu-item-group style="padding-left: 5px">
                 <el-menu-item index="/goldCoinList">金币抽大奖</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="8" style="padding-left:0 ;">
+              <template style="padding-left: 5px" slot="title">
+                <i class="el-icon-tickets"></i>
+                <span>兑换审核</span>
+              </template>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/exchangeAudit">兑换审核</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="9" style="padding-left:0 ;">
+              <template style="padding-left: 5px" slot="title">
+                <i class="el-icon-bell"></i>
+                <span>兑换订单</span>
+              </template>
+              <el-menu-item-group style="padding-left: 5px">
+                <el-menu-item index="/exchangeAuditFinish">兑换订单</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="10" style="padding-left:0 ;">

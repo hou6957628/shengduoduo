@@ -14,15 +14,16 @@
           width="80">
         </el-table-column>
         <el-table-column
-          prop="realName"
+          prop="amount"
           label="提现金额"
           align="center"
           width="100">
         </el-table-column>
         <el-table-column
-          prop="mobile"
+          prop="status"
           label="提现状态"
           align="center"
+          :formatter="longUrlFormatter"
           width="120">
         </el-table-column>
         <!--<el-table-column-->
@@ -38,13 +39,13 @@
           <!--width="120">-->
         <!--</el-table-column>-->
         <el-table-column
-          prop="createDate"
+          prop="updateTime"
           label="更新时间"
           align="center"
           width="170">
         </el-table-column>
         <el-table-column
-          prop="createDate"
+          prop="createTime"
           label="创建时间"
           align="center"
           width="170">
@@ -165,6 +166,23 @@
           this.endTime='';
         }
       },
+      //过去长链接字段
+      longUrlFormatter(row){
+        // 0：待审核 1：放款中 2：放款成功 4：放款失败 5：审核拒绝
+        let status=row.status;
+        if (status == 0) {
+          return '待审核';
+        } else if (status == 1){
+          return '放款中';
+        } else if (status == 2){
+          return '放款成功';
+        } else if (status == 4){
+          return '放款失败';
+        }else if (status == 5){
+          return '审核拒绝';
+        }
+        return status;
+      }
     },
     mounted:function () {
       this.getProductList(1,20,null,null,null,null,null,null,null,null);

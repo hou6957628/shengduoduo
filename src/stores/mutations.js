@@ -1,4 +1,5 @@
-import {SET_TOKEN ,USER_ID,BANK_CARD,ACTIVE_ID} from './mutation-type'
+import {SET_TOKEN, USER_ID, BANK_CARD, ACTIVE_ID, PROHOBIT} from './mutation-type'
+
 export default {
   [SET_TOKEN](state, {todo}) {
     state.userToken = todo;
@@ -6,10 +7,13 @@ export default {
   [USER_ID](state, {todo}) {
     state.userId = todo;
   },
-  [BANK_CARD](state,{todo}){
-    state.bankCard=todo;
+  [BANK_CARD](state, {todo}) {
+    state.bankCard = todo;
   },
-  [ACTIVE_ID](state,{todo}){
-    state.activeId=todo;
+  [ACTIVE_ID](state, {todo}) {
+    state.activeId = todo;
+  },
+  [PROHOBIT](state, {todo}) {
+    state.prohobit = todo;
   }
 }

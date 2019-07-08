@@ -9,16 +9,15 @@
           <td>手机号：{{this.cusCustomer.mobile}}</td>
           <td>渠道：{{this.cusCustomer.subChannelName}}</td>
           <td>新户老户：{{this.cusCustomer.reBorrow==1?'老户':'新户'}}</td>
-          <td>手机机型：{{this.cusCustomer.phoneModel}}</td>
           <td>注册时间：{{this.cusCustomer.createDate}}</td>
-          <td>所属平台：{{this.cusCustomer.productName}}</td>
         </tr>
         <tr>
+          <td>所属平台：{{this.cusCustomer.productName}}</td>
           <td>性别：{{this.cusCustomer.sex}}</td>
-          <td>红包账户：{{this.cusCustomer.redEnvelopesBalance}}</td>
-          <td>金币：{{this.cusCustomer.goldBalance}}</td>
+          <!--<td>红包账户：{{this.cusCustomer.redEnvelopesBalance}}</td>-->
+          <!--<td>金币：{{this.cusCustomer.goldBalance}}</td>-->
           <td>邀请人手机号 ：{{this.cusCustomer.recommendMobile}}</td>
-          <td>身份证号：{{this.cusCustomer.recommendMobile}}</td>
+          <!--<td>身份证号：{{this.cusCustomer.recommendMobile}}</td>-->
         </tr>
       </table>
       <h3>设备信息</h3>
@@ -27,7 +26,7 @@
           <td>手机品牌:{{this.cusCustomer.deviceType==null?'--':this.cusCustomer.deviceType}}</td>
           <td>手机型号:{{this.cusCustomer.device==null?'--':this.cusCustomer.device}}</td>
           <td>手机系统版本号:{{this.cusCustomer.systemVersion==null?'--':this.cusCustomer.systemVersion}}</td>
-          <td>APP版本:{{this.cusCustomer.appVersion}}</td>
+          <!--<td>APP版本:{{this.cusCustomer.appVersion}}</td>-->
         </tr>
       </table>
       <h3>收件信息</h3>

@@ -20,18 +20,6 @@
         </template>
       </el-col>
       <el-col :span="6" style="height: 55px;">
-        <template>银行名称：
-          <el-select v-model="bankName" placeholder="银行名称">
-            <el-option
-              v-for="item in electData"
-              :key="item.key"
-              :label="item.Id"
-              :value="item.key">
-            </el-option>
-          </el-select>
-        </template>
-      </el-col>
-      <el-col :span="6" style="height: 55px;">
         <template>身份证号：
           <el-input class="searchContent" placeholder="身份证号" v-model="idcardNum" clearable></el-input>
         </template>
@@ -53,7 +41,7 @@
         </el-date-picker>
       </template>&nbsp;&nbsp;&nbsp;
       <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
-      <el-button type="primary" @click="batchDelTip()" slot="append" icon="el-icon-delete">批量删除</el-button>
+      <el-button type="primary" @click="batchDelCount()" slot="append" icon="el-icon-delete">批量删除</el-button>
     </div>
     <template>
       <el-table
@@ -139,6 +127,32 @@
                      :total="proTotal">
       </el-pagination>
     </div>
+    <!--删除-->
+    <el-dialog
+      title="是否删除银行卡？"
+      :visible.sync="centerDialogVisible1"
+      width="20%"
+      center>
+      <el-form ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="deleteBankCard">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible1 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!--批量删除银行卡-->
+    <el-dialog
+      title="是否批量删除银行卡？"
+      :visible.sync="centerDialogVisible"
+      width="20%"
+      center>
+      <el-form ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="batchDelTip">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -208,10 +222,12 @@
       },
       //单独删除银行卡提示
       editProduct(row){
-        this.deleteBankCard(row.id);
+        this.centerDialogVisible=true;
+        this.$store.dispatch('setProhobit',row);
       },
       //确认单独删除银行卡接口
       deleteBankCard(id){
+        let bankId=this.$store.state.prohobit.id;
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/flowPool/admin/bank/deleteBankCardInfo",
@@ -220,7 +236,7 @@
             'Authorization': this.$store.state.userToken
           },
           params:{
-            id:id,
+            id:bankId,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -228,11 +244,16 @@
               message: '删除成功',
               type: 'success'
             });
+            this.centerDialogVisible=false;
             this.getProductList(1,30,null,null,null,null,null,null);
           }else {
             this.$message.error(res.data.msgInfo);
           }
         })
+      },
+      //批量删除银行卡弹出层
+      batchDelCount(){
+        this.centerDialogVisible=true;
       },
       //批量删除银行卡提示
       batchDelTip(row){
@@ -262,6 +283,7 @@
               message: '删除成功',
               type: 'success'
             });
+            this.centerDialogVisible1=false;
             this.getProductList(1,30,null,null,null,null,null,null);
           }else {
             this.$message.error(res.data.msgInfo);
@@ -308,6 +330,8 @@
     },
     data() {
       return {
+        centerDialogVisible1:false,
+        centerDialogVisible:false,
         productListData: [],
         productId:null,
         tableData: [],

@@ -123,9 +123,9 @@ axios.interceptors.response.use(
   });
 
 //测试环境
-// Vue.prototype.baseUrl="47.93.234.167:31999";
+Vue.prototype.baseUrl="47.93.234.167:31999";
 //正式环境
-Vue.prototype.baseUrl="60.205.216.141";
+// Vue.prototype.baseUrl="60.205.216.141";
 
 const vueRouter = new Router({
   // mode: 'history',

@@ -55,13 +55,13 @@
           prop="id"
           align="center"
           label="用户ID"
-          width="80">
+          width="70">
         </el-table-column>
         <el-table-column
           prop="username"
           label="姓名"
           align="center"
-          width="100">
+          width="120">
         </el-table-column>
         <el-table-column
           prop="mobile"
@@ -73,19 +73,19 @@
           prop="createDate"
           label="注册时间"
           align="center"
-          width="180">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="channelName"
           label="主渠道"
           align="center"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="subChannelName"
           label="子渠道"
           align="center"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="recommendMobile"
@@ -97,7 +97,7 @@
           prop="loginDate"
           label="最近登录应用时间"
           align="center"
-          width="180">
+          width="170">
         </el-table-column>
         <el-table-column
           prop="isActiveApp"
@@ -128,7 +128,7 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
-            <el-button @click="prohibitBtn(scope.row)" type="text" size="medium">{{(scope.row.enabled)?'禁用':'启用'}}</el-button>
+            <el-button @click="prohibitBtn(scope.row)" :type="(scope.row.enabled)?'primary':'danger'" size="small">{{(scope.row.enabled)?'禁用':'启用'}}</el-button>
             <el-button @click="editProduct(scope.row)" type="text" size="medium">修改</el-button>
           </template>
         </el-table-column>
@@ -146,9 +146,9 @@
         :total="proTotal">
       </el-pagination>
     </div>
-    <!--线下还款结构-->
+    <!--修改登录密码-->
     <el-dialog
-      title="线下还款"
+      title="修改登录密码"
       :visible.sync="centerDialogVisible1"
       width="40%"
       center>
@@ -162,6 +162,19 @@
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')">确认<i class="el-icon-check el-icon--right"></i></el-button>
           <el-button type="info"  @click="centerDialogVisible1 = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!--线下还款结构-->
+    <el-dialog
+      title="是否禁用/启用此账号？"
+      :visible.sync="centerDialogVisible"
+      width="20%"
+      center>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="prohobit">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -196,6 +209,7 @@
                   message: '添加成功',
                   type: 'success'
                 });
+                this.centerDialogVisible1=false;
                 this.$router.push('/userProductList');
               }else if(res.data.msgCd=='ZYCASH-1009'){
                 this.$message.error(res.data.msgInfo);
@@ -287,10 +301,14 @@
           path: `/userDetail`,
         });
       },
-      //禁用按钮
+      //禁用弹窗
       prohibitBtn(row){
-        console.log(row.enabled);
-        let id=row.id;
+        this.centerDialogVisible=true;
+        this.$store.dispatch('setProhobit',row);
+      },
+      //禁用功能
+      prohobit(row){
+        let id=this.$store.state.prohobit.id;
         axios({
           method:"get",
           url:"http://"+this.baseUrl+"/flowPool/admin/customer/updateEnabled",
@@ -300,7 +318,7 @@
           },
           params:{
             id:id,
-            enabled:!row.enabled,
+            enabled:!this.$store.state.prohobit.enabled,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -309,6 +327,7 @@
               message: res.data.msgInfo,
               type: 'success'
             });
+            this.centerDialogVisible=false;
             this.getProductList();
           }else {
             this.$message.error(res.data.msgInfo);
@@ -338,7 +357,7 @@
       },
     },
     mounted:function () {
-      this.getProductList();
+      this.getProductList(1,20);
     },
     data() {
       return {
@@ -378,6 +397,7 @@
           }]
         },
         centerDialogVisible1:false,
+        centerDialogVisible:false,
         realName:'',
         mobile:'',
         channelName:'',

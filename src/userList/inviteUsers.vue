@@ -6,28 +6,29 @@
           <el-input class="searchContent" placeholder="用户姓名" v-model="realName" clearable> </el-input>
         </template>
       </el-col>
-      <el-col :span="6" style="height: 55px;">
+      <el-col :span="5" style="height: 55px;">
         <template>手机号：
           <el-input class="searchContent" placeholder="用户手机号" v-model="mobile" clearable></el-input>
         </template>
       </el-col>
-      <template>
-        时间筛选:
-        <el-date-picker style="margin-left: 25px"
-                        v-model="value7"
-                        type="datetimerange"
-                        align="right"
-                        unlink-panels
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        :picker-options="pickerOptions2"
-                        format="yyyy-MM-dd HH:mm:ss"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        @change="logTimeChange()">
-        </el-date-picker>
-      </template>&nbsp;&nbsp;
       <el-button id="searchBtn" type="primary" @click="searchContent()" slot="append" icon="el-icon-search">查询</el-button>
+      <template>
+        <!--时间筛选:-->
+        <!--<el-date-picker style="margin-left: 25px"-->
+                        <!--v-model="value7"-->
+                        <!--type="datetimerange"-->
+                        <!--align="right"-->
+                        <!--unlink-panels-->
+                        <!--range-separator="至"-->
+                        <!--start-placeholder="开始日期"-->
+                        <!--end-placeholder="结束日期"-->
+                        <!--:picker-options="pickerOptions2"-->
+                        <!--format="yyyy-MM-dd HH:mm:ss"-->
+                        <!--value-format="yyyy-MM-dd HH:mm:ss"-->
+                        <!--@change="logTimeChange()">-->
+        <!--</el-date-picker>-->
+      </template>&nbsp;&nbsp;
+
     </div>
     <template>
       <el-table
@@ -348,7 +349,8 @@
           ],
         },
         ids:[],
-        multipleSelection:[]
+        multipleSelection:[],
+        realName:''
       }
     }
   }

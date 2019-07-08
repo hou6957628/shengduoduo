@@ -1,4 +1,4 @@
-import {SET_TOKEN, USER_ID,BANK_CARD,ACTIVE_ID} from './mutation-type'
+import {SET_TOKEN, USER_ID, BANK_CARD, ACTIVE_ID, PROHOBIT} from './mutation-type'
 
 export default ({
   setToken({commit}, todo) {
@@ -8,11 +8,14 @@ export default ({
   setUserId({commit}, todo) {
     commit(USER_ID, {todo})
   },
-  setBankCard({commit},todo){
-    commit(BANK_CARD,{todo})
+  setBankCard({commit}, todo) {
+    commit(BANK_CARD, {todo})
   },
-  setActiveId({commit},todo){
-    commit(ACTIVE_ID,{todo})
+  setActiveId({commit}, todo) {
+    commit(ACTIVE_ID, {todo})
   },
+  setProhobit({commit}, todo) {
+    commit(PROHOBIT, {todo})
+  }
 })
 

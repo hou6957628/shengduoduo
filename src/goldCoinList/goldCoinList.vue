@@ -91,8 +91,8 @@
           align="center"
           width="200">
           <template slot-scope="scope">
-            <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
-            <el-button @click="prohibitBtn(scope.row)" type="text" size="medium">{{(scope.row.status)?'禁用':'启用'}}</el-button>
+            <el-button @click="detailProduct(scope.row)" type="text" size="medium">编辑</el-button>
+            <el-button @click="prohibit(scope.row)" type="text" :type="(scope.row.status)?'danger':'primary'" size="small">{{(scope.row.status)?'禁用':'启用'}}</el-button>
             <el-button @click="winningRecord(scope.row)" type="text" size="medium">中奖记录</el-button>
           </template>
         </el-table-column>
@@ -110,6 +110,19 @@
                      :total="proTotal">
       </el-pagination>
     </div>
+    <!--线下还款结构-->
+    <el-dialog
+      title="是否禁用/启用此账号？"
+      :visible.sync="centerDialogVisible"
+      width="20%"
+      center>
+      <el-form ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="prohibitBtn">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -188,10 +201,16 @@
           path: `/goldCoinRecord/${id}`,
         });
       },
+      //禁用弹窗
+      prohibit(row){
+        this.centerDialogVisible=true;
+        this.$store.dispatch('setProhobit',row);
+      },
       //禁用按钮
       prohibitBtn(row){
-        let id=row.id;
-        let status=(row.status==1)?0:1;
+        let id=this.$store.state.prohobit.id;
+        let statusDe=this.$store.state.prohobit.status;
+        let status=(statusDe==1)?0:1;
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/flowPool/admin/prizes/startOrStop",
@@ -200,7 +219,7 @@
             'Authorization': this.$store.state.userToken
           },
           params:{
-            id:row.id,
+            id:id,
             status:status,
           }
         }).then((res)=>{
@@ -210,6 +229,7 @@
               message: res.data.msgInfo,
               type: 'success'
             });
+            this.centerDialogVisible=false;
             this.getProductList(1,20);
           }else {
             this.$message.error(res.data.msgInfo);
@@ -229,6 +249,7 @@
     data() {
       return {
         prizeNumber:'',
+        centerDialogVisible:false,
         prizeName:'',
         activityName:'',
         tableData:[],

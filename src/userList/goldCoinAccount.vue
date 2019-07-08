@@ -2,7 +2,7 @@
   <div class="content1">
     <el-row type="flex" class="row-bg" justify="left">
       <el-col :span="6" style="height: 55px;text-align: left;text-indent:6px;font-size: 20px;">
-        <template>金币账户金额 ：<span style="color: red">{{account.amount}}</span>元
+        <template>金币账户金额 ：<span style="color: red">{{account.amount}}</span>个
         </template>
       </el-col>
     </el-row >

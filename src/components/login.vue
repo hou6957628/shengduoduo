@@ -36,8 +36,8 @@
         topBar:false,
         leftSilder:false,
         ruleForm: {
-          username: 'admin',
-          password: 'admin123',
+          username: '',
+          password: '',
           type: true,
         },
         rules: {

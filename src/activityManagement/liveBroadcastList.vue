@@ -79,7 +79,7 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="detailProduct(scope.row)" type="text" size="medium">详情</el-button>
-            <el-button @click="deleteBtn(scope.row)" type="text" size="medium">删除</el-button>
+            <el-button @click="deteleBox(scope.row)" type="text" size="medium">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -96,6 +96,19 @@
                      :total="proTotal">
       </el-pagination>
     </div>
+    <!--删除-->
+    <el-dialog
+      title="是否删除该活动？"
+      :visible.sync="centerDialogVisible"
+      width="20%"
+      center>
+      <el-form ref="ruleForm" label-width="60px" class="demo-ruleForm">
+        <el-form-item>
+          <el-button type="primary" @click="deleteBtn">确认<i class="el-icon-check el-icon--right"></i></el-button>
+          <el-button type="info"  @click="centerDialogVisible = false">取消<i class="el-icon-close el-icon--right"></i></el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -167,9 +180,14 @@
           path: `/liveBroadcastDetail`,
         });
       },
+      //删除提示层
+      deteleBox(row){
+        this.centerDialogVisible=true;
+        this.$store.dispatch('setProhobit',row);
+      },
       //删除按钮
       deleteBtn(row){
-        let id=row.id;
+        let id=this.$store.state.prohobit.id;
         axios({
           method:"POST",
           url:"http://"+this.baseUrl+"/flowPool/admin/liveRadio/delete",
@@ -179,8 +197,6 @@
           },
           params:{
             id:id,
-            // enabled:!enabled,
-            // status:0,
           }
         }).then((res)=>{
           if(res.data.msgCd=='ZYCASH-200'){
@@ -190,6 +206,7 @@
               type: 'success'
             });
             this.getProductList();
+            this.centerDialogVisible=false;
           }else {
             this.$message.error(res.data.msgInfo);
           }
@@ -207,6 +224,7 @@
     },
     data() {
       return {
+        centerDialogVisible:false,
         activeName:'',
         tableData:[],
         productId:null,

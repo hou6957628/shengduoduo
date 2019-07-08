@@ -170,6 +170,7 @@
         ruleForm: {
           parentChannelName: '',
           parentChannelCode: '',
+          parentChannelId: '',
           productId: '',
           productName: '',
           productCode: '',
@@ -280,6 +281,7 @@
                 merchantId: this.ruleForm.merchantId,
                 merchantName: this.ruleForm.merchantName,
                 merchantCode: this.ruleForm.merchantCode,
+                parentChannelId: this.ruleForm.parentChannelId,
                 number: this.ruleForm.number,
                 countType: this.ruleForm.countType,
                 cpaPrice: this.ruleForm.cpaPrice,
@@ -354,22 +356,12 @@
         obj = list.find((item)=>{
           return item.parentChannelCode ===vId;
         });
+        console.log(obj);
         this.ruleForm.parentChannelName=obj.parentChannelName;
+        this.ruleForm.parentChannelId=obj.id;
         this.ruleForm.productId=obj.productId;
         this.ruleForm.productName=obj.productName;
         this.ruleForm.productCode=obj.productCode;
-      },
-      //所属应用下拉选择
-      selectChange2(vId,list){
-        let obj1 = {};
-        obj1 = list.find((item)=>{
-          return item.productId ===vId;
-        });
-        this.ruleForm.productName=obj1.productName;
-        this.ruleForm.productCode=obj1.productCode;
-        this.ruleForm.merchantId=obj1.merchantId;
-        this.ruleForm.merchantName=obj1.merchantName;
-        this.ruleForm.merchantCode=obj1.merchantCode;
       },
       //所属应用下拉选择
       selectChange4(vId,list){

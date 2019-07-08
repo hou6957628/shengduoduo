@@ -15,7 +15,6 @@
       <p><span>更新时间：</span>{{(bankCard.updateTime)?bankCard.updateTime:'----'}}</p>
     </div>
     <el-button-group class="btGrop">
-      <el-button class="jie" type="primary" @click="editProduct()">解绑</el-button>
       <el-button @click="guan()" class="guan">关闭</el-button>
     </el-button-group>
   </div>
